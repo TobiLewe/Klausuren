@@ -70,12 +70,30 @@ h1 {
 
 
 /* ==========================================
-   BEREICH
+   KLAUSUREN NEBENEINANDER
+   ========================================== */
+
+.klausuren-container {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+
+    gap: 50px;
+
+    max-width: 1300px;
+
+    margin: 0 auto;
+}
+
+
+/* ==========================================
+   BEREICHE
    ========================================== */
 
 .bereich {
-    width: 600px;
-    margin: 0 auto;
+    width: 550px;
 }
 
 
@@ -102,6 +120,8 @@ h1 {
     padding: 25px;
 
     border-radius: 10px;
+
+    box-sizing: border-box;
 }
 
 
@@ -134,16 +154,17 @@ h1 {
 
 
 /* ==========================================
-   TRENNLINIE
+   KLEINERE BILDSCHIRME
    ========================================== */
 
-.trennlinie {
+@media (max-width: 1200px) {
 
-    width: 600px;
+    .klausuren-container {
+        flex-direction: column;
 
-    height: 2px;
+        align-items: center;
 
-    background-color: #666;
+        gap: 30px;
+    }
 
-    margin: 60px auto;
 }

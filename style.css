@@ -5,35 +5,42 @@
 body {
     background-color: #222;
     color: white;
+
     font-family: Arial, sans-serif;
+
     text-align: center;
+
     padding-top: 50px;
 }
 
 
 /* ==========================================
-   ÜBERSCHRIFT
+   HAUPTÜBERSCHRIFT
    ========================================== */
 
 h1 {
     font-size: 40px;
+
     margin-bottom: 30px;
 }
 
 
 /* ==========================================
-   TAGE / WOCHEN BUTTONS
+   TAGE / WOCHEN SCHALTER
    ========================================== */
 
 .umschalter {
     display: flex;
+
     justify-content: center;
+
     margin-bottom: 50px;
 }
 
 
 .umschalter button {
     background-color: #333;
+
     color: white;
 
     border: 1px solid #666;
@@ -65,6 +72,7 @@ h1 {
 
 .umschalter button.aktiv {
     background-color: #666;
+
     font-weight: bold;
 }
 
@@ -74,6 +82,7 @@ h1 {
    ========================================== */
 
 .klausuren-container {
+
     display: flex;
 
     justify-content: center;
@@ -89,15 +98,17 @@ h1 {
 
 
 /* ==========================================
-   BEREICHE
+   BEREICH
    ========================================== */
 
 .bereich {
+
     width: 550px;
 }
 
 
 .bereich-titel {
+
     font-size: 24px;
 
     letter-spacing: 2px;
@@ -107,10 +118,11 @@ h1 {
 
 
 /* ==========================================
-   KLAUSUREN
+   KLAUSUR-KARTEN
    ========================================== */
 
 .klausur {
+
     background-color: #333;
 
     width: 500px;
@@ -126,11 +138,13 @@ h1 {
 
 
 .klausur h2 {
+
     margin-top: 0;
 }
 
 
 .klausur p {
+
     font-size: 18px;
 }
 
@@ -160,6 +174,7 @@ h1 {
 @media (max-width: 1200px) {
 
     .klausuren-container {
+
         flex-direction: column;
 
         align-items: center;

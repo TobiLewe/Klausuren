@@ -22,7 +22,7 @@ h1 {
 
 
 /* ==========================================
-   TAGE / WOCHEN SCHALTER
+   TAGE / WOCHEN BUTTONS
    ========================================== */
 
 .umschalter {
@@ -35,10 +35,16 @@ h1 {
 .umschalter button {
     background-color: #333;
     color: white;
+
     border: 1px solid #666;
+
     padding: 10px 25px;
+
     font-size: 16px;
+
     cursor: pointer;
+
+    transition: 0.2s;
 }
 
 
@@ -64,7 +70,7 @@ h1 {
 
 
 /* ==========================================
-   BEREICHE
+   BEREICH
    ========================================== */
 
 .bereich {
@@ -75,7 +81,9 @@ h1 {
 
 .bereich-titel {
     font-size: 24px;
+
     letter-spacing: 2px;
+
     margin-bottom: 25px;
 }
 
@@ -86,9 +94,13 @@ h1 {
 
 .klausur {
     background-color: #333;
+
     width: 500px;
+
     margin: 20px auto;
+
     padding: 25px;
+
     border-radius: 10px;
 }
 
@@ -112,8 +124,11 @@ h1 {
 #timer-elektrom,
 #timer-regelung,
 #timer-digital {
+
     font-size: 32px;
+
     font-weight: bold;
+
     margin-top: 20px;
 }
 
@@ -123,22 +138,12 @@ h1 {
    ========================================== */
 
 .trennlinie {
+
     width: 600px;
+
     height: 2px;
+
     background-color: #666;
+
     margin: 60px auto;
-}
-
-
-/* ==========================================
-   ABSTÄNDE
-   ========================================== */
-
-.vergangene {
-    margin-bottom: 20px;
-}
-
-
-.kommende {
-    margin-bottom: 50px;
 }

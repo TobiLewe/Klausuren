@@ -9,9 +9,30 @@ body {
 
 h1 {
     font-size: 40px;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
 }
 
+
+/* ==========================================
+   BEREICHE
+   ========================================== */
+
+.bereich {
+    width: 600px;
+    margin: 0 auto;
+}
+
+
+.bereich-titel {
+    font-size: 24px;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+}
+
+
+/* ==========================================
+   KLAUSUREN
+   ========================================== */
 
 .klausur {
     background-color: #333;
@@ -32,6 +53,10 @@ h1 {
 }
 
 
+/* ==========================================
+   TIMER
+   ========================================== */
+
 #timer-antrieb,
 #timer-nachrichtentechnik,
 #timer-elektrom,
@@ -43,8 +68,27 @@ h1 {
 }
 
 
-/* Bereits geschriebene Klausuren */
+/* ==========================================
+   TRENNLINIE
+   ========================================== */
 
-.vergangen {
-    background-color: #333;
+.trennlinie {
+    width: 600px;
+    height: 2px;
+    background-color: #666;
+    margin: 60px auto;
+}
+
+
+/* ==========================================
+   ABSTÄNDE DER BEREICHE
+   ========================================== */
+
+.vergangene {
+    margin-bottom: 20px;
+}
+
+
+.kommende {
+    margin-bottom: 50px;
 }

@@ -1,3 +1,7 @@
+/* ==========================================
+   GRUNDLAYOUT
+   ========================================== */
+
 body {
     background-color: #222;
     color: white;
@@ -7,9 +11,55 @@ body {
 }
 
 
+/* ==========================================
+   ÜBERSCHRIFT
+   ========================================== */
+
 h1 {
     font-size: 40px;
+    margin-bottom: 30px;
+}
+
+
+/* ==========================================
+   TAGE / WOCHEN SCHALTER
+   ========================================== */
+
+.umschalter {
+    display: flex;
+    justify-content: center;
     margin-bottom: 50px;
+}
+
+
+.umschalter button {
+    background-color: #333;
+    color: white;
+    border: 1px solid #666;
+    padding: 10px 25px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.umschalter button:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+
+.umschalter button:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+
+.umschalter button:hover {
+    background-color: #444;
+}
+
+
+.umschalter button.aktiv {
+    background-color: #666;
+    font-weight: bold;
 }
 
 
@@ -81,7 +131,7 @@ h1 {
 
 
 /* ==========================================
-   ABSTÄNDE DER BEREICHE
+   ABSTÄNDE
    ========================================== */
 
 .vergangene {

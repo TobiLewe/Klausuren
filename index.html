@@ -11,63 +11,127 @@
 
     <h1>Klausuren</h1>
 
-    <!-- Umschalter -->
+
+    <!-- TAGE / WOCHEN SCHALTER -->
+
     <div class="umschalter">
-        <button id="tage-button" class="aktiv">Tage</button>
-        <button id="wochen-button">Wochen</button>
-    </div>
 
+        <button id="tage-button" class="aktiv">
+            Tage
+        </button>
 
-    <!-- VERGANGENE KLAUSUREN -->
-
-    <div class="bereich">
-
-        <h2 class="bereich-titel">VERGANGENE KLAUSUREN</h2>
-
-        <div class="klausur">
-            <h2>Elektrom. Verträglichkeit</h2>
-            <p>21.07.2026 – 14:00 Uhr</p>
-            <div id="timer-elektrom">Lade Timer...</div>
-        </div>
-
-        <div class="klausur">
-            <h2>Regelungstechnik 2</h2>
-            <p>23.07.2026 – 11:00 Uhr</p>
-            <div id="timer-regelung">Lade Timer...</div>
-        </div>
-
-        <div class="klausur">
-            <h2>Digitaltechnik</h2>
-            <p>27.07.2026 – 12:00 Uhr</p>
-            <div id="timer-digital">Lade Timer...</div>
-        </div>
+        <button id="wochen-button">
+            Wochen
+        </button>
 
     </div>
 
 
-    <!-- TRENNLINIE -->
+    <!-- ==========================================
+         BEIDE BEREICHE NEBENEINANDER
+         ========================================== -->
 
-    <div class="trennlinie"></div>
+    <div class="klausuren-container">
 
 
-    <!-- KOMMENDE KLAUSUREN -->
+        <!-- ======================================
+             VERGANGENE KLAUSUREN
+             ====================================== -->
 
-    <div class="bereich">
+        <div class="bereich">
 
-        <h2 class="bereich-titel">KOMMENDE KLAUSUREN</h2>
+            <h2 class="bereich-titel">
+                VERGANGENE KLAUSUREN
+            </h2>
 
-        <div class="klausur">
-            <h2>Antriebstechnik</h2>
-            <p>21.09.2026 – 09:00 Uhr</p>
-            <div id="timer-antrieb">Lade Timer...</div>
-        </div>
 
-        <div class="klausur">
-            <h2>Nachrichtentechnik</h2>
-            <p>24.09.2026 – 13:30 Uhr</p>
-            <div id="timer-nachrichtentechnik">
-                Lade Timer...
+            <div class="klausur">
+
+                <h2>Elektrom. Verträglichkeit</h2>
+
+                <p>
+                    21.07.2026 – 14:00 Uhr
+                </p>
+
+                <div id="timer-elektrom">
+                    Lade Timer...
+                </div>
+
             </div>
+
+
+            <div class="klausur">
+
+                <h2>Regelungstechnik 2</h2>
+
+                <p>
+                    23.07.2026 – 11:00 Uhr
+                </p>
+
+                <div id="timer-regelung">
+                    Lade Timer...
+                </div>
+
+            </div>
+
+
+            <div class="klausur">
+
+                <h2>Digitaltechnik</h2>
+
+                <p>
+                    27.07.2026 – 12:00 Uhr
+                </p>
+
+                <div id="timer-digital">
+                    Lade Timer...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             KOMMENDE KLAUSUREN
+             ====================================== -->
+
+        <div class="bereich">
+
+            <h2 class="bereich-titel">
+                KOMMENDE KLAUSUREN
+            </h2>
+
+
+            <div class="klausur">
+
+                <h2>Antriebstechnik</h2>
+
+                <p>
+                    21.09.2026 – 09:00 Uhr
+                </p>
+
+                <div id="timer-antrieb">
+                    Lade Timer...
+                </div>
+
+            </div>
+
+
+            <div class="klausur">
+
+                <h2>Nachrichtentechnik</h2>
+
+                <p>
+                    24.09.2026 – 13:30 Uhr
+                </p>
+
+                <div id="timer-nachrichtentechnik">
+                    Lade Timer...
+                </div>
+
+            </div>
+
         </div>
 
     </div>
@@ -76,4 +140,5 @@
     <script src="script.js"></script>
 
 </body>
+
 </html>

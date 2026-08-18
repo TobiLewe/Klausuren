@@ -5,12 +5,10 @@
 body {
     background-color: #222;
     color: white;
-
     font-family: Arial, sans-serif;
-
     text-align: center;
-
     padding-top: 50px;
+    margin: 0;
 }
 
 
@@ -20,7 +18,6 @@ body {
 
 h1 {
     font-size: 40px;
-
     margin-bottom: 30px;
 }
 
@@ -31,48 +28,34 @@ h1 {
 
 .umschalter {
     display: flex;
-
     justify-content: center;
-
     margin-bottom: 50px;
 }
 
-
 .umschalter button {
     background-color: #333;
-
     color: white;
-
     border: 1px solid #666;
-
     padding: 10px 25px;
-
     font-size: 16px;
-
     cursor: pointer;
-
     transition: 0.2s;
 }
-
 
 .umschalter button:first-child {
     border-radius: 8px 0 0 8px;
 }
 
-
 .umschalter button:last-child {
     border-radius: 0 8px 8px 0;
 }
-
 
 .umschalter button:hover {
     background-color: #444;
 }
 
-
 .umschalter button.aktiv {
     background-color: #666;
-
     font-weight: bold;
 }
 
@@ -82,37 +65,33 @@ h1 {
    ========================================== */
 
 .klausuren-container {
-
     display: flex;
-
+    flex-direction: row;
     justify-content: center;
-
     align-items: flex-start;
-
-    gap: 50px;
-
-    max-width: 1300px;
-
+    gap: 40px;
+    width: 100%;
     margin: 0 auto;
 }
 
 
 /* ==========================================
-   BEREICH
+   BEREICHE
    ========================================== */
 
 .bereich {
-
     width: 550px;
+    flex: 0 0 550px;
 }
 
 
+/* ==========================================
+   ÜBERSCHRIFTEN DER BEREICHE
+   ========================================== */
+
 .bereich-titel {
-
     font-size: 24px;
-
     letter-spacing: 2px;
-
     margin-bottom: 25px;
 }
 
@@ -122,29 +101,19 @@ h1 {
    ========================================== */
 
 .klausur {
-
     background-color: #333;
-
-    width: 500px;
-
-    margin: 20px auto;
-
+    width: 100%;
+    margin: 20px 0;
     padding: 25px;
-
     border-radius: 10px;
-
     box-sizing: border-box;
 }
 
-
 .klausur h2 {
-
     margin-top: 0;
 }
 
-
 .klausur p {
-
     font-size: 18px;
 }
 
@@ -158,28 +127,7 @@ h1 {
 #timer-elektrom,
 #timer-regelung,
 #timer-digital {
-
     font-size: 32px;
-
     font-weight: bold;
-
     margin-top: 20px;
-}
-
-
-/* ==========================================
-   KLEINERE BILDSCHIRME
-   ========================================== */
-
-@media (max-width: 1200px) {
-
-    .klausuren-container {
-
-        flex-direction: column;
-
-        align-items: center;
-
-        gap: 30px;
-    }
-
 }

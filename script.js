@@ -1,11 +1,18 @@
+// ==========================================
+// AKTUELLER MODUS
+// ==========================================
+
+// "tage" oder "wochen"
+let modus = "tage";
+
+
+// ==========================================
+// TIMER
+// ==========================================
+
 function timer() {
 
-    const jetzt = new Date();
-
-    // ==========================================
-    // BEREITS GESCHRIEBENE KLAUSUREN
-    // ==========================================
-
+    // Bereits geschriebene Klausuren
     const elektromVertraeglichkeit =
         new Date("2026-07-21T14:00:00");
 
@@ -16,10 +23,7 @@ function timer() {
         new Date("2026-07-27T12:00:00");
 
 
-    // ==========================================
-    // KOMMENDE KLAUSUREN
-    // ==========================================
-
+    // Kommende Klausuren
     const antrieb =
         new Date("2026-09-21T09:00:00");
 
@@ -27,10 +31,7 @@ function timer() {
         new Date("2026-09-24T13:30:00");
 
 
-    // ==========================================
-    // TIMER DER GESCHRIEBENEN KLAUSUREN
-    // ==========================================
-
+    // Vergangene Klausuren
     berechneVergangenTimer(
         elektromVertraeglichkeit,
         "timer-elektrom"
@@ -47,10 +48,7 @@ function timer() {
     );
 
 
-    // ==========================================
-    // TIMER DER KOMMENDEN KLAUSUREN
-    // ==========================================
-
+    // Kommende Klausuren
     berechneTimer(
         antrieb,
         "timer-antrieb"
@@ -64,7 +62,7 @@ function timer() {
 
 
 // ==========================================
-// COUNTDOWN BIS ZUR KLAUSUR
+// TIMER BIS ZUR KLAUSUR
 // ==========================================
 
 function berechneTimer(ziel, elementID) {
@@ -91,18 +89,15 @@ function berechneTimer(ziel, elementID) {
         (1000 * 60 * 60 * 24)
     );
 
-
     const stunden = Math.floor(
         (differenz /
         (1000 * 60 * 60)) % 24
     );
 
-
     const minuten = Math.floor(
         (differenz /
         (1000 * 60)) % 60
     );
-
 
     const sekunden = Math.floor(
         (differenz /
@@ -111,10 +106,12 @@ function berechneTimer(ziel, elementID) {
 
 
     element.innerHTML =
-        tage + " Tage " +
-        stunden + " Std. " +
-        minuten + " Min. " +
-        sekunden + " Sek.";
+        formatiereZeit(
+            tage,
+            stunden,
+            minuten,
+            sekunden
+        );
 }
 
 
@@ -150,18 +147,15 @@ function berechneVergangenTimer(
         (1000 * 60 * 60 * 24)
     );
 
-
     const stunden = Math.floor(
         (differenz /
         (1000 * 60 * 60)) % 24
     );
 
-
     const minuten = Math.floor(
         (differenz /
         (1000 * 60)) % 60
     );
-
 
     const sekunden = Math.floor(
         (differenz /
@@ -171,15 +165,120 @@ function berechneVergangenTimer(
 
     element.innerHTML =
         "vor " +
-        tage + " Tage " +
-        stunden + " Std. " +
-        minuten + " Min. " +
-        sekunden + " Sek.";
+        formatiereZeit(
+            tage,
+            stunden,
+            minuten,
+            sekunden
+        );
 }
 
 
 // ==========================================
-// TIMER STARTEN
+// ZEIT FORMATIEREN
+// ==========================================
+
+function formatiereZeit(
+    tage,
+    stunden,
+    minuten,
+    sekunden
+) {
+
+    // ------------------------------
+    // TAGE-MODUS
+    // ------------------------------
+
+    if (modus === "tage") {
+
+        return (
+            tage + " Tage " +
+            stunden + " Std. " +
+            minuten + " Min. " +
+            sekunden + " Sek."
+        );
+    }
+
+
+    // ------------------------------
+    // WOCHEN-MODUS
+    // ------------------------------
+
+    const wochen =
+        Math.floor(tage / 7);
+
+    const restTage =
+        tage % 7;
+
+
+    let text = "";
+
+
+    if (wochen === 1) {
+        text += "1 Woche ";
+    }
+    else {
+        text += wochen + " Wochen ";
+    }
+
+
+    if (restTage === 1) {
+        text += "1 Tag ";
+    }
+    else {
+        text += restTage + " Tage ";
+    }
+
+
+    text +=
+        stunden + " Std. " +
+        minuten + " Min. " +
+        sekunden + " Sek.";
+
+
+    return text;
+}
+
+
+// ==========================================
+// MODUS WECHSELN
+// ==========================================
+
+function setModus(neuerModus) {
+
+    modus = neuerModus;
+
+
+    const tageButton =
+        document.getElementById("tage-button");
+
+    const wochenButton =
+        document.getElementById("wochen-button");
+
+
+    // Aktiven Button markieren
+
+    if (modus === "tage") {
+
+        tageButton.classList.add("aktiv");
+        wochenButton.classList.remove("aktiv");
+
+    }
+    else {
+
+        wochenButton.classList.add("aktiv");
+        tageButton.classList.remove("aktiv");
+
+    }
+
+
+    // Timer sofort neu berechnen
+    timer();
+}
+
+
+// ==========================================
+// START
 // ==========================================
 
 timer();

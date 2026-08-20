@@ -1,1 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
 
+<head>
+    <meta charset="UTF-8">
+    <title>Neues Semester</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ==============================
+         ZURÜCK BUTTON
+         ============================== -->
+
+    <a href="index.html" class="zurueck-button">
+        ← Zurück
+    </a>
+
+
+    <h1>Neues Semester</h1>
+
+
+    <p class="semester-info">
+        Hier kannst du die Klausuren des neuen Semesters eintragen.
+    </p>
+
+
+    <!-- ==============================
+         BEISPIEL
+         ============================== -->
+
+    <div class="neues-semester-bereich">
+
+        <div class="klausur">
+
+            <h2>Neue Klausur</h2>
+
+            <p>
+                Datum und Uhrzeit noch nicht festgelegt
+            </p>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

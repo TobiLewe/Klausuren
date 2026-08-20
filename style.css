@@ -141,7 +141,7 @@ h1 {
 
 
 /* ==========================================
-   KLAUSUREN AUF DESKTOP
+   KLAUSUREN DESKTOP
    ========================================== */
 
 .klausuren-container {
@@ -298,8 +298,6 @@ h1 {
     }
 
 
-    /* Buttons */
-
     .semester-button,
     .zurueck-button {
 
@@ -313,8 +311,6 @@ h1 {
     }
 
 
-    /* Überschrift */
-
     h1 {
 
         font-size: 32px;
@@ -322,8 +318,6 @@ h1 {
         margin-bottom: 25px;
     }
 
-
-    /* Umschalter */
 
     .umschalter {
 
@@ -338,8 +332,6 @@ h1 {
     }
 
 
-    /* Container */
-
     .klausuren-container {
 
         width: 100%;
@@ -349,8 +341,6 @@ h1 {
         gap: 25px;
     }
 
-
-    /* Bereiche */
 
     .bereich {
 
@@ -362,8 +352,6 @@ h1 {
     }
 
 
-    /* Überschriften */
-
     .bereich-titel {
 
         font-size: 20px;
@@ -373,8 +361,6 @@ h1 {
         margin-bottom: 15px;
     }
 
-
-    /* Klausuren */
 
     .klausur {
 
@@ -400,8 +386,6 @@ h1 {
     }
 
 
-    /* Timer */
-
     #timer-antrieb,
     #timer-nachrichtentechnik,
     #timer-elektrom,
@@ -415,8 +399,6 @@ h1 {
         overflow-wrap: anywhere;
     }
 
-
-    /* Neue Semester Seite */
 
     .neues-semester-bereich {
 

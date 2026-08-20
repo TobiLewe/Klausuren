@@ -24,6 +24,70 @@ body {
 
 
 /* ==========================================
+   BUTTON NEUES SEMESTER
+   ========================================== */
+
+.semester-button {
+    position: absolute;
+
+    top: 25px;
+    left: 25px;
+
+    background-color: #333;
+
+    color: white;
+
+    text-decoration: none;
+
+    border: 1px solid #666;
+
+    padding: 10px 18px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    transition: 0.2s;
+}
+
+.semester-button:hover {
+    background-color: #444;
+}
+
+
+/* ==========================================
+   ZURÜCK BUTTON
+   ========================================== */
+
+.zurueck-button {
+    position: absolute;
+
+    top: 25px;
+    left: 25px;
+
+    background-color: #333;
+
+    color: white;
+
+    text-decoration: none;
+
+    border: 1px solid #666;
+
+    padding: 10px 18px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    transition: 0.2s;
+}
+
+.zurueck-button:hover {
+    background-color: #444;
+}
+
+
+/* ==========================================
    HAUPTÜBERSCHRIFT
    ========================================== */
 
@@ -105,6 +169,7 @@ h1 {
 
 .bereich {
     width: 550px;
+
     max-width: 550px;
 
     flex: 0 1 550px;
@@ -114,7 +179,7 @@ h1 {
 
 
 /* ==========================================
-   BEREICHSÜBERSCHRIFT
+   ÜBERSCHRIFTEN
    ========================================== */
 
 .bereich-titel {
@@ -150,6 +215,7 @@ h1 {
 
 .klausur p {
     font-size: 18px;
+
     margin: 0;
 }
 
@@ -163,6 +229,7 @@ h1 {
 #timer-elektrom,
 #timer-regelung,
 #timer-digital {
+
     font-size: 32px;
 
     font-weight: bold;
@@ -174,12 +241,32 @@ h1 {
 
 
 /* ==========================================
+   NEUES SEMESTER
+   ========================================== */
+
+.semester-info {
+    font-size: 18px;
+
+    margin-bottom: 40px;
+}
+
+.neues-semester-bereich {
+    width: 550px;
+
+    max-width: 90%;
+
+    margin: 0 auto;
+}
+
+
+/* ==========================================
    TABLET
    ========================================== */
 
 @media (max-width: 1150px) {
 
     .klausuren-container {
+
         flex-direction: column;
 
         align-items: center;
@@ -190,7 +277,9 @@ h1 {
     }
 
     .bereich {
+
         width: 90%;
+
         max-width: 550px;
 
         flex: none;
@@ -205,13 +294,29 @@ h1 {
 @media (max-width: 600px) {
 
     body {
-        padding-top: 25px;
+        padding-top: 75px;
+    }
+
+
+    /* Buttons */
+
+    .semester-button,
+    .zurueck-button {
+
+        top: 20px;
+
+        left: 15px;
+
+        padding: 8px 14px;
+
+        font-size: 14px;
     }
 
 
     /* Überschrift */
 
     h1 {
+
         font-size: 32px;
 
         margin-bottom: 25px;
@@ -221,10 +326,12 @@ h1 {
     /* Umschalter */
 
     .umschalter {
+
         margin-bottom: 30px;
     }
 
     .umschalter button {
+
         padding: 9px 20px;
 
         font-size: 15px;
@@ -234,6 +341,7 @@ h1 {
     /* Container */
 
     .klausuren-container {
+
         width: 100%;
 
         padding: 0 12px;
@@ -245,6 +353,7 @@ h1 {
     /* Bereiche */
 
     .bereich {
+
         width: 100%;
 
         max-width: 100%;
@@ -253,9 +362,10 @@ h1 {
     }
 
 
-    /* Überschrift */
+    /* Überschriften */
 
     .bereich-titel {
+
         font-size: 20px;
 
         letter-spacing: 1px;
@@ -264,9 +374,10 @@ h1 {
     }
 
 
-    /* Klausur */
+    /* Klausuren */
 
     .klausur {
+
         width: 100%;
 
         margin: 15px 0;
@@ -276,6 +387,7 @@ h1 {
 
 
     .klausur h2 {
+
         font-size: 20px;
 
         overflow-wrap: anywhere;
@@ -283,6 +395,7 @@ h1 {
 
 
     .klausur p {
+
         font-size: 15px;
     }
 
@@ -301,6 +414,16 @@ h1 {
 
         overflow-wrap: anywhere;
     }
+
+
+    /* Neue Semester Seite */
+
+    .neues-semester-bereich {
+
+        width: 94%;
+
+        max-width: none;
+    }
 }
 
 
@@ -311,7 +434,7 @@ h1 {
 @media (max-width: 400px) {
 
     body {
-        padding-top: 20px;
+        padding-top: 70px;
     }
 
     h1 {

@@ -36,22 +36,17 @@ const nachrichtentechnik =
 
 function timer() {
 
-
-    // ------------------------------
-    // VERGANGENE KLAUSUREN
-    // ------------------------------
+    // Vergangene Klausuren
 
     berechneVergangenTimer(
         elektromVertraeglichkeit,
         "timer-elektrom"
     );
 
-
     berechneVergangenTimer(
         regelungstechnik2,
         "timer-regelung"
     );
-
 
     berechneVergangenTimer(
         digitaltechnik,
@@ -59,15 +54,12 @@ function timer() {
     );
 
 
-    // ------------------------------
-    // KOMMENDE KLAUSUREN
-    // ------------------------------
+    // Kommende Klausuren
 
     berechneTimer(
         antrieb,
         "timer-antrieb"
     );
-
 
     berechneTimer(
         nachrichtentechnik,
@@ -87,10 +79,8 @@ function berechneTimer(ziel, elementID) {
     const differenz =
         ziel - jetzt;
 
-
     const element =
         document.getElementById(elementID);
-
 
     if (differenz <= 0) {
 
@@ -100,30 +90,25 @@ function berechneTimer(ziel, elementID) {
         return;
     }
 
-
     const tage = Math.floor(
         differenz /
         (1000 * 60 * 60 * 24)
     );
-
 
     const stunden = Math.floor(
         (differenz /
         (1000 * 60 * 60)) % 24
     );
 
-
     const minuten = Math.floor(
         (differenz /
         (1000 * 60)) % 60
     );
 
-
     const sekunden = Math.floor(
         (differenz /
         1000) % 60
     );
-
 
     element.innerHTML =
         formatiereZeit(
@@ -149,10 +134,8 @@ function berechneVergangenTimer(
     const differenz =
         jetzt - start;
 
-
     const element =
         document.getElementById(elementID);
-
 
     if (differenz < 0) {
 
@@ -162,30 +145,25 @@ function berechneVergangenTimer(
         return;
     }
 
-
     const tage = Math.floor(
         differenz /
         (1000 * 60 * 60 * 24)
     );
-
 
     const stunden = Math.floor(
         (differenz /
         (1000 * 60 * 60)) % 24
     );
 
-
     const minuten = Math.floor(
         (differenz /
         (1000 * 60)) % 60
     );
 
-
     const sekunden = Math.floor(
         (differenz /
         1000) % 60
     );
-
 
     element.innerHTML =
         "vor " +
@@ -209,43 +187,29 @@ function formatiereZeit(
     sekunden
 ) {
 
-
-    // ======================================
-    // TAGE-MODUS
-    // ======================================
+    // Tage-Modus
 
     if (modus === "tage") {
 
         return (
-
             tage + " Tage " +
-
             stunden + " Std. " +
-
             minuten + " Min. " +
-
             sekunden + " Sek."
-
         );
     }
 
 
-    // ======================================
-    // WOCHEN-MODUS
-    // ======================================
+    // Wochen-Modus
 
     const wochen =
         Math.floor(tage / 7);
 
-
     const restTage =
         tage % 7;
 
-
     let text = "";
 
-
-    // Wochen
 
     if (wochen === 1) {
 
@@ -257,8 +221,6 @@ function formatiereZeit(
     }
 
 
-    // Tage
-
     if (restTage === 1) {
 
         text += "1 Tag ";
@@ -269,13 +231,10 @@ function formatiereZeit(
     }
 
 
-    // Stunden / Minuten / Sekunden
-
     text +=
         stunden + " Std. " +
         minuten + " Min. " +
         sekunden + " Sek.";
-
 
     return text;
 }
@@ -289,19 +248,15 @@ document
     .getElementById("tage-button")
     .addEventListener("click", function () {
 
-
         modus = "tage";
-
 
         document
             .getElementById("tage-button")
             .classList.add("aktiv");
 
-
         document
             .getElementById("wochen-button")
             .classList.remove("aktiv");
-
 
         timer();
 
@@ -316,19 +271,15 @@ document
     .getElementById("wochen-button")
     .addEventListener("click", function () {
 
-
         modus = "wochen";
-
 
         document
             .getElementById("wochen-button")
             .classList.add("aktiv");
 
-
         document
             .getElementById("tage-button")
             .classList.remove("aktiv");
-
 
         timer();
 

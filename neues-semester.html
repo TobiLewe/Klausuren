@@ -10,11 +10,9 @@
 
 <body>
 
-    <!-- ==============================
-         ZURÜCK BUTTON
-         ============================== -->
+    <!-- Zurück Button -->
 
-    <a href="/" class="zurueck-button">
+    <a href="index.html" class="zurueck-button">
         ← Zurück
     </a>
 
@@ -22,24 +20,22 @@
     <h1>Neues Semester</h1>
 
 
-    <p class="semester-info">
-        Hier kannst du die Klausuren des neuen Semesters eintragen.
-    </p>
+    <div class="semester-timer">
 
+        <h2>Das neue Semester beginnt in:</h2>
 
-    <div class="neues-semester-bereich">
-
-        <div class="klausur">
-
-            <h2>Neue Klausur</h2>
-
-            <p>
-                Datum und Uhrzeit noch nicht festgelegt
-            </p>
-
+        <div id="semester-countdown">
+            Lade Timer...
         </div>
 
+        <p>
+            05.10.2026
+        </p>
+
     </div>
+
+
+    <script src="semester-script.js"></script>
 
 </body>
 

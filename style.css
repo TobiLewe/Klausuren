@@ -451,3 +451,65 @@ h1 {
         font-size: 18px;
     }
 }
+
+/* ==========================================
+   SEMESTER TIMER
+   ========================================== */
+
+.semester-timer {
+    width: 550px;
+    max-width: 90%;
+
+    margin: 80px auto 0 auto;
+
+    background-color: #333;
+
+    padding: 35px 20px;
+
+    border-radius: 10px;
+}
+
+.semester-timer h2 {
+    margin: 0 0 25px 0;
+
+    font-size: 24px;
+}
+
+#semester-countdown {
+    font-size: 32px;
+
+    font-weight: bold;
+
+    margin-bottom: 20px;
+}
+
+.semester-timer p {
+    font-size: 18px;
+
+    margin: 0;
+}
+
+
+/* Handy */
+
+@media (max-width: 600px) {
+
+    .semester-timer {
+        width: 94%;
+
+        padding: 25px 12px;
+
+        margin-top: 60px;
+    }
+
+    .semester-timer h2 {
+        font-size: 20px;
+    }
+
+    #semester-countdown {
+        font-size: 21px;
+
+        line-height: 1.5;
+    }
+
+}

@@ -17,14 +17,11 @@ const elektromVertraeglichkeit =
 const regelungstechnik2 =
     new Date("2026-07-23T11:00:00");
 
-const digitaltechnik =
-    new Date("2026-07-27T12:00:00");
+const antrieb =
+    new Date("2026-09-21T09:00:00");
 
 
 // Kommende Klausuren
-
-const antrieb =
-    new Date("2026-09-21T09:00:00");
 
 const nachrichtentechnik =
     new Date("2026-09-24T13:30:00");
@@ -49,17 +46,12 @@ function timer() {
     );
 
     berechneVergangenTimer(
-        digitaltechnik,
-        "timer-digital"
+        antrieb,
+        "timer-antrieb"
     );
 
 
     // Kommende Klausuren
-
-    berechneTimer(
-        antrieb,
-        "timer-antrieb"
-    );
 
     berechneTimer(
         nachrichtentechnik,

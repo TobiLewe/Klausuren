@@ -17,9 +17,6 @@ const elektromVertraeglichkeit =
 const regelungstechnik2 =
     new Date("2026-07-23T11:00:00");
 
-const antrieb =
-    new Date("2026-09-21T09:00:00");
-
 
 // Kommende Klausuren
 
@@ -43,11 +40,6 @@ function timer() {
     berechneVergangenTimer(
         regelungstechnik2,
         "timer-regelung"
-    );
-
-    berechneVergangenTimer(
-        antrieb,
-        "timer-antrieb"
     );
 
 

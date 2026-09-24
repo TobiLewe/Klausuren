@@ -47,58 +47,6 @@ function timer() {
 
 
 // ==========================================
-// COUNTDOWN BIS ZUR KLAUSUR
-// ==========================================
-
-function berechneTimer(ziel, elementID) {
-
-    const jetzt = new Date();
-
-    const differenz =
-        ziel - jetzt;
-
-    const element =
-        document.getElementById(elementID);
-
-    if (differenz <= 0) {
-
-        element.innerHTML =
-            "Die Klausur hat begonnen!";
-
-        return;
-    }
-
-    const tage = Math.floor(
-        differenz /
-        (1000 * 60 * 60 * 24)
-    );
-
-    const stunden = Math.floor(
-        (differenz /
-        (1000 * 60 * 60)) % 24
-    );
-
-    const minuten = Math.floor(
-        (differenz /
-        (1000 * 60)) % 60
-    );
-
-    const sekunden = Math.floor(
-        (differenz /
-        1000) % 60
-    );
-
-    element.innerHTML =
-        formatiereZeit(
-            tage,
-            stunden,
-            minuten,
-            sekunden
-        );
-}
-
-
-// ==========================================
 // ZEIT SEIT DER KLAUSUR
 // ==========================================
 
@@ -109,11 +57,14 @@ function berechneVergangenTimer(
 
     const jetzt = new Date();
 
-    const differenz =
-        jetzt - start;
+    const differenz = jetzt - start;
 
     const element =
         document.getElementById(elementID);
+
+    if (!element) {
+        return;
+    }
 
     if (differenz < 0) {
 

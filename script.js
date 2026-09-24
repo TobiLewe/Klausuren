@@ -17,9 +17,6 @@ const elektromVertraeglichkeit =
 const regelungstechnik2 =
     new Date("2026-07-23T11:00:00");
 
-const nachrichtentechnik =
-    new Date("2026-09-24T13:30:00");
-
 
 // ==========================================
 // TIMER
@@ -38,11 +35,6 @@ function timer() {
         regelungstechnik2,
         "timer-regelung"
     );
-
-    berechneVergangenTimer(
-        nachrichtentechnik,
-        "timer-nachrichtentechnik"
-    );
 }
 
 
@@ -57,7 +49,8 @@ function berechneVergangenTimer(
 
     const jetzt = new Date();
 
-    const differenz = jetzt - start;
+    const differenz =
+        jetzt - start;
 
     const element =
         document.getElementById(elementID);

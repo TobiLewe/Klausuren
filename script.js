@@ -17,9 +17,6 @@ const elektromVertraeglichkeit =
 const regelungstechnik2 =
     new Date("2026-07-23T11:00:00");
 
-
-// Kommende Klausuren
-
 const nachrichtentechnik =
     new Date("2026-09-24T13:30:00");
 
@@ -42,10 +39,7 @@ function timer() {
         "timer-regelung"
     );
 
-
-    // Kommende Klausuren
-
-    berechneTimer(
+    berechneVergangenTimer(
         nachrichtentechnik,
         "timer-nachrichtentechnik"
     );

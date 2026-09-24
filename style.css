@@ -224,11 +224,8 @@ h1 {
    TIMER
    ========================================== */
 
-#timer-antrieb,
-#timer-nachrichtentechnik,
 #timer-elektrom,
-#timer-regelung,
-#timer-digital {
+#timer-regelung {
 
     font-size: 32px;
 
@@ -236,7 +233,19 @@ h1 {
 
     margin-top: 20px;
 
-    overflow-wrap: anywhere;
+    height: 45px;
+
+    min-height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    white-space: nowrap;
+
+    overflow: hidden;
 }
 
 
@@ -386,17 +395,28 @@ h1 {
     }
 
 
-    #timer-antrieb,
-    #timer-nachrichtentechnik,
+    /* TIMER HANDY */
+
     #timer-elektrom,
-    #timer-regelung,
-    #timer-digital {
+    #timer-regelung {
 
         font-size: 21px;
 
-        line-height: 1.4;
+        line-height: 1;
 
-        overflow-wrap: anywhere;
+        height: 30px;
+
+        min-height: 30px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        white-space: nowrap;
+
+        overflow: hidden;
     }
 
 
@@ -443,14 +463,30 @@ h1 {
         font-size: 14px;
     }
 
-    #timer-antrieb,
-    #timer-nachrichtentechnik,
+
+    /* TIMER SEHR KLEINES HANDY */
+
     #timer-elektrom,
-    #timer-regelung,
-    #timer-digital {
+    #timer-regelung {
+
         font-size: 18px;
+
+        height: 26px;
+
+        min-height: 26px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        white-space: nowrap;
+
+        overflow: hidden;
     }
 }
+
 
 /* ==========================================
    SEMESTER TIMER
@@ -490,7 +526,9 @@ h1 {
 }
 
 
-/* Handy */
+/* ==========================================
+   SEMESTER TIMER HANDY
+   ========================================== */
 
 @media (max-width: 600px) {
 

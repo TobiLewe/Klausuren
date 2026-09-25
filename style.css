@@ -93,6 +93,7 @@ body {
 
 h1 {
     font-size: 40px;
+
     margin: 0 0 30px 0;
 }
 
@@ -103,12 +104,15 @@ h1 {
 
 .umschalter {
     display: flex;
+
     justify-content: center;
+
     margin-bottom: 50px;
 }
 
 .umschalter button {
     background-color: #333;
+
     color: white;
 
     border: 1px solid #666;
@@ -136,6 +140,7 @@ h1 {
 
 .umschalter button.aktiv {
     background-color: #666;
+
     font-weight: bold;
 }
 
@@ -226,8 +231,6 @@ h1 {
 
 #timer-elektrom {
 
-    font-size: 28px;
-
     font-weight: bold;
 
     margin-top: 20px;
@@ -245,6 +248,24 @@ h1 {
     white-space: nowrap;
 
     overflow: hidden;
+}
+
+
+/* ==========================================
+   TAGE-MODUS
+   ========================================== */
+
+#timer-elektrom.tage-modus {
+    font-size: 28px;
+}
+
+
+/* ==========================================
+   WOCHEN-MODUS
+   ========================================== */
+
+#timer-elektrom.wochen-modus {
+    font-size: 24px;
 }
 
 
@@ -332,6 +353,7 @@ h1 {
         margin-bottom: 30px;
     }
 
+
     .umschalter button {
 
         padding: 9px 20px;
@@ -394,17 +416,19 @@ h1 {
     }
 
 
-    /* TIMER HANDY */
+    /* ======================================
+       TIMER HANDY
+       ====================================== */
 
     #timer-elektrom {
-
-        font-size: 20px;
-
-        line-height: 1;
 
         height: 30px;
 
         min-height: 30px;
+
+        line-height: 1;
+
+        margin-top: 20px;
 
         display: flex;
 
@@ -415,6 +439,16 @@ h1 {
         white-space: nowrap;
 
         overflow: hidden;
+    }
+
+
+    #timer-elektrom.tage-modus {
+        font-size: 20px;
+    }
+
+
+    #timer-elektrom.wochen-modus {
+        font-size: 17px;
     }
 
 
@@ -437,50 +471,56 @@ h1 {
         padding-top: 70px;
     }
 
+
     h1 {
         font-size: 28px;
     }
+
 
     .klausuren-container {
         padding: 0 8px;
     }
 
+
     .bereich-titel {
         font-size: 18px;
     }
+
 
     .klausur {
         padding: 18px 10px;
     }
 
+
     .klausur h2 {
         font-size: 18px;
     }
+
 
     .klausur p {
         font-size: 14px;
     }
 
 
-    /* TIMER SEHR KLEINES HANDY */
+    /* ======================================
+       TIMER SEHR KLEINES HANDY
+       ====================================== */
 
     #timer-elektrom {
-
-        font-size: 17px;
 
         height: 26px;
 
         min-height: 26px;
+    }
 
-        display: flex;
 
-        align-items: center;
+    #timer-elektrom.tage-modus {
+        font-size: 17px;
+    }
 
-        justify-content: center;
 
-        white-space: nowrap;
-
-        overflow: hidden;
+    #timer-elektrom.wochen-modus {
+        font-size: 15px;
     }
 }
 
@@ -491,6 +531,7 @@ h1 {
 
 .semester-timer {
     width: 550px;
+
     max-width: 90%;
 
     margin: 80px auto 0 auto;
@@ -530,6 +571,7 @@ h1 {
 @media (max-width: 600px) {
 
     .semester-timer {
+
         width: 94%;
 
         padding: 25px 12px;
@@ -538,15 +580,16 @@ h1 {
     }
 
     .semester-timer h2 {
+
         font-size: 20px;
     }
 
     #semester-countdown {
+
         font-size: 21px;
 
         line-height: 1.5;
     }
-
 }
 
 
@@ -555,167 +598,254 @@ h1 {
    ========================================== */
 
 .stundenplan-bereich {
+
     display: block;
+
     width: 96%;
+
     max-width: 1500px;
+
     margin: 60px auto 60px auto;
+
     text-align: center;
 }
 
 .stundenplan-bereich > h2 {
+
     font-size: 28px;
+
     margin: 0 0 25px 0;
 }
 
 
-/* Tabellenrahmen */
+/* ==========================================
+   TABELLENRAHMEN
+   ========================================== */
 
 .tabelle-container {
+
     display: block;
+
     width: 100%;
+
     overflow-x: auto;
+
     overflow-y: visible;
+
     border: 2px solid #777;
+
     border-radius: 10px;
+
     background-color: #222;
+
     -webkit-overflow-scrolling: touch;
 }
 
 
-/* Tabelle */
+/* ==========================================
+   TABELLE
+   ========================================== */
 
 .stundenplan {
+
     display: table;
+
     width: 100%;
+
     min-width: 1150px;
+
     border-collapse: collapse;
+
     table-layout: fixed;
+
     margin: 0;
 }
 
 
-/* Alle Linien */
+/* ==========================================
+   ALLE LINIEN
+   ========================================== */
 
 .stundenplan th,
 .stundenplan td {
+
     border: 1px solid #777;
 }
 
 
-/* Kopfzeile */
+/* ==========================================
+   KOPFZEILE
+   ========================================== */
 
 .stundenplan thead th {
+
     background-color: #444;
+
     color: white;
+
     font-size: 17px;
+
     font-weight: bold;
+
     text-align: center;
+
     padding: 15px 10px;
+
     height: 55px;
+
     vertical-align: middle;
+
     border: 1px solid #888;
 }
 
 
-/* Breite der Uhrzeit-Spalte */
+/* ==========================================
+   BREITE UHRZEIT-SPALTE
+   ========================================== */
 
 .stundenplan thead th:first-child,
 .stundenplan .uhrzeit {
+
     width: 90px;
 }
 
 
-/* Uhrzeit */
+/* ==========================================
+   UHRZEIT
+   ========================================== */
 
 .stundenplan .uhrzeit {
+
     background-color: #292929;
+
     color: white;
+
     text-align: center;
+
     font-weight: bold;
+
     font-size: 15px;
+
     white-space: nowrap;
+
     vertical-align: middle;
+
     padding: 10px 5px;
 }
 
 
-/* Kurszellen */
+/* ==========================================
+   KURSZELLEN
+   ========================================== */
 
 .stundenplan tbody td {
+
     background-color: #333;
+
     color: white;
+
     font-size: 13px;
+
     line-height: 1.45;
+
     text-align: left;
+
     vertical-align: top;
+
     padding: 12px 10px;
+
     min-height: 70px;
 }
 
 
-/* Leere Felder */
+/* ==========================================
+   LEERE FELDER
+   ========================================== */
 
 .stundenplan tbody td:empty {
+
     background-color: #282828;
 }
 
 
-/* Trennlinien zwischen Stunden besonders sichtbar */
+/* ==========================================
+   TRENNLINIEN
+   ========================================== */
 
 .stundenplan tbody tr {
+
     border-top: 2px solid #666;
 }
 
 .stundenplan tbody tr:first-child {
+
     border-top: 1px solid #777;
 }
 
 
-/* Leichte Hervorhebung beim Darüberfahren */
+/* ==========================================
+   HOVER
+   ========================================== */
 
 .stundenplan tbody tr:hover td {
+
     background-color: #3b3b3b;
 }
 
 .stundenplan tbody tr:hover .uhrzeit {
+
     background-color: #353535;
 }
 
 
-/* Scroll-Hinweis auf kleinen Bildschirmen */
+/* ==========================================
+   STUNDENPLAN HANDY
+   ========================================== */
 
 @media (max-width: 600px) {
 
     .stundenplan-bereich {
+
         width: 96%;
+
         margin-top: 45px;
     }
 
     .stundenplan-bereich > h2 {
+
         font-size: 22px;
     }
 
     .tabelle-container {
+
         border-width: 2px;
+
         border-radius: 8px;
     }
 
     .stundenplan {
+
         min-width: 1150px;
     }
 
     .stundenplan thead th {
+
         font-size: 14px;
+
         padding: 12px 8px;
+
         height: 50px;
     }
 
     .stundenplan tbody td {
+
         font-size: 12px;
+
         padding: 10px 8px;
     }
 
     .stundenplan .uhrzeit {
+
         font-size: 13px;
     }
 }

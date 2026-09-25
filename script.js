@@ -9,7 +9,7 @@ let modus = "tage";
 // KLAUSURTERMINE
 // ==========================================
 
-// Bereits geschriebene Klausuren
+// Bereits geschriebene Klausur
 
 const elektromVertraeglichkeit =
     new Date("2026-07-21T14:00:00");
@@ -50,6 +50,7 @@ function berechneVergangenTimer(
         return;
     }
 
+
     if (differenz < 0) {
 
         element.innerHTML =
@@ -57,6 +58,7 @@ function berechneVergangenTimer(
 
         return;
     }
+
 
     const tage = Math.floor(
         differenz /
@@ -77,6 +79,31 @@ function berechneVergangenTimer(
         (differenz /
         1000) % 60
     );
+
+
+    // Alte Klassen entfernen
+
+    element.classList.remove(
+        "tage-modus",
+        "wochen-modus"
+    );
+
+
+    // Aktuellen Modus setzen
+
+    if (modus === "tage") {
+
+        element.classList.add(
+            "tage-modus"
+        );
+
+    } else {
+
+        element.classList.add(
+            "wochen-modus"
+        );
+    }
+
 
     element.innerHTML =
         "vor " +
@@ -100,7 +127,9 @@ function formatiereZeit(
     sekunden
 ) {
 
-    // Tage-Modus
+    // ======================================
+    // TAGE-MODUS
+    // ======================================
 
     if (modus === "tage") {
 
@@ -113,7 +142,9 @@ function formatiereZeit(
     }
 
 
-    // Wochen-Modus
+    // ======================================
+    // WOCHEN-MODUS
+    // ======================================
 
     const wochen =
         Math.floor(tage / 7);
@@ -149,6 +180,7 @@ function formatiereZeit(
         minuten + " Min. " +
         sekunden + " Sek.";
 
+
     return text;
 }
 
@@ -163,13 +195,16 @@ document
 
         modus = "tage";
 
+
         document
             .getElementById("tage-button")
             .classList.add("aktiv");
 
+
         document
             .getElementById("wochen-button")
             .classList.remove("aktiv");
+
 
         timer();
 
@@ -186,13 +221,16 @@ document
 
         modus = "wochen";
 
+
         document
             .getElementById("wochen-button")
             .classList.add("aktiv");
 
+
         document
             .getElementById("tage-button")
             .classList.remove("aktiv");
+
 
         timer();
 
@@ -206,6 +244,11 @@ document
 timer();
 
 
-// Jede Sekunde aktualisieren
+// ==========================================
+// JEDE SEKUNDE AKTUALISIEREN
+// ==========================================
 
-setInterval(timer, 1000);
+setInterval(
+    timer,
+    1000
+);

@@ -14,9 +14,6 @@ let modus = "tage";
 const elektromVertraeglichkeit =
     new Date("2026-07-21T14:00:00");
 
-const regelungstechnik2 =
-    new Date("2026-07-23T11:00:00");
-
 
 // ==========================================
 // TIMER
@@ -24,17 +21,11 @@ const regelungstechnik2 =
 
 function timer() {
 
-    // Vergangene Klausuren
-
     berechneVergangenTimer(
         elektromVertraeglichkeit,
         "timer-elektrom"
     );
 
-    berechneVergangenTimer(
-        regelungstechnik2,
-        "timer-regelung"
-    );
 }
 
 

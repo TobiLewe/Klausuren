@@ -33,13 +33,12 @@
       <h2 id="plan-title">Wochenplan – Bachelor Elektrotechnik (5. Fachsemester)</h2>
     </div>
 
-    <div class="plan-zoom-controls" aria-label="Stundenplan Zoom">
-      <button type="button" id="plan-zoom-minus" aria-label="Stundenplan kleiner anzeigen">−</button>
-      <span id="plan-zoom-value" aria-live="polite">100%</span>
-      <button type="button" id="plan-zoom-plus" aria-label="Stundenplan größer anzeigen">+</button>
-    </div>
+
+
+    <div class="touch-zoom-hinweis" aria-hidden="true">Mit zwei Fingern vergrößern oder verkleinern</div>
 
     <div class="tabelle-container">
+      <div class="stundenplan-zoom-target">
       <table class="stundenplan" aria-label="Wochenplan">
         <colgroup>
           <col class="zeitspalte">
@@ -996,6 +995,7 @@
     </article></td><td class="leer"></td><td class="leer"></td><td class="leer"></td></tr>
         </tbody>
       </table>
+      </div>
     </div>
 
   </section>
@@ -1126,9 +1126,115 @@
     }
   }
 
+  // ==========================================================
+  // TOUCH-ZOOM FÜR TABLET / HANDY
+  // Kein sichtbares Bedienelement auf Desktop oder Webansicht.
+  // Zwei-Finger-Pinch direkt auf der Tabelle skaliert die Ansicht.
+  // ==========================================================
+  function initTouchZoom() {
+    const target = document.querySelector(".stundenplan-zoom-target");
+    const container = document.querySelector(".tabelle-container");
+    if (!target || !container) return;
+
+    let scale = 1;
+    let startDistance = 0;
+    let startScale = 1;
+    let pinching = false;
+    let baseWidth = 0;
+    let baseHeight = 0;
+
+    const isTouchDevice = () => window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+
+    function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+
+    function refreshSize() {
+      const table = target.querySelector(".stundenplan");
+      if (!table) return;
+      baseWidth = table.getBoundingClientRect().width / scale;
+      baseHeight = table.getBoundingClientRect().height / scale;
+      target.style.width = `${baseWidth * scale}px`;
+      target.style.height = `${baseHeight * scale}px`;
+      target.style.transform = `scale(${scale})`;
+      target.style.transformOrigin = "top left";
+    }
+
+    function distance(a, b) {
+      const dx = a.clientX - b.clientX;
+      const dy = a.clientY - b.clientY;
+      return Math.hypot(dx, dy);
+    }
+
+    function applyScale(nextScale, centerX, centerY) {
+      const oldScale = scale;
+      scale = clamp(nextScale, 0.5, 1);
+      if (Math.abs(scale - oldScale) < 0.001) return;
+
+      // Halte beim Pinch ungefähr denselben Punkt unter den Fingern.
+      const rect = container.getBoundingClientRect();
+      const xRatio = (centerX - rect.left + container.scrollLeft) / Math.max(1, baseWidth * oldScale);
+      const yRatio = (centerY - rect.top + container.scrollTop) / Math.max(1, baseHeight * oldScale);
+
+      refreshSize();
+
+      container.scrollLeft = Math.max(0, xRatio * baseWidth * scale - (centerX - rect.left));
+      container.scrollTop = Math.max(0, yRatio * baseHeight * scale - (centerY - rect.top));
+    }
+
+    // Erst nach dem Layout messen, damit Excel-Inhalte und Fallbacktabelle gleichermaßen funktionieren.
+    requestAnimationFrame(() => {
+      if (!isTouchDevice()) return;
+      baseWidth = target.querySelector(".stundenplan")?.getBoundingClientRect().width || 0;
+      baseHeight = target.querySelector(".stundenplan")?.getBoundingClientRect().height || 0;
+      target.style.transformOrigin = "top left";
+      target.style.willChange = "transform";
+      refreshSize();
+    });
+
+    container.addEventListener("touchstart", (event) => {
+      if (!isTouchDevice() || event.touches.length !== 2) return;
+      pinching = true;
+      startDistance = distance(event.touches[0], event.touches[1]);
+      startScale = scale;
+    }, { passive: true });
+
+    container.addEventListener("touchmove", (event) => {
+      if (!pinching || event.touches.length !== 2 || !startDistance) return;
+      event.preventDefault();
+      const currentDistance = distance(event.touches[0], event.touches[1]);
+      const factor = currentDistance / startDistance;
+      const nextScale = startScale * factor;
+      const centerX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+      const centerY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+      applyScale(nextScale, centerX, centerY);
+    }, { passive: false });
+
+    container.addEventListener("touchend", (event) => {
+      if (event.touches.length < 2) {
+        pinching = false;
+        startDistance = 0;
+      }
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      if (!isTouchDevice()) return;
+      requestAnimationFrame(refreshSize);
+    });
+
+    // Nach dem Excel-Rendering wird die Größe noch einmal sauber ermittelt.
+    setTimeout(() => {
+      if (!isTouchDevice()) return;
+      baseWidth = target.querySelector(".stundenplan")?.getBoundingClientRect().width / scale || baseWidth;
+      baseHeight = target.querySelector(".stundenplan")?.getBoundingClientRect().height / scale || baseHeight;
+      refreshSize();
+    }, 500);
+  }
+
   semesterTimer();
   setInterval(semesterTimer,1000);
-  window.addEventListener("load", autoLoadExcel);
+  window.addEventListener("load", () => {
+    initTouchZoom();
+    autoLoadExcel();
+  });
 })();
 </script>
 </body>

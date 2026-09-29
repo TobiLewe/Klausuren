@@ -1,80 +1,1150 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#101827">
-    <title>Neues Semester – Stundenplan</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <title>Neues Semester – Stundenplan</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="semester-style.css">
 
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="semester-style.css">
-
-    <!-- SheetJS: liest die fest mit GitHub gelieferte Excel-Datei im Browser ein -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <!-- Wird nur zum automatischen Aktualisieren aus Stundenplan.xlsx benötigt. -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body class="semester-page">
-
 <a href="index.html" class="zurueck-button semester-back">← Zurück</a>
 
 <main class="semester-main">
-    <header class="semester-header">
-        <div class="semester-kicker">WS 2026/27 · Hochschule Bochum</div>
-        <h1>Neues Semester</h1>
-        <p class="semester-subtitle">Vollständiger Wochenplan · automatisch aus Stundenplan.xlsx</p>
-    </header>
+  <header class="semester-header">
+    <div class="semester-kicker">WS 2026/27 · Hochschule Bochum</div>
+    <h1>Neues Semester</h1>
+    <p class="semester-subtitle">Vollständiger Wochenplan · automatisch aus Stundenplan.xlsx</p>
+  </header>
 
-    <section class="semester-timer" aria-label="Semester-Countdown">
-        <div class="timer-label">Das neue Semester beginnt in</div>
-        <div id="semester-countdown" class="countdown-value" aria-live="polite">Lade Timer...</div>
-        <div class="timer-date">05.10.2026</div>
-    </section>
+  <section class="semester-timer" aria-label="Semester-Countdown">
+    <div class="timer-label">Das neue Semester beginnt in</div>
+    <div id="semester-countdown" class="countdown-value" aria-live="polite">Lade Timer...</div>
+    <div class="timer-date">05.10.2026</div>
+  </section>
 
-    <section id="excel-status-card" class="excel-status-card" aria-label="Excel-Status">
-        <div class="excel-status-icon" aria-hidden="true">▦</div>
-        <div>
-            <div class="section-kicker">Stundenplan-Datei</div>
-            <h2>Stundenplan.xlsx</h2>
-            <p id="excel-status" class="excel-status-text" aria-live="polite">
-                Stundenplan wird aus der mitgelieferten Excel-Datei geladen …
-            </p>
-        </div>
-        <div class="excel-status-badge">GitHub-Datei</div>
-    </section>
+  <section class="excel-status-card" id="excel-status-card" aria-label="Excel-Status">
+    <div class="excel-status-icon">▦</div>
+    <div>
+      <div class="section-kicker">Stundenplan-Datei</div>
+      <h2>Stundenplan.xlsx</h2>
+      <p id="excel-status" class="excel-status-text">Automatischer Excel-Abgleich läuft …</p>
+    </div>
+    <div class="excel-status-badge">GitHub-Datei</div>
+  </section>
 
-    <div id="upload-error" class="upload-error" role="alert" hidden></div>
+  <section class="stundenplan-bereich" aria-labelledby="plan-title">
+    <div class="section-heading">
+      <div>
+        <div class="section-kicker">Vollständiger Wochenplan</div>
+        <h2 id="plan-title">Wochenplan – Bachelor Elektrotechnik (5. Fachsemester)</h2>
+        <p id="plan-subtitle" class="plan-subtitle">Wintersemester 2026/2027 · Hochschule Bochum</p>
+      </div>
+      <div class="excel-badge">Excel-Ansicht</div>
+    </div>
 
-    <section id="stundenplan-bereich" class="stundenplan-bereich" aria-labelledby="plan-title" hidden>
-        <div class="section-heading">
-            <div>
-                <div id="plan-kicker" class="section-kicker">Vollständiger Wochenplan</div>
-                <h2 id="plan-title">Stundenplan</h2>
-                <p id="plan-subtitle" class="plan-subtitle"></p>
-            </div>
-            <div class="excel-badge">Excel-Ansicht</div>
-        </div>
+    <div class="legende" id="legende">
+      <span class="legend-item typ-p"><span class="legend-dot"></span>P = Praktikum</span>
+      <span class="legend-item typ-v"><span class="legend-dot"></span>V = Vorlesung</span>
+      <span class="legend-item typ-u"><span class="legend-dot"></span>Ü = Übung</span>
+      <span class="legend-item typ-s"><span class="legend-dot"></span>S = Seminar</span>
+    </div>
 
-        <div class="legende" id="legende"></div>
+    <div class="tabelle-container">
+      <table class="stundenplan" aria-label="Wochenplan">
+        <thead id="stundenplan-head">
+          <tr>
+            <th scope="col" class="zeitkopf">Zeit</th>
+            <th scope="col">Montag</th><th scope="col">Dienstag</th><th scope="col">Mittwoch</th><th scope="col">Donnerstag</th><th scope="col">Freitag</th>
+          </tr>
+        </thead>
+        <tbody id="stundenplan-body">
+          <tr><th scope="row" class="uhrzeit">08:00–09:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4850-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Steuerungstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-10</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4471</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Statistik für Ingenieurwissenschaften</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C1-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4050-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-05</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3071</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Windenergie</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4851</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Steuerungstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-12</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2041</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ H8</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4860</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">English for academic writing: Ethics of AI</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-12</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 2.</span>
+        <span class="kurs-raum">▣ C7-10</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C7-09</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4161</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Funkbetriebstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-33</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">09:00–10:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4850-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Steuerungstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-10</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4471</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Statistik für Ingenieurwissenschaften</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C1-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4050-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-05</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3071</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Windenergie</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4851</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Steuerungstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-12</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2041</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ H8</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4860</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">English for academic writing: Ethics of AI</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-12</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 2.</span>
+        <span class="kurs-raum">▣ C7-10</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C7-09</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4161</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Funkbetriebstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-33</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3061</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Betriebsorganisation</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C1-08</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">10:00–11:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4850-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Steuerungstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-10</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4471</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Statistik für Ingenieurwissenschaften</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C1-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4050-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-05</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3071</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Windenergie</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4855</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Steuerungstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-12</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">2045</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4861</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">English for academic writing: Ethics of AI</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-12</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 2.</span>
+        <span class="kurs-raum">▣ C7-10</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C7-09</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3061</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Betriebsorganisation</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C1-08</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2221</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Software Engineering</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ Digital, ExterneRäume</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4165</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Funkbetriebstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-33</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">11:00–12:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4850-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Steuerungstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-10</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4471</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Statistik für Ingenieurwissenschaften</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C1-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4050-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-05</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">3075</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Windenergie</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">2045</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Webtechnologien 1</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4861</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">English for academic writing: Ethics of AI</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-12</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">3015</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 2.</span>
+        <span class="kurs-raum">▣ C7-10</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">3015</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Projektmanagement</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C7-09</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">3061</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Betriebsorganisation</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C1-08</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2221</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Software Engineering</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ Digital, ExterneRäume</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">12:00–13:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4010-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-05</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4280-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Programmieren in C</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-11</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4040-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Betriebssysteme</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-05</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4160-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Funkbetriebstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C4-19</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4490-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">RUST</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-19</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4030-P(PL)</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Algorithmen und Datenstrukturen</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2051</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Betriebssysteme</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4841</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Fahrzeugelektronik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">2225</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Software Engineering</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 2.</span>
+        <span class="kurs-raum">▣ Digital, ExterneRäume</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">2225</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Software Engineering</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-07</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">13:00–14:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4010-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-05</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4280-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Programmieren in C</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-11</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4040-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Betriebssysteme</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-05</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4160-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Funkbetriebstechnik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C4-19</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4490-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">RUST</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-19</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4030-P(PL)</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Algorithmen und Datenstrukturen</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2051</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Betriebssysteme</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4841</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Fahrzeugelektronik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4070-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Software Engineering</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-06</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">14:00–15:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4010-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-05</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4280-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Programmieren in C</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-11</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4495</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">RUST</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-11</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2031</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Algorithmen Datenstrukt</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ H8</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4030-P(PL)</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Algorithmen und Datenstrukturen</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4130-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">VHDL</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-11</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">2055</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Betriebssysteme</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4845</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Fahrzeugelektronik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-10</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">15:00–16:00</th><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4010-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-05</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4280-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Programmieren in C</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-11</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4491</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">RUST</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">2031</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Algorithmen Datenstrukt</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ H8</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4030-P(PL)</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Algorithmen und Datenstrukturen</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4130-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">VHDL</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-11</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-33</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4840-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Fahrzeugelektronik</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C6-10</span>
+      </div>
+    </article></td></tr>
+<tr><th scope="row" class="uhrzeit">16:00–17:00</th><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4051</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">VHDL</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4491</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">RUST</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">2035</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Algorithmen Datenstr</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ H8</span>
+      </div>
+    </article><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4010-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-05</span>
+      </div>
+    </article><article class="kurskarte typ-s">
+      <div class="kurs-topline">
+        <span class="kurs-code">1511-GU</span>
+        <span class="kurs-typ">Seminar</span>
+      </div>
+      <div class="kurs-name">Klimawandel und globale Umweltveränderungen</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ H6</span>
+      </div>
+    </article></td><td class="leer"></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4011</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-33</span>
+      </div>
+    </article></td><td class="leer"></td></tr>
+<tr><th scope="row" class="uhrzeit">17:00–18:00</th><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">4051</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">VHDL</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4010-P</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-05</span>
+      </div>
+    </article><article class="kurskarte typ-s">
+      <div class="kurs-topline">
+        <span class="kurs-code">1511-GU</span>
+        <span class="kurs-typ">Seminar</span>
+      </div>
+      <div class="kurs-name">Klimawandel und globale Umweltveränderungen</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ H6</span>
+      </div>
+    </article><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">1191</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Programmieren in C</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article></td><td class="leer"></td><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4015</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Industrieroboter</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-33</span>
+      </div>
+    </article></td><td class="leer"></td></tr>
+<tr><th scope="row" class="uhrzeit">18:00–19:00</th><td><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">4055</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">VHDL</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C5-14</span>
+      </div>
+    </article></td><td><article class="kurskarte typ-v">
+      <div class="kurs-topline">
+        <span class="kurs-code">1191</span>
+        <span class="kurs-typ">Vorlesung</span>
+      </div>
+      <div class="kurs-name">Programmieren in C</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article></td><td class="leer"></td><td class="leer"></td><td class="leer"></td></tr>
+<tr><th scope="row" class="uhrzeit">19:00–20:00</th><td class="leer"></td><td><article class="kurskarte typ-p">
+      <div class="kurs-topline">
+        <span class="kurs-code">4150-P-748</span>
+        <span class="kurs-typ">Praktikum</span>
+      </div>
+      <div class="kurs-name">Entwicklung nachhaltiger Elektrofahrzeuge</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ D3-33</span>
+      </div>
+    </article><article class="kurskarte typ-u">
+      <div class="kurs-topline">
+        <span class="kurs-code">1195</span>
+        <span class="kurs-typ">Übung</span>
+      </div>
+      <div class="kurs-name">Programmieren in C</div>
+      <div class="kurs-meta">
+        <span class="kurs-gruppe">PG 1.</span>
+        <span class="kurs-raum">▣ C0-08</span>
+      </div>
+    </article></td><td class="leer"></td><td class="leer"></td><td class="leer"></td></tr>
+        </tbody>
+      </table>
+    </div>
 
-        <div class="tabelle-container">
-            <table class="stundenplan" aria-label="Wochenplan aus der Excel-Datei">
-                <thead id="stundenplan-head"></thead>
-                <tbody id="stundenplan-body"></tbody>
-            </table>
-        </div>
-
-        <div class="plan-footer">
-            <div id="footer-note" class="footer-note">Legende: P = Praktikum · V = Vorlesung · Ü = Übung · S = Seminar</div>
-            <div id="footer-source" class="footer-source">Quelle: Stundenplan.xlsx</div>
-        </div>
-    </section>
-
-    <section id="empty-state" class="empty-state" aria-live="polite">
-        <div class="empty-state-icon">…</div>
-        <h2>Stundenplan wird geladen</h2>
-        <p>Die auf GitHub hinterlegte Datei <strong>Stundenplan.xlsx</strong> wird automatisch eingelesen.</p>
-    </section>
+    <div class="plan-footer">
+      <div id="footer-note" class="footer-note">Legende: P = Praktikum · V = Vorlesung · Ü = Übung · S = Seminar</div>
+      <div id="footer-source" class="footer-source">Quelle: Hochschule Bochum – Studiengangsplan für Bachelor Elektrotechnik (Vers_2019) (5. FS), Wintersemester 2026/2027.</div>
+    </div>
+  </section>
 </main>
 
-<script src="semester-script.js"></script>
+<script>
+(() => {
+  const semesterStart = new Date("2026-10-05T00:00:00");
+  const excelFileName = "Stundenplan.xlsx";
+  const typInfo = {
+    P: { label: "Praktikum", className: "typ-p" },
+    V: { label: "Vorlesung", className: "typ-v" },
+    Ü: { label: "Übung", className: "typ-u" },
+    S: { label: "Seminar", className: "typ-s" }
+  };
+
+  function semesterTimer() {
+    const el = document.getElementById("semester-countdown");
+    if (!el) return;
+    const diff = semesterStart - new Date();
+    if (diff <= 0) {
+      el.textContent = "Das neue Semester hat begonnen!";
+      el.classList.add("begonnen");
+      return;
+    }
+    el.classList.remove("begonnen");
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff / 3600000) % 24);
+    const m = Math.floor((diff / 60000) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    el.innerHTML = `<span>${d}<small>Tage</small></span><span>${String(h).padStart(2,"0")}<small>Std.</small></span><span>${String(m).padStart(2,"0")}<small>Min.</small></span><span>${String(s).padStart(2,"0")}<small>Sek.</small></span>`;
+  }
+
+  function esc(v) {
+    return String(v ?? "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function clean(v) { return String(v ?? "").replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim(); }
+  function isTime(v) { return /^\d{1,2}:\d{2}\s*[–-]\s*\d{1,2}:\d{2}$/.test(clean(v)); }
+
+  function parseCourse(raw) {
+    raw = clean(raw);
+    if (!raw) return null;
+    const m = raw.match(/^(.+?)\s+\((P|V|Ü|S),\s*([^)]*)\)\s*·\s*Raum:\s*(.+)$/s);
+    if (!m) return {code:"",name:raw,type:"",group:"",room:""};
+    const left = m[1].trim();
+    const p = left.indexOf(" ");
+    return {
+      code: p > 0 ? left.slice(0,p) : left,
+      name: p > 0 ? left.slice(p+1) : "",
+      type: m[2], group: m[3].trim(), room: m[4].trim()
+    };
+  }
+
+  function card(raw) {
+    const c = parseCourse(raw);
+    if (!c) return "";
+    const info = typInfo[c.type] || {label:c.type || "Kurs", className:"typ-default"};
+    const pg = c.group ? `<span class="kurs-gruppe">${esc(c.group.replace("PG","").trim())} PG</span>` : "";
+    const room = c.room ? `<span class="kurs-raum">▣ ${esc(c.room)}</span>` : "";
+    return `<article class="kurskarte ${info.className}">
+      <div class="kurs-topline"><span class="kurs-code">${esc(c.code)}</span>${c.type ? `<span class="kurs-typ">${esc(info.label)}</span>` : ""}</div>
+      <div class="kurs-name">${esc(c.name)}</div>
+      <div class="kurs-meta">${pg}${room}</div>
+    </article>`;
+  }
+
+  function parseWorkbook(workbook) {
+    const sheetName = workbook.SheetNames[0];
+    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1, defval:"", raw:false, blankrows:true});
+    const headerIndex = rows.findIndex(r => clean(r[0]).toLowerCase()==="zeit" && clean(r[1]).toLowerCase()==="montag");
+    if (headerIndex < 0) throw new Error('Keine Kopfzeile "Zeit | Montag | Dienstag | Mittwoch | Donnerstag | Freitag" gefunden.');
+    const header = rows[headerIndex].slice(0,6).map(clean);
+    const days = header.slice(1,6);
+    const planRows = [];
+    let title = clean(rows[0]?.[0]) || "Stundenplan";
+    let subtitle = clean(rows[1]?.[0]);
+    let legendText = "", sourceText = "";
+    for (let i=headerIndex+1; i<rows.length; i++) {
+      const r = rows[i] || [];
+      const first = clean(r[0]);
+      if (!first) continue;
+      if (first.toLowerCase().startsWith("legende:")) { legendText=first; continue; }
+      if (first.toLowerCase().startsWith("quelle:")) { sourceText=first; continue; }
+      if (!isTime(first)) continue;
+      planRows.push({time:first, cells:days.map((_,j)=>clean(r[j+1]))});
+    }
+    if (!planRows.length) throw new Error("Keine Zeitzeilen gefunden.");
+    return {title,subtitle,days,rows:planRows,legend:legendText,source:sourceText};
+  }
+
+  function render(plan) {
+    document.getElementById("plan-title").textContent = plan.title;
+    document.getElementById("plan-subtitle").textContent = plan.subtitle;
+    document.getElementById("footer-note").textContent = plan.legend || "Legende: P = Praktikum · V = Vorlesung · Ü = Übung · S = Seminar";
+    document.getElementById("footer-source").textContent = plan.source || "Quelle: Stundenplan.xlsx";
+    const head = document.getElementById("stundenplan-head");
+    head.innerHTML = `<tr><th scope="col" class="zeitkopf">Zeit</th>${plan.days.map(d=>`<th scope="col">${esc(d)}</th>`).join("")}</tr>`;
+    document.getElementById("stundenplan-body").innerHTML = plan.rows.map(r => `<tr>
+      <th scope="row" class="uhrzeit">${esc(r.time)}</th>
+      ${r.cells.map(c=>c ? `<td>${c.split(/\n\s*\n+/).map(card).join("")}</td>` : '<td class="leer"></td>').join("")}
+    </tr>`).join("");
+  }
+
+  async function autoLoadExcel() {
+    const status = document.getElementById("excel-status");
+    const cardEl = document.getElementById("excel-status-card");
+    if (typeof XLSX === "undefined") {
+      status.textContent = "Excel-Bibliothek nicht verfügbar – die mitgelieferte Ansicht bleibt sichtbar.";
+      cardEl.classList.add("warning");
+      return;
+    }
+    try {
+      const url = new URL(excelFileName, document.baseURI);
+      url.searchParams.set("v", Date.now());
+      const response = await fetch(url.href, {cache:"no-store"});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const workbook = XLSX.read(await response.arrayBuffer(), {type:"array"});
+      render(parseWorkbook(workbook));
+      status.textContent = "✓ Stundenplan.xlsx erfolgreich aus GitHub geladen";
+      cardEl.classList.add("success");
+    } catch (err) {
+      console.warn("Excel-Abgleich:", err);
+      status.textContent = "Hinweis: Die GitHub-Excel konnte gerade nicht neu eingelesen werden – die vorhandene Stundenplanansicht bleibt sichtbar.";
+      cardEl.classList.add("warning");
+    }
+  }
+
+  semesterTimer();
+  setInterval(semesterTimer,1000);
+  window.addEventListener("load", autoLoadExcel);
+})();
+</script>
 </body>
 </html>

@@ -11,11 +11,46 @@
   // ==========================================================
   const SUPABASE_URL = "https://taborotlsggghrwhdga.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TGk8R6DLn81v_WVMuGXP2w_mednCgaY";
-  const supabaseClient = window.supabase?.createClient
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
-    : null;
-
   const SAVED_VIEWS_TABLE = "gespeicherte_ansichten";
+  const SUPABASE_REST_URL = `${SUPABASE_URL}/rest/v1/${SAVED_VIEWS_TABLE}`;
+
+  // Direkter REST-Zugriff: keine externe supabase-js-Bibliothek notwendig.
+  // Der Publishable Key wird nur als `apikey` gesendet, wie von Supabase
+  // für Browser-Anwendungen vorgesehen.
+  async function supabaseRest(path = "", options = {}) {
+    const headers = {
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+      ...(options.headers || {})
+    };
+
+    const response = await fetch(`${SUPABASE_REST_URL}${path}`, {
+      ...options,
+      headers
+    });
+
+    const text = await response.text();
+    let body = null;
+    if (text) {
+      try {
+        body = JSON.parse(text);
+      } catch {
+        body = text;
+      }
+    }
+
+    if (!response.ok) {
+      const error = new Error(
+        body?.message || body?.error || `HTTP ${response.status}`
+      );
+      error.code = body?.code;
+      error.details = body?.details;
+      error.hint = body?.hint;
+      error.status = response.status;
+      throw error;
+    }
+
+    return body;
+  }
   const typInfo = {
     P: { label: "Praktikum", className: "typ-p" },
     V: { label: "Vorlesung", className: "typ-v" },
@@ -107,27 +142,21 @@
   let selectedModules = [];
 
   async function getSavedViews() {
-    if (!supabaseClient) {
-      console.error("Supabase ist nicht verfügbar.");
-      return [];
-    }
+    try {
+      const query = "?select=id,name,module,created_at&order=created_at.desc&limit=50";
+      const data = await supabaseRest(query, {
+        headers: { "Accept-Profile": "public" }
+      });
 
-    const { data, error } = await supabaseClient
-      .schema("public").from(SAVED_VIEWS_TABLE)
-      .select("id, name, module, created_at")
-      .order("created_at", { ascending: false })
-      .limit(50);
-
-    if (error) {
-      console.error("Fehler beim Laden der gespeicherten Ansichten:", error);
-      return [];
-    }
-
-    return (data || []).map(view => ({
+      return (data || []).map(view => ({
       id: view.id,
       name: clean(view.name),
       modules: Array.isArray(view.module) ? view.module.map(clean).filter(Boolean) : []
-    }));
+      }));
+    } catch (error) {
+      console.error("Fehler beim Laden der gespeicherten Ansichten:", error);
+      return [];
+    }
   }
 
   function updateModuleFilterButton() {
@@ -201,7 +230,7 @@
   }
 
   async function saveCurrentView() {
-    if (!selectedModules.length || !supabaseClient) return;
+    if (!selectedModules.length) return;
 
     const name = window.prompt("Name für diese Ansicht:", "Meine Ansicht");
     if (name === null) return;
@@ -213,29 +242,41 @@
     if (saveButton) saveButton.disabled = true;
 
     try {
-      const { data: existing, error: findError } = await supabaseClient
-        .schema("public").from(SAVED_VIEWS_TABLE)
-        .select("id")
-        .eq("name", trimmed)
-        .order("created_at", { ascending: true })
-        .limit(1);
-
-      if (findError) throw findError;
+      const existing = await supabaseRest(
+        `?select=id&name=eq.${encodeURIComponent(trimmed)}&order=created_at.asc&limit=1`,
+        {
+          headers: { "Accept-Profile": "public" }
+        }
+      );
 
       if (existing && existing.length) {
-        const { error: updateError } = await supabaseClient
-          .schema("public").from(SAVED_VIEWS_TABLE)
-          .update({ module: [...selectedModules].slice(0, MAX_SELECTED_MODULES) })
-          .eq("id", existing[0].id);
-        if (updateError) throw updateError;
+        await supabaseRest(
+          `?id=eq.${encodeURIComponent(existing[0].id)}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "Content-Profile": "public",
+              "Prefer": "return=minimal"
+            },
+            body: JSON.stringify({
+              module: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
+            })
+          }
+        );
       } else {
-        const { error: insertError } = await supabaseClient
-          .schema("public").from(SAVED_VIEWS_TABLE)
-          .insert({
+        await supabaseRest("", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Profile": "public",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({
             name: trimmed,
             module: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
-          });
-        if (insertError) throw insertError;
+          })
+        });
       }
 
       await renderSavedViews();
@@ -259,18 +300,15 @@
   }
 
   async function loadSavedView(id) {
-    if (!supabaseClient) return;
-
-    const { data: view, error } = await supabaseClient
-      .schema("public").from(SAVED_VIEWS_TABLE)
-      .select("id, name, module")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error || !view) {
-      console.error("Fehler beim Laden der Ansicht:", error);
-      return;
-    }
+    try {
+      const rows = await supabaseRest(
+        `?select=id,name,module&id=eq.${encodeURIComponent(id)}&limit=1`,
+        {
+          headers: { "Accept-Profile": "public" }
+        }
+      );
+      const view = rows?.[0];
+      if (!view) return;
 
     const available = collectModulesFromDom();
     const modules = (Array.isArray(view.module) ? view.module : [])
@@ -278,29 +316,35 @@
       .filter(module => available.includes(module))
       .slice(0, MAX_SELECTED_MODULES);
 
-    selectedModules = modules;
-    populateModuleFilter();
-    closeSavedViews();
+      selectedModules = modules;
+      populateModuleFilter();
+      closeSavedViews();
+    } catch (error) {
+      console.error("Fehler beim Laden der Ansicht:", error);
+      window.alert("Die Ansicht konnte nicht geladen werden.\n\n" + (error.message || "Unbekannter Fehler"));
+    }
   }
 
   async function deleteSavedView(id) {
-    if (!supabaseClient) return;
-
     const confirmed = window.confirm("Diese gespeicherte Ansicht wirklich löschen? Sie wird für alle Besucher gelöscht.");
     if (!confirmed) return;
 
-    const { error } = await supabaseClient
-      .schema("public").from(SAVED_VIEWS_TABLE)
-      .delete()
-      .eq("id", id);
-
-    if (error) {
+    try {
+      await supabaseRest(
+        `?id=eq.${encodeURIComponent(id)}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Profile": "public",
+            "Prefer": "return=minimal"
+          }
+        }
+      );
+      await renderSavedViews();
+    } catch (error) {
       console.error("Fehler beim Löschen der Ansicht:", error);
-      window.alert("Die Ansicht konnte nicht gelöscht werden.");
-      return;
+      window.alert("Die Ansicht konnte nicht gelöscht werden.\n\n" + (error.message || "Unbekannter Fehler"));
     }
-
-    await renderSavedViews();
   }
 
   function populateModuleFilter() {

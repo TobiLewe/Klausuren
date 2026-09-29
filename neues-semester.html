@@ -18,7 +18,6 @@
   <header class="semester-header">
     <div class="semester-kicker">WS 2026/27 · Hochschule Bochum</div>
     <h1>Neues Semester</h1>
-    <p class="semester-subtitle">Vollständiger Wochenplan · automatisch aus Stundenplan.xlsx</p>
   </header>
 
   <section class="semester-timer" aria-label="Semester-Countdown">
@@ -27,31 +26,11 @@
     <div class="timer-date">05.10.2026</div>
   </section>
 
-  <section class="excel-status-card" id="excel-status-card" aria-label="Excel-Status">
-    <div class="excel-status-icon">▦</div>
-    <div>
-      <div class="section-kicker">Stundenplan-Datei</div>
-      <h2>Stundenplan.xlsx</h2>
-      <p id="excel-status" class="excel-status-text">Automatischer Excel-Abgleich läuft …</p>
-    </div>
-    <div class="excel-status-badge">GitHub-Datei</div>
-  </section>
+  <p id="excel-status" class="excel-status-line" role="status" aria-live="polite">Stundenplan.xlsx wird geladen …</p>
 
   <section class="stundenplan-bereich" aria-labelledby="plan-title">
-    <div class="section-heading">
-      <div>
-        <div class="section-kicker">Vollständiger Wochenplan</div>
-        <h2 id="plan-title">Wochenplan – Bachelor Elektrotechnik (5. Fachsemester)</h2>
-        <p id="plan-subtitle" class="plan-subtitle">Wintersemester 2026/2027 · Hochschule Bochum</p>
-      </div>
-      <div class="excel-badge">Excel-Ansicht</div>
-    </div>
-
-    <div class="legende" id="legende">
-      <span class="legend-item typ-p"><span class="legend-dot"></span>P = Praktikum</span>
-      <span class="legend-item typ-v"><span class="legend-dot"></span>V = Vorlesung</span>
-      <span class="legend-item typ-u"><span class="legend-dot"></span>Ü = Übung</span>
-      <span class="legend-item typ-s"><span class="legend-dot"></span>S = Seminar</span>
+    <div class="plan-heading">
+      <h2 id="plan-title">Wochenplan – Bachelor Elektrotechnik (5. Fachsemester)</h2>
     </div>
 
     <div class="tabelle-container">
@@ -1009,10 +988,6 @@
       </table>
     </div>
 
-    <div class="plan-footer">
-      <div id="footer-note" class="footer-note">Legende: P = Praktikum · V = Vorlesung · Ü = Übung · S = Seminar</div>
-      <div id="footer-source" class="footer-source">Quelle: Hochschule Bochum – Studiengangsplan für Bachelor Elektrotechnik (Vers_2019) (5. FS), Wintersemester 2026/2027.</div>
-    </div>
   </section>
 </main>
 
@@ -1105,10 +1080,8 @@
   }
 
   function render(plan) {
-    document.getElementById("plan-title").textContent = plan.title;
-    document.getElementById("plan-subtitle").textContent = plan.subtitle;
-    document.getElementById("footer-note").textContent = plan.legend || "Legende: P = Praktikum · V = Vorlesung · Ü = Übung · S = Seminar";
-    document.getElementById("footer-source").textContent = plan.source || "Quelle: Stundenplan.xlsx";
+    const titleEl = document.getElementById("plan-title");
+    if (titleEl) titleEl.textContent = plan.title;
     const head = document.getElementById("stundenplan-head");
     head.innerHTML = `<tr><th scope="col" class="zeitkopf">Zeit</th>${plan.days.map(d=>`<th scope="col">${esc(d)}</th>`).join("")}</tr>`;
     document.getElementById("stundenplan-body").innerHTML = plan.rows.map(r => `<tr>
@@ -1119,12 +1092,14 @@
 
   async function autoLoadExcel() {
     const status = document.getElementById("excel-status");
-    const cardEl = document.getElementById("excel-status-card");
+    if (!status) return;
+
     if (typeof XLSX === "undefined") {
-      status.textContent = "Excel-Bibliothek nicht verfügbar – die mitgelieferte Ansicht bleibt sichtbar.";
-      cardEl.classList.add("warning");
+      status.textContent = "Excel-Bibliothek nicht verfügbar – die vorhandene Stundenplanansicht bleibt sichtbar.";
+      status.className = "excel-status-line warning";
       return;
     }
+
     try {
       const url = new URL(excelFileName, document.baseURI);
       url.searchParams.set("v", Date.now());
@@ -1132,12 +1107,12 @@
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const workbook = XLSX.read(await response.arrayBuffer(), {type:"array"});
       render(parseWorkbook(workbook));
-      status.textContent = "✓ Stundenplan.xlsx erfolgreich aus GitHub geladen";
-      cardEl.classList.add("success");
+      status.textContent = "✓ Stundenplan.xlsx erfolgreich geladen";
+      status.className = "excel-status-line success";
     } catch (err) {
       console.warn("Excel-Abgleich:", err);
-      status.textContent = "Hinweis: Die GitHub-Excel konnte gerade nicht neu eingelesen werden – die vorhandene Stundenplanansicht bleibt sichtbar.";
-      cardEl.classList.add("warning");
+      status.textContent = "Hinweis: Stundenplan.xlsx konnte gerade nicht geladen werden – die vorhandene Ansicht bleibt sichtbar.";
+      status.className = "excel-status-line warning";
     }
   }
 

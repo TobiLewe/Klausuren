@@ -1,335 +1,445 @@
-/* ==========================================\n   NEUES SEMESTER – MODERNE EXCEL-ANSICHT\n   ========================================== */\n\n.semester-page {\n    --bg: #0b1220;\n    --panel: #111a2b;\n    --panel-2: #162237;\n    --grid: rgba(148, 163, 184, 0.20);\n    --grid-strong: rgba(148, 163, 184, 0.34);\n    --text: #eef2f7;\n    --muted: #9aa7ba;\n    --accent: #6ea8fe;\n    --p: #bfdbfe;\n    --v: #bbf7d0;\n    --u: #fde68a;\n    --s: #ddd6fe;\n    background:\n        radial-gradient(circle at 8% 0%, rgba(110, 168, 254, 0.12), transparent 28%),\n        radial-gradient(circle at 92% 12%, rgba(124, 58, 237, 0.10), transparent 25%),\n        var(--bg);\n    color: var(--text);\n    min-height: 100vh;\n}\n\n.semester-main {\n    width: min(1800px, calc(100% - 40px));\n    margin: 0 auto;\n    padding: 42px 0 60px;\n}\n\n.semester-back {\n    z-index: 20;\n    background: rgba(17, 26, 43, 0.92) !important;\n    border-color: rgba(255, 255, 255, 0.14) !important;\n    backdrop-filter: blur(10px);\n}\n\n.semester-header {\n    text-align: center;\n    margin: 0 auto 28px;\n}\n\n.semester-kicker,\n.section-kicker {\n    color: var(--accent);\n    font-size: 13px;\n    font-weight: 800;\n    letter-spacing: 0.16em;\n    text-transform: uppercase;\n}\n\n.semester-page h1 {\n    margin: 8px 0 8px;\n    font-size: clamp(34px, 4vw, 52px);\n    letter-spacing: -0.03em;\n}\n\n.semester-subtitle {\n    margin: 0;\n    color: var(--muted);\n    font-size: 16px;\n}\n\n.semester-timer {\n    width: min(820px, 100%);\n    margin: 0 auto 38px;\n    padding: 23px 28px 25px;\n    background: linear-gradient(180deg, rgba(22, 34, 55, 0.98), rgba(17, 26, 43, 0.98));\n    border: 1px solid rgba(255, 255, 255, 0.10);\n    border-radius: 18px;\n    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.25);\n}\n\n.timer-label {\n    color: var(--muted);\n    font-size: 14px;\n    letter-spacing: 0.06em;\n    text-transform: uppercase;\n    margin-bottom: 13px;\n}\n\n.countdown-value {\n    display: grid;\n    grid-template-columns: repeat(4, minmax(0, 1fr));\n    gap: 12px;\n}\n\n.countdown-value span {\n    display: flex;\n    flex-direction: column;\n    gap: 2px;\n    padding: 12px 9px 10px;\n    border-radius: 12px;\n    background: rgba(255, 255, 255, 0.045);\n    border: 1px solid rgba(255, 255, 255, 0.07);\n    font-size: clamp(24px, 3vw, 34px);\n    font-weight: 800;\n    line-height: 1;\n}\n\n.countdown-value small {\n    color: var(--muted);\n    font-size: 11px;\n    font-weight: 700;\n    letter-spacing: 0.10em;\n    text-transform: uppercase;\n}\n\n.countdown-value.begonnen {\n    display: block;\n    text-align: center;\n    font-size: 25px;\n}\n\n.timer-date {\n    margin-top: 11px;\n    color: #cbd5e1;\n    font-size: 13px;\n    font-weight: 700;\n}\n\n.section-heading {\n    display: flex;\n    align-items: end;\n    justify-content: space-between;\n    gap: 16px;\n    margin-bottom: 15px;\n}\n\n.section-heading h2 {\n    margin: 5px 0 0;\n    font-size: clamp(24px, 3vw, 32px);\n    letter-spacing: -0.02em;\n}\n\n.excel-badge {\n    flex: 0 0 auto;\n    padding: 7px 11px;\n    border: 1px solid rgba(110, 168, 254, 0.25);\n    border-radius: 999px;\n    color: #cfe0ff;\n    background: rgba(110, 168, 254, 0.08);\n    font-size: 12px;\n    font-weight: 800;\n}\n\n.legende {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 8px 14px;\n    margin-bottom: 13px;\n    padding: 0 2px;\n    color: var(--muted);\n    font-size: 12px;\n}\n\n.legend-item {\n    display: inline-flex;\n    align-items: center;\n    gap: 7px;\n}\n\n.legend-dot {\n    width: 8px;\n    height: 8px;\n    border-radius: 50%;\n    background: currentColor;\n}\n\n.typ-p { color: var(--p); }\n.typ-v { color: var(--v); }\n.typ-u { color: var(--u); }\n.typ-s { color: var(--s); }\n.typ-default { color: #cbd5e1; }\n\n.tabelle-container {\n    position: relative;\n    overflow: auto;\n    max-height: 72vh;\n    border: 1px solid var(--grid-strong);\n    border-radius: 16px;\n    background: #0d1625;\n    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.26);\n    scrollbar-width: thin;\n    scrollbar-color: #41516a transparent;\n    -webkit-overflow-scrolling: touch;\n}\n\n.stundenplan {\n    width: 100%;\n    min-width: 1340px;\n    border-collapse: separate;\n    border-spacing: 0;\n    table-layout: fixed;\n    text-align: left;\n}\n\n.stundenplan th,\n.stundenplan td {\n    border-right: 1px solid var(--grid);\n    border-bottom: 1px solid var(--grid);\n}\n\n.stundenplan thead th {\n    position: sticky;\n    top: 0;\n    z-index: 8;\n    padding: 15px 14px;\n    background: linear-gradient(180deg, #1c2a42, #172238);\n    color: #f8fafc;\n    text-align: center;\n    font-size: 14px;\n    font-weight: 800;\n    letter-spacing: 0.04em;\n    text-transform: uppercase;\n}\n\n.stundenplan thead th:first-child {\n    width: 120px;\n    left: 0;\n    z-index: 10;\n    background: linear-gradient(180deg, #23324b, #1b2940);\n}\n\n.stundenplan tbody th.uhrzeit {\n    position: sticky;\n    left: 0;\n    z-index: 5;\n    width: 120px;\n    padding: 14px 10px;\n    background: #111c2d;\n    color: #cbd5e1;\n    text-align: center;\n    vertical-align: top;\n    font-size: 13px;\n    font-weight: 800;\n    white-space: nowrap;\n}\n\n.stundenplan tbody td {\n    min-width: 240px;\n    height: 112px;\n    padding: 8px;\n    vertical-align: top;\n    background: rgba(17, 26, 43, 0.70);\n}\n\n.stundenplan tbody tr:nth-child(even) td {\n    background: rgba(22, 34, 55, 0.58);\n}\n\n.stundenplan tbody tr:hover td,\n.stundenplan tbody tr:hover th.uhrzeit {\n    background: rgba(110, 168, 254, 0.055);\n}\n\n.stundenplan tbody tr:last-child td,\n.stundenplan tbody tr:last-child th {\n    border-bottom: 0;\n}\n\n.stundenplan thead th:last-child,\n.stundenplan td:last-child {\n    border-right: 0;\n}\n\n.stundenplan td.leer {\n    background: rgba(7, 13, 23, 0.24) !important;\n}\n\n.kurskarte {\n    position: relative;\n    margin-bottom: 8px;\n    padding: 10px 11px 10px 12px;\n    border: 1px solid rgba(255, 255, 255, 0.08);\n    border-left: 3px solid currentColor;\n    border-radius: 11px;\n    background: rgba(255, 255, 255, 0.035);\n    color: #dbe5f1;\n    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.10);\n}\n\n.kurskarte:last-child {\n    margin-bottom: 0;\n}\n\n.kurskarte:hover {\n    background: rgba(255, 255, 255, 0.065);\n    transform: translateY(-1px);\n}\n\n.kurs-topline {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 8px;\n    margin-bottom: 5px;\n}\n\n.kurs-code {\n    color: currentColor;\n    font-size: 11px;\n    font-weight: 900;\n    letter-spacing: 0.04em;\n}\n\n.kurs-typ {\n    padding: 3px 7px;\n    border-radius: 999px;\n    background: currentColor;\n    color: #0b1220;\n    font-size: 9px;\n    font-weight: 900;\n    letter-spacing: 0.06em;\n    text-transform: uppercase;\n    white-space: nowrap;\n}\n\n.kurs-name {\n    color: #f1f5f9;\n    font-size: 13px;\n    font-weight: 750;\n    line-height: 1.35;\n}\n\n.kurs-meta {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: center;\n    gap: 6px 9px;\n    margin-top: 7px;\n    color: #9facbd;\n    font-size: 10px;\n    font-weight: 700;\n}\n\n.kurs-gruppe,\n.kurs-raum {\n    display: inline-flex;\n    align-items: center;\n    gap: 4px;\n    min-height: 18px;\n    padding: 2px 6px;\n    border-radius: 6px;\n    background: rgba(148, 163, 184, 0.08);\n}\n\n.plan-footer {\n    display: flex;\n    justify-content: space-between;\n    gap: 18px;\n    margin-top: 12px;\n    color: #7f8da2;\n    font-size: 11px;\n    line-height: 1.5;\n}\n\n.footer-source {\n    text-align: right;\n    max-width: 58%;\n}\n\n@media (max-width: 900px) {\n    .semester-main {\n        width: min(100% - 24px, 1800px);\n        padding-top: 72px;\n    }\n\n    .semester-back {\n        top: 17px !important;\n        left: 12px !important;\n    }\n\n    .section-heading {\n        align-items: center;\n    }\n\n    .tabelle-container {\n        max-height: 70vh;\n    }\n}\n\n@media (max-width: 600px) {\n    .semester-main {\n        width: calc(100% - 16px);\n        padding-bottom: 34px;\n    }\n\n    .semester-header {\n        margin-bottom: 18px;\n    }\n\n    .semester-kicker {\n        font-size: 10px;\n    }\n\n    .semester-page h1 {\n        font-size: 34px;\n        margin-top: 6px;\n    }\n\n    .semester-subtitle {\n        font-size: 13px;\n    }\n\n    .semester-timer {\n        margin-bottom: 28px;\n        padding: 18px 12px;\n        border-radius: 14px;\n    }\n\n    .countdown-value {\n        gap: 7px;\n    }\n\n    .countdown-value span {\n        padding: 10px 5px;\n        font-size: 20px;\n    }\n\n    .countdown-value small {\n        font-size: 8px;\n    }\n\n    .section-heading {\n        flex-direction: column;\n        align-items: flex-start;\n        margin-bottom: 12px;\n    }\n\n    .section-heading h2 {\n        font-size: 23px;\n    }\n\n    .excel-badge {\n        font-size: 10px;\n    }\n\n    .legende {\n        font-size: 11px;\n        gap: 6px 10px;\n    }\n\n    .tabelle-container {\n        border-radius: 12px;\n        max-height: 68vh;\n    }\n\n    .stundenplan {\n        min-width: 1250px;\n    }\n\n    .stundenplan thead th {\n        padding: 12px 10px;\n        font-size: 12px;\n    }\n\n    .stundenplan thead th:first-child,\n    .stundenplan tbody th.uhrzeit {\n        width: 104px;\n    }\n\n    .stundenplan tbody th.uhrzeit {\n        padding: 12px 7px;\n        font-size: 12px;\n    }\n\n    .stundenplan tbody td {\n        min-width: 228px;\n        height: 100px;\n        padding: 7px;\n    }\n\n    .kurskarte {\n        padding: 9px 9px 9px 10px;\n    }\n\n    .kurs-name {\n        font-size: 12px;\n    }\n\n    .plan-footer {\n        flex-direction: column;\n        gap: 7px;\n    }\n\n    .footer-source {\n        max-width: none;\n        text-align: left;\n    }\n}\n
-/* ==========================================
-   EXCEL-UPLOAD
-   ========================================== */
+/* ==========================================================
+   NEUES SEMESTER – SAUBERE STUNDENPLAN-ANSICHT
+   ========================================================== */
 
-.excel-upload {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 18px;
-    width: min(1100px, 100%);
-    margin: 0 auto 18px;
-    padding: 20px 22px;
-    border: 1px solid rgba(110, 168, 254, 0.22);
-    border-radius: 16px;
-    background: linear-gradient(180deg, rgba(22, 34, 55, 0.96), rgba(17, 26, 43, 0.96));
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+.semester-page {
+    --bg: #222;
+    --panel: #2d2d2d;
+    --panel-2: #333;
+    --grid: rgba(255, 255, 255, 0.13);
+    --grid-strong: rgba(255, 255, 255, 0.26);
+    --text: #f4f4f4;
+    --muted: #b9b9b9;
+    --p: #9ecbff;
+    --v: #a9e7b8;
+    --u: #f4d77d;
+    --s: #c9b5f7;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
 }
 
-.upload-icon {
+.semester-main {
+    width: min(1800px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 42px 0 60px;
+}
+
+.semester-back {
+    z-index: 20;
+}
+
+.semester-header {
+    text-align: center;
+    margin: 0 auto 30px;
+}
+
+.semester-kicker {
+    color: #cfcfcf;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.semester-page h1 {
+    margin: 0;
+    font-size: clamp(34px, 4vw, 50px);
+    line-height: 1.1;
+}
+
+/* ==========================================================
+   COUNTDOWN
+   ========================================================== */
+
+.semester-timer {
+    width: min(820px, 100%);
+    margin: 0 auto 34px;
+    padding: 22px 26px 24px;
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+    text-align: center;
+}
+
+.timer-label {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 13px;
+}
+
+.countdown-value {
     display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 13px;
-    background: rgba(110, 168, 254, 0.10);
-    border: 1px solid rgba(110, 168, 254, 0.18);
-    color: #9fc4ff;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.countdown-value span {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 8px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.countdown-value small {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.countdown-value.begonnen {
+    display: block;
     font-size: 24px;
-    font-weight: 900;
 }
 
-.upload-copy {
-    min-width: 0;
+.timer-date {
+    margin-top: 11px;
+    color: #d2d2d2;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ==========================================================
+   EXCEL-STATUS – NUR EINE KLEINE ZEILE
+   ========================================================== */
+
+.excel-status-line {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 32px;
+    color: #9fcca9;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.excel-status-line.success {
+    color: #a9dfb1;
+}
+
+.excel-status-line.warning {
+    color: #e5cd86;
+}
+
+/* ==========================================================
+   WOCHENPLAN
+   ========================================================== */
+
+.stundenplan-bereich {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.plan-heading {
+    text-align: center;
+    margin: 0 0 20px;
+}
+
+.plan-heading h2 {
+    margin: 0;
+    font-size: clamp(23px, 3vw, 31px);
+    line-height: 1.2;
+}
+
+/* ==========================================================
+   TABELLENRAHMEN
+   ========================================================== */
+
+.tabelle-container {
+    position: relative;
+    overflow: auto;
+    max-height: 74vh;
+    border: 1px solid var(--grid-strong);
+    border-radius: 14px;
+    background: #1d1d1d;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+    scrollbar-width: thin;
+    scrollbar-color: #666 transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+.stundenplan {
+    width: 100%;
+    min-width: 1340px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
     text-align: left;
 }
 
-.upload-copy h2 {
-    margin: 3px 0 5px;
-    color: #f8fafc;
-    font-size: 19px;
+.stundenplan th,
+.stundenplan td {
+    border-right: 1px solid var(--grid);
+    border-bottom: 1px solid var(--grid);
 }
 
-.upload-copy p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.55;
+.stundenplan thead th {
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    padding: 15px 14px;
+    background: #3a3a3a;
+    color: #ffffff;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
 }
 
-.upload-button {
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 0 17px;
-    border: 1px solid rgba(110, 168, 254, 0.32);
-    border-radius: 10px;
-    background: rgba(110, 168, 254, 0.12);
-    color: #eaf2ff;
+.stundenplan thead th:first-child {
+    width: 120px;
+    left: 0;
+    z-index: 10;
+    background: #333;
+}
+
+.stundenplan tbody th.uhrzeit {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    width: 120px;
+    padding: 14px 10px;
+    background: #2a2a2a;
+    color: #e0e0e0;
+    text-align: center;
+    vertical-align: top;
     font-size: 13px;
     font-weight: 800;
     white-space: nowrap;
-    transition: 0.2s ease;
 }
 
-.upload-button:hover {
-    background: rgba(110, 168, 254, 0.20);
+.stundenplan tbody td {
+    min-width: 240px;
+    height: 112px;
+    padding: 8px;
+    vertical-align: top;
+    background: #303030;
+}
+
+.stundenplan tbody tr:nth-child(even) td {
+    background: #2d2d2d;
+}
+
+.stundenplan tbody tr:hover td,
+.stundenplan tbody tr:hover th.uhrzeit {
+    background: #393939;
+}
+
+.stundenplan tbody tr:last-child td,
+.stundenplan tbody tr:last-child th {
+    border-bottom: 0;
+}
+
+.stundenplan thead th:last-child,
+.stundenplan td:last-child {
+    border-right: 0;
+}
+
+.stundenplan td.leer {
+    background: #282828 !important;
+}
+
+/* ==========================================================
+   KURSKARTEN
+   ========================================================== */
+
+.typ-p { color: var(--p); }
+.typ-v { color: var(--v); }
+.typ-u { color: var(--u); }
+.typ-s { color: var(--s); }
+.typ-default { color: #d0d0d0; }
+
+.kurskarte {
+    margin-bottom: 8px;
+    padding: 10px 11px 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 3px solid currentColor;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.035);
+    color: #ddd;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.kurskarte:last-child {
+    margin-bottom: 0;
+}
+
+.kurskarte:hover {
+    background: rgba(255, 255, 255, 0.065);
     transform: translateY(-1px);
 }
 
-.upload-status {
-    grid-column: 2 / 3;
-    margin-top: -7px;
-    color: #8796aa;
-    font-size: 11px;
-    text-align: left;
-}
-
-.upload-status.loading {
-    color: #cbd5e1;
-}
-
-.upload-status.success {
-    color: #bbf7d0;
-}
-
-.upload-hint {
-    grid-column: 2 / 4;
-    margin-top: -9px;
-    color: #738196;
-    font-size: 10px;
-    text-align: left;
-}
-
-.upload-error {
-    width: min(1100px, 100%);
-    margin: 0 auto 18px;
-    padding: 12px 14px;
-    border: 1px solid rgba(248, 113, 113, 0.25);
-    border-radius: 11px;
-    background: rgba(127, 29, 29, 0.18);
-    color: #fecaca;
-    font-size: 12px;
-    line-height: 1.5;
-    text-align: left;
-}
-
-.empty-state {
-    width: min(700px, 100%);
-    margin: 32px auto 0;
-    padding: 34px 24px;
-    border: 1px dashed rgba(148, 163, 184, 0.24);
-    border-radius: 16px;
-    background: rgba(17, 26, 43, 0.42);
-}
-
-.empty-state-icon {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    margin: 0 auto 12px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.045);
-    color: #a9b7ca;
-    font-size: 22px;
-    font-weight: 900;
-}
-
-.empty-state h2 {
-    margin: 0 0 7px;
-    color: #e5ebf3;
-    font-size: 20px;
-}
-
-.empty-state p {
-    max-width: 520px;
-    margin: 0 auto;
-    color: #7f8da2;
-    font-size: 12px;
-    line-height: 1.55;
-}
-
-.plan-subtitle {
-    margin: 5px 0 0;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-@media (max-width: 900px) {
-    .excel-upload {
-        grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .upload-button {
-        grid-column: 1 / -1;
-        justify-self: start;
-    }
-
-    .upload-status,
-    .upload-hint {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 600px) {
-    .excel-upload {
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 12px;
-        padding: 16px;
-        border-radius: 13px;
-    }
-
-    .upload-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        font-size: 20px;
-    }
-
-    .upload-copy h2 {
-        font-size: 16px;
-    }
-
-    .upload-copy p {
-        font-size: 11px;
-    }
-
-    .upload-button {
-        width: 100%;
-        min-height: 43px;
-    }
-
-    .upload-status {
-        margin-top: -2px;
-    }
-
-    .upload-hint {
-        margin-top: -3px;
-    }
-
-    .empty-state {
-        padding: 28px 16px;
-    }
-}
-
-/* ==========================================
-   FESTE EXCEL-DATEI AUS GITHUB
-   ========================================== */
-
-.excel-status-card {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+.kurs-topline {
+    display: flex;
     align-items: center;
-    gap: 16px;
-    width: min(1100px, 100%);
-    margin: 0 auto 18px;
-    padding: 18px 20px;
-    border: 1px solid rgba(110, 168, 254, 0.18);
-    border-radius: 15px;
-    background: linear-gradient(180deg, rgba(22, 34, 55, 0.96), rgba(17, 26, 43, 0.96));
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14);
-    transition: 0.2s ease;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
 }
 
-.excel-status-card.success {
-    border-color: rgba(74, 222, 128, 0.20);
-}
-
-.excel-status-card.error {
-    border-color: rgba(248, 113, 113, 0.24);
-}
-
-.excel-status-icon {
-    display: grid;
-    place-items: center;
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
-    background: rgba(110, 168, 254, 0.10);
-    color: #9fc4ff;
-    font-size: 23px;
-    font-weight: 900;
-}
-
-.excel-status-card.success .excel-status-icon {
-    background: rgba(74, 222, 128, 0.10);
-    color: #86efac;
-}
-
-.excel-status-card.error .excel-status-icon {
-    background: rgba(248, 113, 113, 0.10);
-    color: #fca5a5;
-}
-
-.excel-status-card h2 {
-    margin: 3px 0 4px;
-    color: #f8fafc;
-    font-size: 18px;
-}
-
-.excel-status-text {
-    margin: 0;
-    color: #8796aa;
+.kurs-code {
+    color: currentColor;
     font-size: 11px;
-    line-height: 1.5;
+    font-weight: 900;
+    letter-spacing: 0.04em;
 }
 
-.excel-status-text.loading {
-    color: #cbd5e1;
-}
-
-.excel-status-text.success {
-    color: #bbf7d0;
-}
-
-.excel-status-text.error {
-    color: #fecaca;
-}
-
-.excel-status-badge {
-    padding: 7px 10px;
-    border: 1px solid rgba(148, 163, 184, 0.16);
+.kurs-typ {
+    padding: 3px 7px;
     border-radius: 999px;
-    color: #aebbc9;
-    background: rgba(148, 163, 184, 0.06);
-    font-size: 10px;
-    font-weight: 800;
+    background: currentColor;
+    color: #242424;
+    font-size: 9px;
+    font-weight: 900;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     white-space: nowrap;
 }
 
-@media (max-width: 600px) {
-    .excel-status-card {
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 12px;
-        padding: 15px;
-        border-radius: 13px;
+.kurs-name {
+    color: #f0f0f0;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.kurs-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 9px;
+    margin-top: 7px;
+    color: #aaa;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.kurs-gruppe,
+.kurs-raum {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 18px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.055);
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 900px) {
+    .semester-main {
+        width: min(100% - 24px, 1800px);
+        padding-top: 72px;
     }
 
-    .excel-status-badge {
-        grid-column: 1 / -1;
-        justify-self: start;
+    .semester-back {
+        top: 17px !important;
+        left: 12px !important;
     }
 
-    .excel-status-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        font-size: 20px;
-    }
-
-    .excel-status-card h2 {
-        font-size: 16px;
-    }
-
-    .excel-status-text {
-        font-size: 10px;
+    .tabelle-container {
+        max-height: 70vh;
     }
 }
 
+@media (max-width: 600px) {
+    .semester-main {
+        width: calc(100% - 16px);
+        padding-bottom: 34px;
+    }
 
-/* ==========================================
-   ROBUSTE DARSTELLUNG / GITHUB-EXCEL
-   ========================================== */
-#stundenplan-bereich { display: block; }
-.excel-status-card.warning { border-color: rgba(250, 204, 21, 0.24); }
-.excel-status-card.warning .excel-status-icon { color: #fde68a; background: rgba(250, 204, 21, 0.08); }
-.excel-status-card.warning .excel-status-text { color: #fde68a; }
-.kurskarte { transition: transform .15s ease, background .15s ease, border-color .15s ease; }
-.kurskarte:hover { border-color: rgba(255,255,255,.15); }
+    .semester-header {
+        margin-bottom: 22px;
+    }
+
+    .semester-kicker {
+        font-size: 10px;
+    }
+
+    .semester-page h1 {
+        font-size: 34px;
+    }
+
+    .semester-timer {
+        margin-bottom: 24px;
+        padding: 18px 12px 20px;
+        border-radius: 12px;
+    }
+
+    .countdown-value {
+        gap: 7px;
+    }
+
+    .countdown-value span {
+        padding: 10px 5px;
+        font-size: 20px;
+    }
+
+    .countdown-value small {
+        font-size: 8px;
+    }
+
+    .excel-status-line {
+        margin-bottom: 24px;
+        font-size: 11px;
+    }
+
+    .plan-heading {
+        margin-bottom: 15px;
+    }
+
+    .plan-heading h2 {
+        font-size: 22px;
+    }
+
+    .tabelle-container {
+        border-radius: 10px;
+        max-height: 68vh;
+    }
+
+    .stundenplan {
+        min-width: 1250px;
+    }
+
+    .stundenplan thead th {
+        padding: 12px 10px;
+        font-size: 12px;
+    }
+
+    .stundenplan thead th:first-child,
+    .stundenplan tbody th.uhrzeit {
+        width: 104px;
+    }
+
+    .stundenplan tbody th.uhrzeit {
+        padding: 12px 7px;
+        font-size: 12px;
+    }
+
+    .stundenplan tbody td {
+        min-width: 228px;
+        height: 100px;
+        padding: 7px;
+    }
+
+    .kurskarte {
+        padding: 9px 9px 9px 10px;
+    }
+
+    .kurs-name {
+        font-size: 12px;
+    }
+}

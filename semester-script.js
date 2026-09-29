@@ -1,8 +1,9 @@
 // ==========================================
-// NEUES SEMESTER – EXCEL-IMPORT + TIMER
+// NEUES SEMESTER – EXCEL AUS GITHUB + TIMER
 // ==========================================
 
 const semesterStart = new Date("2026-10-05T00:00:00");
+const excelFileName = "Stundenplan.xlsx";
 
 const typInfo = {
     P: { label: "Praktikum", className: "typ-p" },
@@ -11,8 +12,8 @@ const typInfo = {
     S: { label: "Seminar", className: "typ-s" }
 };
 
-const fileInput = document.getElementById("excel-file");
-const uploadStatus = document.getElementById("upload-status");
+const excelStatus = document.getElementById("excel-status");
+const excelStatusCard = document.getElementById("excel-status-card");
 const uploadError = document.getElementById("upload-error");
 const stundenplanBereich = document.getElementById("stundenplan-bereich");
 const emptyState = document.getElementById("empty-state");
@@ -89,7 +90,7 @@ function parseWorkbook(workbook) {
     const headerIndex = findHeaderRow(rows);
     if (headerIndex === -1) {
         throw new Error(
-            'Die Tabelle konnte nicht erkannt werden. Es wird eine Zeile mit "Zeit | Montag | Dienstag | Mittwoch | Donnerstag | Freitag" erwartet.'
+            'Die Tabelle konnte nicht erkannt werden. Erwartet wird eine Zeile mit "Zeit | Montag | Dienstag | Mittwoch | Donnerstag | Freitag".'
         );
     }
 
@@ -122,7 +123,6 @@ function parseWorkbook(workbook) {
             continue;
         }
 
-        // Nur Zeitzeilen gehören zum eigentlichen Stundenplan.
         if (!isTimeValue(first)) continue;
 
         rowsOut.push({
@@ -148,7 +148,7 @@ function parseWorkbook(workbook) {
 function parseCourse(raw) {
     if (!raw.trim()) return null;
 
-    // Erwartetes Format:
+    // Format aus der Excel-Datei:
     // Code Kursname (Typ, PG) · Raum: Raumname
     const match = raw.match(/^(.+?)\s+\((P|V|Ü|S),\s*([^)]*)\)\s*·\s*Raum:\s*(.+)$/s);
 
@@ -263,7 +263,7 @@ function renderStundenplan(plan) {
     }).join("");
 }
 
-function showPlan(plan, fileName) {
+function showPlan(plan) {
     const title = document.getElementById("plan-title");
     const subtitle = document.getElementById("plan-subtitle");
     const kicker = document.getElementById("plan-kicker");
@@ -277,11 +277,20 @@ function showPlan(plan, fileName) {
     renderStundenplan(plan);
 
     if (source) {
-        source.textContent = plan.source || `Geladen aus: ${fileName}`;
+        source.textContent = plan.source || `Quelle: ${excelFileName}`;
     }
 
     stundenplanBereich.hidden = false;
     emptyState.hidden = true;
+
+    if (excelStatus) {
+        excelStatus.textContent = `✓ ${excelFileName} erfolgreich geladen`;
+        excelStatus.classList.add("success");
+    }
+
+    if (excelStatusCard) {
+        excelStatusCard.classList.add("success");
+    }
 }
 
 function showError(message) {
@@ -289,53 +298,54 @@ function showError(message) {
     uploadError.hidden = false;
     stundenplanBereich.hidden = true;
     emptyState.hidden = false;
-    emptyState.querySelector("h2").textContent = "Excel-Datei konnte nicht geladen werden";
-    emptyState.querySelector("p").textContent = "Prüfe das Tabellenformat oder wähle eine andere Datei aus.";
+    emptyState.querySelector("h2").textContent = "Stundenplan konnte nicht geladen werden";
+    emptyState.querySelector("p").innerHTML = `Die Datei <strong>${escapeHtml(excelFileName)}</strong> konnte nicht automatisch aus dem GitHub-Repository geladen werden.`;
+
+    if (excelStatus) {
+        excelStatus.textContent = "✕ Laden fehlgeschlagen";
+        excelStatus.classList.remove("loading", "success");
+        excelStatus.classList.add("error");
+    }
+
+    if (excelStatusCard) {
+        excelStatusCard.classList.remove("success");
+        excelStatusCard.classList.add("error");
+    }
 }
 
-function clearError() {
-    uploadError.textContent = "";
-    uploadError.hidden = true;
-    emptyState.querySelector("h2").textContent = "Dein Stundenplan wartet";
-    emptyState.querySelector("p").textContent = "Lade oben deine Excel-Datei hoch, damit hier automatisch der komplette Wochenplan erscheint.";
-}
-
-async function loadExcelFile(file) {
-    clearError();
-
-    if (!file) return;
-
+async function loadExcelFromGitHub() {
     if (typeof XLSX === "undefined") {
-        showError("Die Excel-Bibliothek konnte nicht geladen werden. Prüfe deine Internetverbindung oder binde SheetJS lokal ein.");
+        showError("Die Excel-Bibliothek konnte nicht geladen werden. Prüfe die Internetverbindung oder binde SheetJS lokal ein.");
         return;
     }
 
-    uploadStatus.textContent = `Lese „${file.name}“ …`;
-    uploadStatus.classList.add("loading");
+    if (excelStatus) {
+        excelStatus.textContent = `Lese ${excelFileName} …`;
+        excelStatus.classList.add("loading");
+    }
 
     try {
-        const buffer = await file.arrayBuffer();
+        // Cache-Busting sorgt dafür, dass beim Austausch der XLSX-Datei auf GitHub
+        // nicht versehentlich eine alte Version aus dem Browser-Cache verwendet wird.
+        const response = await fetch(`${encodeURIComponent(excelFileName)}?v=${Date.now()}`, {
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const buffer = await response.arrayBuffer();
         const workbook = XLSX.read(buffer, { type: "array" });
         const plan = parseWorkbook(workbook);
 
-        showPlan(plan, file.name);
-        uploadStatus.textContent = `✓ „${file.name}“ erfolgreich geladen`;
-        uploadStatus.classList.remove("loading");
-        uploadStatus.classList.add("success");
+        showPlan(plan);
     } catch (error) {
-        uploadStatus.textContent = `Fehler beim Laden: ${file.name}`;
-        uploadStatus.classList.remove("loading");
-        uploadStatus.classList.remove("success");
-        showError(error instanceof Error ? error.message : "Die Excel-Datei konnte nicht verarbeitet werden.");
+        const detail = error instanceof Error ? error.message : "Unbekannter Fehler";
+        showError(`${excelFileName} konnte nicht verarbeitet werden (${detail}).`);
     }
-}
-
-if (fileInput) {
-    fileInput.addEventListener("change", event => {
-        const file = event.target.files?.[0];
-        loadExcelFile(file);
-    });
 }
 
 semesterTimer();
 setInterval(semesterTimer, 1000);
+loadExcelFromGitHub();

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="semester-style.css">
 
-    <!-- SheetJS: Excel-Dateien direkt im Browser einlesen -->
+    <!-- SheetJS: liest die fest mit GitHub gelieferte Excel-Datei im Browser ein -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body class="semester-page">
@@ -20,7 +20,7 @@
     <header class="semester-header">
         <div class="semester-kicker">WS 2026/27 · Hochschule Bochum</div>
         <h1>Neues Semester</h1>
-        <p class="semester-subtitle">Wochenplan aus deiner Excel-Datei</p>
+        <p class="semester-subtitle">Vollständiger Wochenplan · automatisch aus Stundenplan.xlsx</p>
     </header>
 
     <section class="semester-timer" aria-label="Semester-Countdown">
@@ -29,28 +29,16 @@
         <div class="timer-date">05.10.2026</div>
     </section>
 
-    <section class="excel-upload" aria-labelledby="upload-title">
-        <div class="upload-icon" aria-hidden="true">▦</div>
-        <div class="upload-copy">
-            <div class="section-kicker">Excel-Stundenplan</div>
-            <h2 id="upload-title">Excel-Datei hochladen</h2>
-            <p>
-                Wähle deine neue Stundenplan-Datei aus. Die Tabelle wird anschließend automatisch
-                ausgelesen und in der schönen Web-Ansicht dargestellt.
+    <section id="excel-status-card" class="excel-status-card" aria-label="Excel-Status">
+        <div class="excel-status-icon" aria-hidden="true">▦</div>
+        <div>
+            <div class="section-kicker">Stundenplan-Datei</div>
+            <h2>Stundenplan.xlsx</h2>
+            <p id="excel-status" class="excel-status-text" aria-live="polite">
+                Stundenplan wird aus der mitgelieferten Excel-Datei geladen …
             </p>
         </div>
-
-        <label class="upload-button" for="excel-file">
-            Excel-Datei auswählen
-        </label>
-        <input id="excel-file" type="file" accept=".xlsx,.xls,.xlsm" hidden>
-
-        <div id="upload-status" class="upload-status" aria-live="polite">
-            Noch keine Excel-Datei ausgewählt.
-        </div>
-        <div class="upload-hint">
-            Unterstützt: .xlsx, .xls und .xlsm · Die Datei wird nur lokal im Browser verarbeitet.
-        </div>
+        <div class="excel-status-badge">GitHub-Datei</div>
     </section>
 
     <div id="upload-error" class="upload-error" role="alert" hidden></div>
@@ -68,7 +56,7 @@
         <div class="legende" id="legende"></div>
 
         <div class="tabelle-container">
-            <table class="stundenplan" aria-label="Aus Excel geladener Wochenplan">
+            <table class="stundenplan" aria-label="Wochenplan aus der Excel-Datei">
                 <thead id="stundenplan-head"></thead>
                 <tbody id="stundenplan-body"></tbody>
             </table>
@@ -76,14 +64,14 @@
 
         <div class="plan-footer">
             <div id="footer-note" class="footer-note">Legende: P = Praktikum · V = Vorlesung · Ü = Übung · S = Seminar</div>
-            <div id="footer-source" class="footer-source"></div>
+            <div id="footer-source" class="footer-source">Quelle: Stundenplan.xlsx</div>
         </div>
     </section>
 
     <section id="empty-state" class="empty-state" aria-live="polite">
-        <div class="empty-state-icon">↑</div>
-        <h2>Dein Stundenplan wartet</h2>
-        <p>Lade oben deine Excel-Datei hoch, damit hier automatisch der komplette Wochenplan erscheint.</p>
+        <div class="empty-state-icon">…</div>
+        <h2>Stundenplan wird geladen</h2>
+        <p>Die auf GitHub hinterlegte Datei <strong>Stundenplan.xlsx</strong> wird automatisch eingelesen.</p>
     </section>
 </main>
 

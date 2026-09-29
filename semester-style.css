@@ -1,8 +1,9 @@
 
 /* ==========================================================
-   DESKTOP-STABILITÄT
-   Verhindert, dass sich Toolbar/Dropdown beim Filtern
-   durch das Ein-/Ausblenden der vertikalen Scrollbar verschiebt.
+   STABILE DROPDOWN-BASIS
+   Das Modulmenü bleibt als echtes Untermenü am Auswahlfeld
+   verankert. Änderungen innerhalb der Tabelle können seine
+   Position dadurch nicht beeinflussen.
    ========================================================== */
 html {
     scrollbar-gutter: stable;
@@ -16,21 +17,10 @@ html {
     position: relative;
 }
 
-@media (min-width: 1025px) {
-    .stundenplan-toolbar {
-        min-height: 40px;
-        flex-wrap: nowrap;
-    }
-
-    .modul-select,
-    .ansichten-select {
-        flex: 0 0 auto;
-    }
-
-    .modul-filter-menu,
-    .ansichten-menu {
-        position: absolute;
-    }
+.modul-select,
+.ansichten-select {
+    position: relative;
+    flex: 0 0 auto;
 }
 
 /* ==========================================================
@@ -287,14 +277,23 @@ html {
     display: flex;
     align-items: center;
     gap: 9px;
+    width: 100%;
     min-height: 38px;
     padding: 7px 9px;
+    margin: 0;
+    border: 0;
     border-radius: 8px;
+    background: transparent;
     color: #ededed;
+    font-family: inherit;
     font-size: 12px;
     font-weight: 600;
+    line-height: 1.25;
+    text-align: left;
     cursor: pointer;
     user-select: none;
+    appearance: none;
+    -webkit-appearance: none;
     transition: background 0.12s ease, color 0.12s ease;
 }
 
@@ -1147,4 +1146,81 @@ html {
         font-size: 11px;
     }
 }
-\n\n/* ==========================================================\n   MODUL-AUSWAHLMENÜ – STABIL\n   Das Menü liegt unabhängig vom Tabellenlayout über der Seite.\n   Dadurch verschiebt/verdeckt sich die Auswahlliste nicht, wenn\n   mehrere Module ausgewählt werden.\n   ========================================================== */\n#modul-filter-menu {\n    position: fixed;\n    z-index: 10000;\n    overflow: hidden;\n    box-sizing: border-box;\n    width: 320px;\n    max-width: calc(100vw - 20px);\n}\n\n#modul-filter-options {\n    overflow-y: auto;\n    overscroll-behavior: contain;\n    scrollbar-width: thin;\n}\n\n@media (max-width: 600px) {\n    #modul-filter-menu {\n        max-width: calc(100vw - 20px);\n    }\n}\n
+
+
+/* ==========================================================
+   MODUL-AUSWAHLMENÜ – STABILES NATIVE DROPDOWN
+   Das Menü bleibt als normales position:absolute-Untermenü
+   direkt am Modul-Button verankert. Änderungen an der Tabelle,
+   an Scrollpositionen oder an der Auswahl verändern seine Lage
+   nicht. Es bleibt geöffnet, bis der Button erneut geklickt oder
+   außerhalb geklickt wird.
+   ========================================================== */
+.modul-select {
+    position: relative;
+}
+
+#modul-filter-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: auto;
+    z-index: 1000;
+    width: 320px;
+    max-width: min(320px, calc(100vw - 24px));
+    margin: 0;
+    transform: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    contain: layout paint;
+}
+
+#modul-filter-options {
+    max-height: min(310px, calc(100vh - 245px));
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #666 transparent;
+}
+
+#modul-filter-options .modul-option {
+    display: flex;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    color: #ededed;
+    font-family: inherit;
+    text-align: left;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+#modul-filter-options .modul-option[aria-pressed="true"] {
+    background: rgba(255,255,255,0.06);
+}
+
+#modul-filter-options .modul-option[aria-pressed="true"] .modul-check {
+    border-color: #9fcca9;
+    background: #9fcca9;
+}
+
+#modul-filter-options .modul-option[aria-pressed="true"] .modul-check::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #1e2a20;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+@media (max-width: 1024px) {
+    #modul-filter-menu {
+        width: 100%;
+        max-width: 100%;
+    }
+}

@@ -1275,28 +1275,38 @@
 
     optionsWrap.innerHTML = modules.length
       ? modules.map((module, index) => `
-          <label class="modul-option" for="modul-option-${index}">
-            <input id="modul-option-${index}" type="checkbox" value="${esc(module)}" ${selectedModules.includes(module) ? "checked" : ""}>
+          <button type="button" class="modul-option" data-modul-value="${esc(module)}" aria-pressed="${selectedModules.includes(module) ? "true" : "false"}">
             <span class="modul-check" aria-hidden="true"></span>
             <span class="modul-option-text">${esc(module)}</span>
-          </label>
+          </button>
         `).join("")
       : `<div class="modul-option-empty">Keine Module gefunden</div>`;
 
-    optionsWrap.querySelectorAll("input[type='checkbox']").forEach(input => {
-      input.addEventListener("change", () => {
-        const value = clean(input.value);
-        if (input.checked && !selectedModules.includes(value)) {
-          if (selectedModules.length >= MAX_SELECTED_MODULES) {
-            input.checked = false;
-            return;
-          }
+    optionsWrap.querySelectorAll(".modul-option[data-modul-value]").forEach(option => {
+      // Kein natives Focus-Scrolling innerhalb der Liste: Die geöffnete
+      // Auswahlansicht darf beim Anklicken niemals nachspringen.
+      option.addEventListener("mousedown", event => event.preventDefault());
+      option.addEventListener("click", event => {
+        event.preventDefault();
+        const value = clean(option.dataset.modulValue);
+        const optionsScroll = optionsWrap.scrollTop;
+
+        if (!selectedModules.includes(value)) {
+          if (selectedModules.length >= MAX_SELECTED_MODULES) return;
           selectedModules.push(value);
-        } else if (!input.checked) {
+          option.setAttribute("aria-pressed", "true");
+        } else {
           selectedModules = selectedModules.filter(module => module !== value);
+          option.setAttribute("aria-pressed", "false");
         }
-        updateModuleFilterButton();
+
         applyModuleFilter(selectedModules);
+
+        // Browser-Reflow durch die veränderte Tabelle darf die Modulliste
+        // weder scrollen noch deren sichtbaren Ausschnitt verändern.
+        requestAnimationFrame(() => {
+          optionsWrap.scrollTop = optionsScroll;
+        });
       });
     });
 
@@ -1337,6 +1347,7 @@
     const menu = document.getElementById("modul-filter-menu");
     const reset = document.getElementById("modul-filter-reset");
     const wrapper = document.querySelector(".modul-select");
+    const optionsWrap = document.getElementById("modul-filter-options");
     if (!toggle || !menu || !wrapper) return;
 
     toggle.addEventListener("click", event => {
@@ -1346,19 +1357,23 @@
       menu.hidden = !open;
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
       toggle.classList.toggle("offen", open);
+      if (open && optionsWrap) {
+        optionsWrap.scrollTop = 0;
+      }
     });
 
     reset?.addEventListener("click", event => {
       event.stopPropagation();
+      const menuScroll = optionsWrap ? optionsWrap.scrollTop : 0;
       selectedModules = [];
-      wrapper.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
+      optionsWrap?.querySelectorAll(".modul-option[aria-pressed='true']").forEach(option => option.setAttribute("aria-pressed", "false"));
       applyModuleFilter([]);
+      requestAnimationFrame(() => {
+        if (optionsWrap) optionsWrap.scrollTop = menuScroll;
+      });
     });
 
     menu.addEventListener("click", event => event.stopPropagation());
-
-    // Das Modulmenü bleibt rein per CSS am Auswahlfeld verankert.
-    // Dadurch wird es weder beim Scrollen noch beim Filtern/Neuzeichnen der Tabelle verschoben.
   }
 
   function initSavedViews() {

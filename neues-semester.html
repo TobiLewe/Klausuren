@@ -34,10 +34,20 @@
     </div>
 
     <div class="modul-filter" aria-label="Stundenplan filtern">
-      <label for="modul-filter">Modul</label>
-      <select id="modul-filter">
-        <option value="">Alle Module</option>
-      </select>
+      <label id="modul-filter-label-text">Module</label>
+      <div class="modul-select">
+        <button type="button" id="modul-filter-toggle" class="modul-filter-button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="modul-filter-label-text modul-filter-label">
+          <span id="modul-filter-label">Alle Module</span>
+          <span class="modul-filter-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div id="modul-filter-menu" class="modul-filter-menu" hidden>
+          <div id="modul-filter-options" class="modul-filter-options" role="group" aria-label="Module auswählen"></div>
+          <div class="modul-filter-footer">
+            <span id="modul-filter-count">0/5 ausgewählt</span>
+            <button type="button" id="modul-filter-reset" class="modul-filter-reset">Alle anzeigen</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="tabelle-container">
@@ -1095,26 +1105,94 @@
     return [...modules].sort((a, b) => a.localeCompare(b, "de-DE"));
   }
 
-  function populateModuleFilter() {
-    const filter = document.getElementById("modul-filter");
-    if (!filter) return;
+  const MAX_SELECTED_MODULES = 5;
+  let selectedModules = [];
 
-    const previous = filter.value;
-    const modules = collectModulesFromDom();
-    filter.innerHTML = `<option value="">Alle Module</option>` +
-      modules.map(module => `<option value="${esc(module)}">${esc(module)}</option>`).join("");
+  function updateModuleFilterButton() {
+    const label = document.getElementById("modul-filter-label");
+    const count = document.getElementById("modul-filter-count");
+    const reset = document.getElementById("modul-filter-reset");
+    const options = document.querySelectorAll("#modul-filter-options input[type='checkbox']");
 
-    if (modules.includes(previous)) {
-      filter.value = previous;
-    } else {
-      filter.value = "";
+    if (label) {
+      if (selectedModules.length === 0) {
+        label.textContent = "Alle Module";
+      } else if (selectedModules.length === 1) {
+        label.textContent = selectedModules[0];
+      } else {
+        label.textContent = `${selectedModules.length} Module ausgewählt`;
+      }
     }
 
-    applyModuleFilter(filter.value);
+    if (count) {
+      count.textContent = `${selectedModules.length}/${MAX_SELECTED_MODULES} ausgewählt`;
+    }
+
+    if (reset) {
+      reset.disabled = selectedModules.length === 0;
+    }
+
+    // Sobald fünf Module gewählt sind, werden die übrigen Optionen deaktiviert.
+    options.forEach(input => {
+      input.disabled = selectedModules.length >= MAX_SELECTED_MODULES && !input.checked;
+      input.closest("label")?.classList.toggle("deaktiviert", input.disabled);
+    });
   }
 
-  function applyModuleFilter(moduleName) {
-    const selected = clean(moduleName);
+  function closeModuleFilter() {
+    const menu = document.getElementById("modul-filter-menu");
+    const toggle = document.getElementById("modul-filter-toggle");
+    if (!menu || !toggle) return;
+    menu.hidden = true;
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.classList.remove("offen");
+  }
+
+  function populateModuleFilter() {
+    const optionsWrap = document.getElementById("modul-filter-options");
+    if (!optionsWrap) return;
+
+    const modules = collectModulesFromDom();
+    selectedModules = selectedModules.filter(module => modules.includes(module)).slice(0, MAX_SELECTED_MODULES);
+
+    optionsWrap.innerHTML = modules.length
+      ? modules.map((module, index) => `
+          <label class="modul-option" for="modul-option-${index}">
+            <input id="modul-option-${index}" type="checkbox" value="${esc(module)}" ${selectedModules.includes(module) ? "checked" : ""}>
+            <span class="modul-check" aria-hidden="true"></span>
+            <span class="modul-option-text">${esc(module)}</span>
+          </label>
+        `).join("")
+      : `<div class="modul-option-empty">Keine Module gefunden</div>`;
+
+    optionsWrap.querySelectorAll("input[type='checkbox']").forEach(input => {
+      input.addEventListener("change", () => {
+        const value = clean(input.value);
+        if (input.checked && !selectedModules.includes(value)) {
+          if (selectedModules.length >= MAX_SELECTED_MODULES) {
+            input.checked = false;
+            return;
+          }
+          selectedModules.push(value);
+        } else if (!input.checked) {
+          selectedModules = selectedModules.filter(module => module !== value);
+        }
+
+        updateModuleFilterButton();
+        applyModuleFilter(selectedModules);
+      });
+    });
+
+    updateModuleFilterButton();
+    applyModuleFilter(selectedModules);
+  }
+
+  function applyModuleFilter(modules) {
+    const selected = (Array.isArray(modules) ? modules : [])
+      .map(clean)
+      .filter(Boolean)
+      .slice(0, MAX_SELECTED_MODULES);
+
     document.querySelectorAll(".stundenplan tbody td").forEach(cell => {
       const cards = [...cell.querySelectorAll(".kurskarte")];
       if (!cards.length) {
@@ -1124,20 +1202,43 @@
 
       let visibleCount = 0;
       cards.forEach(cardEl => {
-        const matches = !selected || normalizeModuleName(cardEl.dataset.modul || cardEl.querySelector(".kurs-name")?.textContent || "") === selected;
+        const cardModule = normalizeModuleName(cardEl.dataset.modul || cardEl.querySelector(".kurs-name")?.textContent || "");
+        const matches = selected.length === 0 || selected.includes(cardModule);
         cardEl.hidden = !matches;
         if (matches) visibleCount += 1;
       });
 
       cell.classList.toggle("leer", visibleCount === 0);
     });
+
+    selectedModules = selected;
+    updateModuleFilterButton();
   }
 
   function initModuleFilter() {
-    const filter = document.getElementById("modul-filter");
-    if (!filter) return;
-    filter.addEventListener("change", () => applyModuleFilter(filter.value));
-    populateModuleFilter();
+    const toggle = document.getElementById("modul-filter-toggle");
+    const menu = document.getElementById("modul-filter-menu");
+    const reset = document.getElementById("modul-filter-reset");
+    const wrapper = document.querySelector(".modul-select");
+    if (!toggle || !menu || !wrapper) return;
+
+    toggle.addEventListener("click", event => {
+      event.stopPropagation();
+      const open = menu.hidden;
+      menu.hidden = !open;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.classList.toggle("offen", open);
+    });
+
+    reset?.addEventListener("click", event => {
+      event.stopPropagation();
+      selectedModules = [];
+      wrapper.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
+      applyModuleFilter([]);
+    });
+
+    menu.addEventListener("click", event => event.stopPropagation());
+    document.addEventListener("click", () => closeModuleFilter());
   }
 
   function parseWorkbook(workbook) {

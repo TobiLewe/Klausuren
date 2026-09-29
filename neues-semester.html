@@ -33,8 +33,12 @@
       <h2 id="plan-title">Wochenplan – Bachelor Elektrotechnik (5. Fachsemester)</h2>
     </div>
 
-
-
+    <div class="modul-filter" aria-label="Stundenplan filtern">
+      <label for="modul-filter">Modul</label>
+      <select id="modul-filter">
+        <option value="">Alle Module</option>
+      </select>
+    </div>
 
     <div class="tabelle-container">
       <div class="stundenplan-zoom-target">
@@ -1037,6 +1041,19 @@
   function clean(v) { return String(v ?? "").replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim(); }
   function isTime(v) { return /^\d{1,2}:\d{2}\s*[–-]\s*\d{1,2}:\d{2}$/.test(clean(v)); }
 
+  function normalizeModuleName(name) {
+    const n = clean(name);
+    const lower = n.toLocaleLowerCase("de-DE");
+
+    // Kleine Vereinheitlichungen aus dem offiziellen Stundenplan,
+    // damit Vorlesung, Übung und Praktikum desselben Moduls gemeinsam gefiltert werden.
+    if (lower.includes("algorithmen") && lower.includes("datenstrukt")) {
+      return "Algorithmen und Datenstrukturen";
+    }
+
+    return n;
+  }
+
   function parseCourse(raw) {
     raw = clean(raw);
     if (!raw) return null;
@@ -1057,11 +1074,70 @@
     const info = typInfo[c.type] || {label:c.type || "Kurs", className:"typ-default"};
     const pg = c.group ? `<span class="kurs-gruppe">${esc(c.group.replace("PG","").trim())} PG</span>` : "";
     const room = c.room ? `<span class="kurs-raum">Raum ${esc(c.room)}</span>` : "";
-    return `<article class="kurskarte ${info.className}">
+    const moduleName = normalizeModuleName(c.name);
+    return `<article class="kurskarte ${info.className}" data-modul="${esc(moduleName)}">
       <div class="kurs-topline"><span class="kurs-code">${esc(c.code)}</span>${c.type ? `<span class="kurs-typ">${esc(info.label)}</span>` : ""}</div>
       <div class="kurs-name">${esc(c.name)}</div>
       <div class="kurs-meta">${pg}${room}</div>
     </article>`;
+  }
+
+  function collectModulesFromDom() {
+    const modules = new Set();
+    document.querySelectorAll(".kurskarte").forEach(cardEl => {
+      const nameEl = cardEl.querySelector(".kurs-name");
+      const moduleName = normalizeModuleName(cardEl.dataset.modul || nameEl?.textContent || "");
+      if (moduleName) {
+        cardEl.dataset.modul = moduleName;
+        modules.add(moduleName);
+      }
+    });
+    return [...modules].sort((a, b) => a.localeCompare(b, "de-DE"));
+  }
+
+  function populateModuleFilter() {
+    const filter = document.getElementById("modul-filter");
+    if (!filter) return;
+
+    const previous = filter.value;
+    const modules = collectModulesFromDom();
+    filter.innerHTML = `<option value="">Alle Module</option>` +
+      modules.map(module => `<option value="${esc(module)}">${esc(module)}</option>`).join("");
+
+    if (modules.includes(previous)) {
+      filter.value = previous;
+    } else {
+      filter.value = "";
+    }
+
+    applyModuleFilter(filter.value);
+  }
+
+  function applyModuleFilter(moduleName) {
+    const selected = clean(moduleName);
+    document.querySelectorAll(".stundenplan tbody td").forEach(cell => {
+      const cards = [...cell.querySelectorAll(".kurskarte")];
+      if (!cards.length) {
+        cell.classList.add("leer");
+        return;
+      }
+
+      let visibleCount = 0;
+      cards.forEach(cardEl => {
+        const matches = !selected || normalizeModuleName(cardEl.dataset.modul || cardEl.querySelector(".kurs-name")?.textContent || "") === selected;
+        cardEl.hidden = !matches;
+        if (matches) visibleCount += 1;
+      });
+
+      cell.classList.toggle("leer", visibleCount === 0);
+    });
+  }
+
+  function initModuleFilter() {
+    const filter = document.getElementById("modul-filter");
+    if (!filter) return;
+    filter.addEventListener("change", () => applyModuleFilter(filter.value));
+    populateModuleFilter();
   }
 
   function parseWorkbook(workbook) {
@@ -1097,6 +1173,7 @@
       <th scope="row" class="uhrzeit">${esc(r.time)}</th>
       ${r.cells.map(c=>c ? `<td>${c.split(/\n\s*\n+/).map(card).join("")}</td>` : '<td class="leer"></td>').join("")}
     </tr>`).join("");
+    populateModuleFilter();
   }
 
   async function autoLoadExcel() {
@@ -1231,7 +1308,9 @@
   semesterTimer();
   setInterval(semesterTimer,1000);
   window.addEventListener("load", () => {
+    initModuleFilter();
     initTouchZoom();
+    populateModuleFilter();
     autoLoadExcel();
   });
 })();

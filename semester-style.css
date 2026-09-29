@@ -152,6 +152,45 @@
     line-height: 1.2;
 }
 
+.plan-zoom-controls {
+    display: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0 0 10px;
+}
+
+.plan-zoom-controls button {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    background: #333;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.plan-zoom-controls button:hover:not(:disabled) {
+    background: #424242;
+}
+
+.plan-zoom-controls button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+#plan-zoom-value {
+    min-width: 48px;
+    text-align: center;
+    color: #cfcfcf;
+    font-size: 12px;
+    font-weight: 800;
+}
+
 /* ==========================================================
    TABELLENRAHMEN
    ========================================================== */
@@ -170,8 +209,10 @@
 }
 
 .stundenplan {
+    --plan-zoom: 1;
     width: 100%;
     min-width: 1390px;
+    zoom: var(--plan-zoom);
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
@@ -374,6 +415,16 @@
 /* ==========================================================
    RESPONSIVE
    ========================================================== */
+
+@media (max-width: 1024px) {
+    .semester-page {
+        touch-action: pan-x pan-y pinch-zoom;
+    }
+
+    .plan-zoom-controls {
+        display: flex;
+    }
+}
 
 @media (max-width: 900px) {
     .semester-main {

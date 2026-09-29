@@ -346,6 +346,58 @@ async function loadExcelFromGitHub() {
     }
 }
 
+// ==========================================
+// STUNDENPLAN-ZOOM FÜR TABLET / HANDY
+// ==========================================
+
+(function initPlanZoom() {
+    const table = document.querySelector(".stundenplan");
+    const minus = document.getElementById("plan-zoom-minus");
+    const plus = document.getElementById("plan-zoom-plus");
+    const value = document.getElementById("plan-zoom-value");
+
+    if (!table || !minus || !plus || !value) return;
+
+    const steps = [1, 0.9, 0.8, 0.7, 0.6, 0.5];
+    let index = 0;
+
+    try {
+        const saved = Number(localStorage.getItem("stundenplanZoom"));
+        const savedIndex = steps.indexOf(saved);
+        if (savedIndex >= 0) index = savedIndex;
+    } catch (_) {
+        // LocalStorage darf blockiert sein; Zoom funktioniert trotzdem.
+    }
+
+    function apply() {
+        const zoom = steps[index];
+        table.style.setProperty("--plan-zoom", zoom);
+        value.textContent = `${Math.round(zoom * 100)}%`;
+        minus.disabled = index === steps.length - 1;
+        plus.disabled = index === 0;
+
+        try {
+            localStorage.setItem("stundenplanZoom", String(zoom));
+        } catch (_) {}
+    }
+
+    minus.addEventListener("click", () => {
+        if (index < steps.length - 1) {
+            index += 1;
+            apply();
+        }
+    });
+
+    plus.addEventListener("click", () => {
+        if (index > 0) {
+            index -= 1;
+            apply();
+        }
+    });
+
+    apply();
+})();
+
 semesterTimer();
 setInterval(semesterTimer, 1000);
 loadExcelFromGitHub();

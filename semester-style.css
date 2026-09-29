@@ -301,15 +301,45 @@
 }
 
 .kurs-typ {
-    padding: 3px 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 18px;
+    padding: 3px 8px;
     border-radius: 999px;
-    background: currentColor;
-    color: #242424;
     font-size: 9px;
     font-weight: 900;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Die Farbe wird vom Kurstyp auf den Badge übertragen. */
+.kurskarte.typ-p .kurs-typ {
+    background: var(--p);
+    color: #15202b;
+}
+
+.kurskarte.typ-v .kurs-typ {
+    background: var(--v);
+    color: #152018;
+}
+
+.kurskarte.typ-u .kurs-typ {
+    background: var(--u);
+    color: #302a15;
+}
+
+.kurskarte.typ-s .kurs-typ {
+    background: var(--s);
+    color: #251f33;
+}
+
+.kurskarte.typ-default .kurs-typ {
+    background: #d0d0d0;
+    color: #242424;
 }
 
 .kurs-name {

@@ -113,7 +113,7 @@
     }
 
     const { data, error } = await supabaseClient
-      .from(SAVED_VIEWS_TABLE)
+      .schema("public").from(SAVED_VIEWS_TABLE)
       .select("id, name, module, created_at")
       .order("created_at", { ascending: false })
       .limit(50);
@@ -214,7 +214,7 @@
 
     try {
       const { data: existing, error: findError } = await supabaseClient
-        .from(SAVED_VIEWS_TABLE)
+        .schema("public").from(SAVED_VIEWS_TABLE)
         .select("id")
         .eq("name", trimmed)
         .order("created_at", { ascending: true })
@@ -224,13 +224,13 @@
 
       if (existing && existing.length) {
         const { error: updateError } = await supabaseClient
-          .from(SAVED_VIEWS_TABLE)
+          .schema("public").from(SAVED_VIEWS_TABLE)
           .update({ module: [...selectedModules].slice(0, MAX_SELECTED_MODULES) })
           .eq("id", existing[0].id);
         if (updateError) throw updateError;
       } else {
         const { error: insertError } = await supabaseClient
-          .from(SAVED_VIEWS_TABLE)
+          .schema("public").from(SAVED_VIEWS_TABLE)
           .insert({
             name: trimmed,
             module: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
@@ -251,7 +251,7 @@
     if (!supabaseClient) return;
 
     const { data: view, error } = await supabaseClient
-      .from(SAVED_VIEWS_TABLE)
+      .schema("public").from(SAVED_VIEWS_TABLE)
       .select("id, name, module")
       .eq("id", id)
       .maybeSingle();
@@ -279,7 +279,7 @@
     if (!confirmed) return;
 
     const { error } = await supabaseClient
-      .from(SAVED_VIEWS_TABLE)
+      .schema("public").from(SAVED_VIEWS_TABLE)
       .delete()
       .eq("id", id);
 

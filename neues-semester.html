@@ -43,7 +43,7 @@
         <div id="modul-filter-menu" class="modul-filter-menu" hidden>
           <div id="modul-filter-options" class="modul-filter-options" role="group" aria-label="Module auswählen"></div>
           <div class="modul-filter-footer">
-            <span id="modul-filter-count">0/5 ausgewählt</span>
+            <span id="modul-filter-count">0/6 ausgewählt</span>
             <button type="button" id="modul-filter-reset" class="modul-filter-reset">Alle anzeigen</button>
           </div>
         </div>
@@ -1105,7 +1105,7 @@
     return [...modules].sort((a, b) => a.localeCompare(b, "de-DE"));
   }
 
-  const MAX_SELECTED_MODULES = 5;
+  const MAX_SELECTED_MODULES = 6;
   let selectedModules = [];
 
   function updateModuleFilterButton() {

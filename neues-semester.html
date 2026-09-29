@@ -33,18 +33,42 @@
       <h2 id="plan-title">Wochenplan – Bachelor Elektrotechnik (5. Fachsemester)</h2>
     </div>
 
-    <div class="modul-filter" aria-label="Stundenplan filtern">
-      <label id="modul-filter-label-text">Module</label>
-      <div class="modul-select">
-        <button type="button" id="modul-filter-toggle" class="modul-filter-button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="modul-filter-label-text modul-filter-label">
-          <span id="modul-filter-label">Alle Module</span>
-          <span class="modul-filter-chevron" aria-hidden="true">⌄</span>
+    <div class="stundenplan-toolbar">
+      <div class="modul-filter" aria-label="Stundenplan filtern">
+        <label id="modul-filter-label-text">Module</label>
+        <div class="modul-select">
+          <button type="button" id="modul-filter-toggle" class="modul-filter-button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="modul-filter-label-text modul-filter-label">
+            <span id="modul-filter-label">Alle Module</span>
+            <span class="modul-filter-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div id="modul-filter-menu" class="modul-filter-menu" hidden>
+            <div id="modul-filter-options" class="modul-filter-options" role="group" aria-label="Module auswählen"></div>
+            <div class="modul-filter-footer">
+              <span id="modul-filter-count">0/6 ausgewählt</span>
+              <button type="button" id="modul-filter-reset" class="modul-filter-reset">Alle anzeigen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ansichten-select">
+        <button type="button" id="ansichten-toggle" class="ansichten-button" aria-haspopup="dialog" aria-expanded="false">
+          <span>Gespeicherte Ansichten</span>
+          <span id="ansichten-count" class="ansichten-count">0</span>
+          <span class="ansichten-chevron" aria-hidden="true">⌄</span>
         </button>
-        <div id="modul-filter-menu" class="modul-filter-menu" hidden>
-          <div id="modul-filter-options" class="modul-filter-options" role="group" aria-label="Module auswählen"></div>
-          <div class="modul-filter-footer">
-            <span id="modul-filter-count">0/6 ausgewählt</span>
-            <button type="button" id="modul-filter-reset" class="modul-filter-reset">Alle anzeigen</button>
+        <div id="ansichten-menu" class="ansichten-menu" hidden>
+          <div class="ansichten-menu-head">
+            <div>
+              <strong>Meine Ansichten</strong>
+              <span>Gespeicherte Modulauswahlen</span>
+            </div>
+          </div>
+          <div id="ansichten-list" class="ansichten-list"></div>
+          <div class="ansichten-menu-footer">
+            <button type="button" id="ansicht-speichern" class="ansicht-speichern" disabled>
+              <span aria-hidden="true">＋</span> Aktuelle Auswahl speichern
+            </button>
           </div>
         </div>
       </div>
@@ -1106,7 +1130,23 @@
   }
 
   const MAX_SELECTED_MODULES = 6;
+  const SAVED_VIEWS_KEY = "stundenplanGespeicherteAnsichtenV1";
   let selectedModules = [];
+
+  function getSavedViews() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(SAVED_VIEWS_KEY) || "[]");
+      return Array.isArray(parsed)
+        ? parsed.filter(v => v && typeof v.name === "string" && Array.isArray(v.modules))
+        : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function setSavedViews(views) {
+    localStorage.setItem(SAVED_VIEWS_KEY, JSON.stringify(views.slice(0, 20)));
+  }
 
   function updateModuleFilterButton() {
     const label = document.getElementById("modul-filter-label");
@@ -1115,28 +1155,21 @@
     const options = document.querySelectorAll("#modul-filter-options input[type='checkbox']");
 
     if (label) {
-      if (selectedModules.length === 0) {
-        label.textContent = "Alle Module";
-      } else if (selectedModules.length === 1) {
-        label.textContent = selectedModules[0];
-      } else {
-        label.textContent = `${selectedModules.length} Module ausgewählt`;
-      }
+      if (selectedModules.length === 0) label.textContent = "Alle Module";
+      else if (selectedModules.length === 1) label.textContent = selectedModules[0];
+      else label.textContent = `${selectedModules.length} Module ausgewählt`;
     }
 
-    if (count) {
-      count.textContent = `${selectedModules.length}/${MAX_SELECTED_MODULES} ausgewählt`;
-    }
+    if (count) count.textContent = `${selectedModules.length}/${MAX_SELECTED_MODULES} ausgewählt`;
+    if (reset) reset.disabled = selectedModules.length === 0;
 
-    if (reset) {
-      reset.disabled = selectedModules.length === 0;
-    }
-
-    // Sobald fünf Module gewählt sind, werden die übrigen Optionen deaktiviert.
     options.forEach(input => {
       input.disabled = selectedModules.length >= MAX_SELECTED_MODULES && !input.checked;
       input.closest("label")?.classList.toggle("deaktiviert", input.disabled);
     });
+
+    const saveButton = document.getElementById("ansicht-speichern");
+    if (saveButton) saveButton.disabled = selectedModules.length === 0;
   }
 
   function closeModuleFilter() {
@@ -1146,6 +1179,91 @@
     menu.hidden = true;
     toggle.setAttribute("aria-expanded", "false");
     toggle.classList.remove("offen");
+  }
+
+  function closeSavedViews() {
+    const menu = document.getElementById("ansichten-menu");
+    const toggle = document.getElementById("ansichten-toggle");
+    if (!menu || !toggle) return;
+    menu.hidden = true;
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.classList.remove("offen");
+  }
+
+  function renderSavedViews() {
+    const list = document.getElementById("ansichten-list");
+    const count = document.getElementById("ansichten-count");
+    if (!list) return;
+
+    const views = getSavedViews();
+    if (count) count.textContent = String(views.length);
+
+    list.innerHTML = views.length
+      ? views.map((view, index) => {
+          const modules = view.modules.map(m => clean(m)).filter(Boolean).slice(0, MAX_SELECTED_MODULES);
+          const summary = modules.length === 1 ? modules[0] : `${modules.length} Module`;
+          return `
+            <div class="ansicht-item">
+              <button type="button" class="ansicht-laden" data-view-index="${index}" title="Ansicht laden">
+                <span class="ansicht-icon" aria-hidden="true">✓</span>
+                <span class="ansicht-info">
+                  <strong>${esc(view.name)}</strong>
+                  <small>${esc(summary)}</small>
+                </span>
+              </button>
+              <button type="button" class="ansicht-loeschen" data-view-index="${index}" title="Ansicht löschen" aria-label="Ansicht ${esc(view.name)} löschen">×</button>
+            </div>`;
+        }).join("")
+      : `<div class="ansichten-empty">Noch keine Ansichten gespeichert.</div>`;
+  }
+
+  function saveCurrentView() {
+    if (!selectedModules.length) return;
+
+    const name = window.prompt("Name für diese Ansicht:", `Ansicht ${getSavedViews().length + 1}`);
+    if (name === null) return;
+
+    const trimmed = clean(name).slice(0, 50);
+    if (!trimmed) return;
+
+    const views = getSavedViews();
+    const existingIndex = views.findIndex(v =>
+      v.name.toLocaleLowerCase("de-DE") === trimmed.toLocaleLowerCase("de-DE")
+    );
+    const newView = {
+      name: trimmed,
+      modules: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
+    };
+
+    if (existingIndex >= 0) views[existingIndex] = newView;
+    else views.unshift(newView);
+
+    setSavedViews(views);
+    renderSavedViews();
+  }
+
+  function loadSavedView(index) {
+    const views = getSavedViews();
+    const view = views[index];
+    if (!view) return;
+
+    const available = collectModulesFromDom();
+    const modules = view.modules
+      .map(clean)
+      .filter(module => available.includes(module))
+      .slice(0, MAX_SELECTED_MODULES);
+
+    selectedModules = modules;
+    populateModuleFilter();
+    closeSavedViews();
+  }
+
+  function deleteSavedView(index) {
+    const views = getSavedViews();
+    if (!views[index]) return;
+    views.splice(index, 1);
+    setSavedViews(views);
+    renderSavedViews();
   }
 
   function populateModuleFilter() {
@@ -1177,7 +1295,6 @@
         } else if (!input.checked) {
           selectedModules = selectedModules.filter(module => module !== value);
         }
-
         updateModuleFilterButton();
         applyModuleFilter(selectedModules);
       });
@@ -1224,6 +1341,7 @@
 
     toggle.addEventListener("click", event => {
       event.stopPropagation();
+      closeSavedViews();
       const open = menu.hidden;
       menu.hidden = !open;
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
@@ -1238,8 +1356,46 @@
     });
 
     menu.addEventListener("click", event => event.stopPropagation());
-    document.addEventListener("click", () => closeModuleFilter());
   }
+
+  function initSavedViews() {
+    const toggle = document.getElementById("ansichten-toggle");
+    const menu = document.getElementById("ansichten-menu");
+    const save = document.getElementById("ansicht-speichern");
+    const list = document.getElementById("ansichten-list");
+    if (!toggle || !menu || !save || !list) return;
+
+    toggle.addEventListener("click", event => {
+      event.stopPropagation();
+      closeModuleFilter();
+      const open = menu.hidden;
+      menu.hidden = !open;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.classList.toggle("offen", open);
+      if (open) renderSavedViews();
+    });
+
+    save.addEventListener("click", event => {
+      event.stopPropagation();
+      saveCurrentView();
+    });
+
+    list.addEventListener("click", event => {
+      event.stopPropagation();
+      const loadButton = event.target.closest(".ansicht-laden");
+      const deleteButton = event.target.closest(".ansicht-loeschen");
+      if (loadButton) loadSavedView(Number(loadButton.dataset.viewIndex));
+      if (deleteButton) deleteSavedView(Number(deleteButton.dataset.viewIndex));
+    });
+
+    menu.addEventListener("click", event => event.stopPropagation());
+    renderSavedViews();
+  }
+
+  document.addEventListener("click", () => {
+    closeModuleFilter();
+    closeSavedViews();
+  });
 
   function parseWorkbook(workbook) {
     const sheetName = workbook.SheetNames[0];
@@ -1410,6 +1566,7 @@
   setInterval(semesterTimer,1000);
   window.addEventListener("load", () => {
     initModuleFilter();
+    initSavedViews();
     initTouchZoom();
     populateModuleFilter();
     autoLoadExcel();

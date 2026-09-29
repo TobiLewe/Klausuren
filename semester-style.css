@@ -1,0 +1,208 @@
+/* ==========================================\n   NEUES SEMESTER – MODERNE EXCEL-ANSICHT\n   ========================================== */\n\n.semester-page {\n    --bg: #0b1220;\n    --panel: #111a2b;\n    --panel-2: #162237;\n    --grid: rgba(148, 163, 184, 0.20);\n    --grid-strong: rgba(148, 163, 184, 0.34);\n    --text: #eef2f7;\n    --muted: #9aa7ba;\n    --accent: #6ea8fe;\n    --p: #bfdbfe;\n    --v: #bbf7d0;\n    --u: #fde68a;\n    --s: #ddd6fe;\n    background:\n        radial-gradient(circle at 8% 0%, rgba(110, 168, 254, 0.12), transparent 28%),\n        radial-gradient(circle at 92% 12%, rgba(124, 58, 237, 0.10), transparent 25%),\n        var(--bg);\n    color: var(--text);\n    min-height: 100vh;\n}\n\n.semester-main {\n    width: min(1800px, calc(100% - 40px));\n    margin: 0 auto;\n    padding: 42px 0 60px;\n}\n\n.semester-back {\n    z-index: 20;\n    background: rgba(17, 26, 43, 0.92) !important;\n    border-color: rgba(255, 255, 255, 0.14) !important;\n    backdrop-filter: blur(10px);\n}\n\n.semester-header {\n    text-align: center;\n    margin: 0 auto 28px;\n}\n\n.semester-kicker,\n.section-kicker {\n    color: var(--accent);\n    font-size: 13px;\n    font-weight: 800;\n    letter-spacing: 0.16em;\n    text-transform: uppercase;\n}\n\n.semester-page h1 {\n    margin: 8px 0 8px;\n    font-size: clamp(34px, 4vw, 52px);\n    letter-spacing: -0.03em;\n}\n\n.semester-subtitle {\n    margin: 0;\n    color: var(--muted);\n    font-size: 16px;\n}\n\n.semester-timer {\n    width: min(820px, 100%);\n    margin: 0 auto 38px;\n    padding: 23px 28px 25px;\n    background: linear-gradient(180deg, rgba(22, 34, 55, 0.98), rgba(17, 26, 43, 0.98));\n    border: 1px solid rgba(255, 255, 255, 0.10);\n    border-radius: 18px;\n    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.25);\n}\n\n.timer-label {\n    color: var(--muted);\n    font-size: 14px;\n    letter-spacing: 0.06em;\n    text-transform: uppercase;\n    margin-bottom: 13px;\n}\n\n.countdown-value {\n    display: grid;\n    grid-template-columns: repeat(4, minmax(0, 1fr));\n    gap: 12px;\n}\n\n.countdown-value span {\n    display: flex;\n    flex-direction: column;\n    gap: 2px;\n    padding: 12px 9px 10px;\n    border-radius: 12px;\n    background: rgba(255, 255, 255, 0.045);\n    border: 1px solid rgba(255, 255, 255, 0.07);\n    font-size: clamp(24px, 3vw, 34px);\n    font-weight: 800;\n    line-height: 1;\n}\n\n.countdown-value small {\n    color: var(--muted);\n    font-size: 11px;\n    font-weight: 700;\n    letter-spacing: 0.10em;\n    text-transform: uppercase;\n}\n\n.countdown-value.begonnen {\n    display: block;\n    text-align: center;\n    font-size: 25px;\n}\n\n.timer-date {\n    margin-top: 11px;\n    color: #cbd5e1;\n    font-size: 13px;\n    font-weight: 700;\n}\n\n.section-heading {\n    display: flex;\n    align-items: end;\n    justify-content: space-between;\n    gap: 16px;\n    margin-bottom: 15px;\n}\n\n.section-heading h2 {\n    margin: 5px 0 0;\n    font-size: clamp(24px, 3vw, 32px);\n    letter-spacing: -0.02em;\n}\n\n.excel-badge {\n    flex: 0 0 auto;\n    padding: 7px 11px;\n    border: 1px solid rgba(110, 168, 254, 0.25);\n    border-radius: 999px;\n    color: #cfe0ff;\n    background: rgba(110, 168, 254, 0.08);\n    font-size: 12px;\n    font-weight: 800;\n}\n\n.legende {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 8px 14px;\n    margin-bottom: 13px;\n    padding: 0 2px;\n    color: var(--muted);\n    font-size: 12px;\n}\n\n.legend-item {\n    display: inline-flex;\n    align-items: center;\n    gap: 7px;\n}\n\n.legend-dot {\n    width: 8px;\n    height: 8px;\n    border-radius: 50%;\n    background: currentColor;\n}\n\n.typ-p { color: var(--p); }\n.typ-v { color: var(--v); }\n.typ-u { color: var(--u); }\n.typ-s { color: var(--s); }\n.typ-default { color: #cbd5e1; }\n\n.tabelle-container {\n    position: relative;\n    overflow: auto;\n    max-height: 72vh;\n    border: 1px solid var(--grid-strong);\n    border-radius: 16px;\n    background: #0d1625;\n    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.26);\n    scrollbar-width: thin;\n    scrollbar-color: #41516a transparent;\n    -webkit-overflow-scrolling: touch;\n}\n\n.stundenplan {\n    width: 100%;\n    min-width: 1340px;\n    border-collapse: separate;\n    border-spacing: 0;\n    table-layout: fixed;\n    text-align: left;\n}\n\n.stundenplan th,\n.stundenplan td {\n    border-right: 1px solid var(--grid);\n    border-bottom: 1px solid var(--grid);\n}\n\n.stundenplan thead th {\n    position: sticky;\n    top: 0;\n    z-index: 8;\n    padding: 15px 14px;\n    background: linear-gradient(180deg, #1c2a42, #172238);\n    color: #f8fafc;\n    text-align: center;\n    font-size: 14px;\n    font-weight: 800;\n    letter-spacing: 0.04em;\n    text-transform: uppercase;\n}\n\n.stundenplan thead th:first-child {\n    width: 120px;\n    left: 0;\n    z-index: 10;\n    background: linear-gradient(180deg, #23324b, #1b2940);\n}\n\n.stundenplan tbody th.uhrzeit {\n    position: sticky;\n    left: 0;\n    z-index: 5;\n    width: 120px;\n    padding: 14px 10px;\n    background: #111c2d;\n    color: #cbd5e1;\n    text-align: center;\n    vertical-align: top;\n    font-size: 13px;\n    font-weight: 800;\n    white-space: nowrap;\n}\n\n.stundenplan tbody td {\n    min-width: 240px;\n    height: 112px;\n    padding: 8px;\n    vertical-align: top;\n    background: rgba(17, 26, 43, 0.70);\n}\n\n.stundenplan tbody tr:nth-child(even) td {\n    background: rgba(22, 34, 55, 0.58);\n}\n\n.stundenplan tbody tr:hover td,\n.stundenplan tbody tr:hover th.uhrzeit {\n    background: rgba(110, 168, 254, 0.055);\n}\n\n.stundenplan tbody tr:last-child td,\n.stundenplan tbody tr:last-child th {\n    border-bottom: 0;\n}\n\n.stundenplan thead th:last-child,\n.stundenplan td:last-child {\n    border-right: 0;\n}\n\n.stundenplan td.leer {\n    background: rgba(7, 13, 23, 0.24) !important;\n}\n\n.kurskarte {\n    position: relative;\n    margin-bottom: 8px;\n    padding: 10px 11px 10px 12px;\n    border: 1px solid rgba(255, 255, 255, 0.08);\n    border-left: 3px solid currentColor;\n    border-radius: 11px;\n    background: rgba(255, 255, 255, 0.035);\n    color: #dbe5f1;\n    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.10);\n}\n\n.kurskarte:last-child {\n    margin-bottom: 0;\n}\n\n.kurskarte:hover {\n    background: rgba(255, 255, 255, 0.065);\n    transform: translateY(-1px);\n}\n\n.kurs-topline {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 8px;\n    margin-bottom: 5px;\n}\n\n.kurs-code {\n    color: currentColor;\n    font-size: 11px;\n    font-weight: 900;\n    letter-spacing: 0.04em;\n}\n\n.kurs-typ {\n    padding: 3px 7px;\n    border-radius: 999px;\n    background: currentColor;\n    color: #0b1220;\n    font-size: 9px;\n    font-weight: 900;\n    letter-spacing: 0.06em;\n    text-transform: uppercase;\n    white-space: nowrap;\n}\n\n.kurs-name {\n    color: #f1f5f9;\n    font-size: 13px;\n    font-weight: 750;\n    line-height: 1.35;\n}\n\n.kurs-meta {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: center;\n    gap: 6px 9px;\n    margin-top: 7px;\n    color: #9facbd;\n    font-size: 10px;\n    font-weight: 700;\n}\n\n.kurs-gruppe,\n.kurs-raum {\n    display: inline-flex;\n    align-items: center;\n    gap: 4px;\n    min-height: 18px;\n    padding: 2px 6px;\n    border-radius: 6px;\n    background: rgba(148, 163, 184, 0.08);\n}\n\n.plan-footer {\n    display: flex;\n    justify-content: space-between;\n    gap: 18px;\n    margin-top: 12px;\n    color: #7f8da2;\n    font-size: 11px;\n    line-height: 1.5;\n}\n\n.footer-source {\n    text-align: right;\n    max-width: 58%;\n}\n\n@media (max-width: 900px) {\n    .semester-main {\n        width: min(100% - 24px, 1800px);\n        padding-top: 72px;\n    }\n\n    .semester-back {\n        top: 17px !important;\n        left: 12px !important;\n    }\n\n    .section-heading {\n        align-items: center;\n    }\n\n    .tabelle-container {\n        max-height: 70vh;\n    }\n}\n\n@media (max-width: 600px) {\n    .semester-main {\n        width: calc(100% - 16px);\n        padding-bottom: 34px;\n    }\n\n    .semester-header {\n        margin-bottom: 18px;\n    }\n\n    .semester-kicker {\n        font-size: 10px;\n    }\n\n    .semester-page h1 {\n        font-size: 34px;\n        margin-top: 6px;\n    }\n\n    .semester-subtitle {\n        font-size: 13px;\n    }\n\n    .semester-timer {\n        margin-bottom: 28px;\n        padding: 18px 12px;\n        border-radius: 14px;\n    }\n\n    .countdown-value {\n        gap: 7px;\n    }\n\n    .countdown-value span {\n        padding: 10px 5px;\n        font-size: 20px;\n    }\n\n    .countdown-value small {\n        font-size: 8px;\n    }\n\n    .section-heading {\n        flex-direction: column;\n        align-items: flex-start;\n        margin-bottom: 12px;\n    }\n\n    .section-heading h2 {\n        font-size: 23px;\n    }\n\n    .excel-badge {\n        font-size: 10px;\n    }\n\n    .legende {\n        font-size: 11px;\n        gap: 6px 10px;\n    }\n\n    .tabelle-container {\n        border-radius: 12px;\n        max-height: 68vh;\n    }\n\n    .stundenplan {\n        min-width: 1250px;\n    }\n\n    .stundenplan thead th {\n        padding: 12px 10px;\n        font-size: 12px;\n    }\n\n    .stundenplan thead th:first-child,\n    .stundenplan tbody th.uhrzeit {\n        width: 104px;\n    }\n\n    .stundenplan tbody th.uhrzeit {\n        padding: 12px 7px;\n        font-size: 12px;\n    }\n\n    .stundenplan tbody td {\n        min-width: 228px;\n        height: 100px;\n        padding: 7px;\n    }\n\n    .kurskarte {\n        padding: 9px 9px 9px 10px;\n    }\n\n    .kurs-name {\n        font-size: 12px;\n    }\n\n    .plan-footer {\n        flex-direction: column;\n        gap: 7px;\n    }\n\n    .footer-source {\n        max-width: none;\n        text-align: left;\n    }\n}\n
+/* ==========================================
+   EXCEL-UPLOAD
+   ========================================== */
+
+.excel-upload {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    width: min(1100px, 100%);
+    margin: 0 auto 18px;
+    padding: 20px 22px;
+    border: 1px solid rgba(110, 168, 254, 0.22);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(22, 34, 55, 0.96), rgba(17, 26, 43, 0.96));
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+}
+
+.upload-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    background: rgba(110, 168, 254, 0.10);
+    border: 1px solid rgba(110, 168, 254, 0.18);
+    color: #9fc4ff;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.upload-copy {
+    min-width: 0;
+    text-align: left;
+}
+
+.upload-copy h2 {
+    margin: 3px 0 5px;
+    color: #f8fafc;
+    font-size: 19px;
+}
+
+.upload-copy p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.upload-button {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 17px;
+    border: 1px solid rgba(110, 168, 254, 0.32);
+    border-radius: 10px;
+    background: rgba(110, 168, 254, 0.12);
+    color: #eaf2ff;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.upload-button:hover {
+    background: rgba(110, 168, 254, 0.20);
+    transform: translateY(-1px);
+}
+
+.upload-status {
+    grid-column: 2 / 3;
+    margin-top: -7px;
+    color: #8796aa;
+    font-size: 11px;
+    text-align: left;
+}
+
+.upload-status.loading {
+    color: #cbd5e1;
+}
+
+.upload-status.success {
+    color: #bbf7d0;
+}
+
+.upload-hint {
+    grid-column: 2 / 4;
+    margin-top: -9px;
+    color: #738196;
+    font-size: 10px;
+    text-align: left;
+}
+
+.upload-error {
+    width: min(1100px, 100%);
+    margin: 0 auto 18px;
+    padding: 12px 14px;
+    border: 1px solid rgba(248, 113, 113, 0.25);
+    border-radius: 11px;
+    background: rgba(127, 29, 29, 0.18);
+    color: #fecaca;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.empty-state {
+    width: min(700px, 100%);
+    margin: 32px auto 0;
+    padding: 34px 24px;
+    border: 1px dashed rgba(148, 163, 184, 0.24);
+    border-radius: 16px;
+    background: rgba(17, 26, 43, 0.42);
+}
+
+.empty-state-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.045);
+    color: #a9b7ca;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.empty-state h2 {
+    margin: 0 0 7px;
+    color: #e5ebf3;
+    font-size: 20px;
+}
+
+.empty-state p {
+    max-width: 520px;
+    margin: 0 auto;
+    color: #7f8da2;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.plan-subtitle {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+@media (max-width: 900px) {
+    .excel-upload {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .upload-button {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+
+    .upload-status,
+    .upload-hint {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .excel-upload {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 12px;
+        padding: 16px;
+        border-radius: 13px;
+    }
+
+    .upload-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    .upload-copy h2 {
+        font-size: 16px;
+    }
+
+    .upload-copy p {
+        font-size: 11px;
+    }
+
+    .upload-button {
+        width: 100%;
+        min-height: 43px;
+    }
+
+    .upload-status {
+        margin-top: -2px;
+    }
+
+    .upload-hint {
+        margin-top: -3px;
+    }
+
+    .empty-state {
+        padding: 28px 16px;
+    }
+}

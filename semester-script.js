@@ -241,7 +241,18 @@
       await renderSavedViews();
     } catch (error) {
       console.error("Fehler beim Speichern der Ansicht:", error);
-      window.alert("Die Ansicht konnte nicht gespeichert werden. Bitte prüfe die Supabase-Einstellungen.");
+      const parts = [
+        error?.message ? `Nachricht: ${error.message}` : "",
+        error?.code ? `Code: ${error.code}` : "",
+        error?.details ? `Details: ${error.details}` : "",
+        error?.hint ? `Hinweis: ${error.hint}` : ""
+      ].filter(Boolean);
+      const detailText = parts.join("\n");
+      window.alert(
+        detailText
+          ? `Die Ansicht konnte nicht gespeichert werden.\n\n${detailText}`
+          : "Die Ansicht konnte nicht gespeichert werden. Bitte prüfe die Supabase-Einstellungen."
+      );
     } finally {
       updateModuleFilterButton();
     }

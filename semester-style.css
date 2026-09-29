@@ -1,3 +1,38 @@
+
+/* ==========================================================
+   DESKTOP-STABILITÄT
+   Verhindert, dass sich Toolbar/Dropdown beim Filtern
+   durch das Ein-/Ausblenden der vertikalen Scrollbar verschiebt.
+   ========================================================== */
+html {
+    scrollbar-gutter: stable;
+}
+
+.semester-page {
+    overflow-x: hidden;
+}
+
+.stundenplan-toolbar {
+    position: relative;
+}
+
+@media (min-width: 1025px) {
+    .stundenplan-toolbar {
+        min-height: 40px;
+        flex-wrap: nowrap;
+    }
+
+    .modul-select,
+    .ansichten-select {
+        flex: 0 0 auto;
+    }
+
+    .modul-filter-menu,
+    .ansichten-menu {
+        position: absolute;
+    }
+}
+
 /* ==========================================================
    NEUES SEMESTER – SAUBERE STUNDENPLAN-ANSICHT
    ========================================================== */
@@ -230,8 +265,9 @@
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    z-index: 40;
+    z-index: 100;
     width: 100%;
+    max-height: min(390px, calc(100vh - 150px));
     overflow: hidden;
     border: 1px solid #5b5b5b;
     border-radius: 12px;
@@ -240,7 +276,7 @@
 }
 
 .modul-filter-options {
-    max-height: 310px;
+    max-height: min(310px, calc(100vh - 205px));
     overflow-y: auto;
     padding: 7px;
     scrollbar-width: thin;
@@ -1033,3 +1069,82 @@
         right: auto;
     }
 }
+
+/* ==========================================================
+   FILTER-STABILITÄT AUF TABLET & HANDY
+   Verhindert horizontales Verschieben beim Öffnen/Auswählen.
+   ========================================================== */
+
+.semester-page,
+.semester-page .semester-main {
+    max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .semester-page {
+        overflow-x: hidden;
+    }
+
+    .stundenplan-toolbar {
+        width: 100%;
+        max-width: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .stundenplan-toolbar .modul-filter,
+    .stundenplan-toolbar .ansichten-select {
+        width: min(100%, 360px);
+        max-width: 100%;
+    }
+
+    .stundenplan-toolbar .modul-filter {
+        display: flex;
+        align-items: center;
+    }
+
+    .stundenplan-toolbar .modul-select {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+    }
+
+    .stundenplan-toolbar .modul-filter-button,
+    .stundenplan-toolbar .ansichten-button {
+        width: 100%;
+    }
+
+    .modul-filter-menu {
+        left: 0;
+        right: auto;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .ansichten-menu {
+        left: 0;
+        right: auto;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .stundenplan-toolbar {
+        margin: 10px auto 22px;
+        padding: 0 2px;
+    }
+
+    .stundenplan-toolbar .modul-filter,
+    .stundenplan-toolbar .ansichten-select {
+        width: min(100%, 360px);
+    }
+
+    .stundenplan-toolbar .modul-filter > label {
+        font-size: 11px;
+    }
+}
+\n\n/* ==========================================================\n   MODUL-AUSWAHLMENÜ – STABIL\n   Das Menü liegt unabhängig vom Tabellenlayout über der Seite.\n   Dadurch verschiebt/verdeckt sich die Auswahlliste nicht, wenn\n   mehrere Module ausgewählt werden.\n   ========================================================== */\n#modul-filter-menu {\n    position: fixed;\n    z-index: 10000;\n    overflow: hidden;\n    box-sizing: border-box;\n    width: 320px;\n    max-width: calc(100vw - 20px);\n}\n\n#modul-filter-options {\n    overflow-y: auto;\n    overscroll-behavior: contain;\n    scrollbar-width: thin;\n}\n\n@media (max-width: 600px) {\n    #modul-filter-menu {\n        max-width: calc(100vw - 20px);\n    }\n}\n

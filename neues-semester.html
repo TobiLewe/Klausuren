@@ -1356,6 +1356,9 @@
     });
 
     menu.addEventListener("click", event => event.stopPropagation());
+
+    // Das Modulmenü bleibt rein per CSS am Auswahlfeld verankert.
+    // Dadurch wird es weder beim Scrollen noch beim Filtern/Neuzeichnen der Tabelle verschoben.
   }
 
   function initSavedViews() {

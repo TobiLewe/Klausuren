@@ -161,7 +161,7 @@
 .stundenplan-zoom-target {
     position: relative;
     display: block;
-    width: max-content;
+    width: 100%;
     transform-origin: top left;
 }
 
@@ -183,7 +183,7 @@
 }
 
 .stundenplan {
-    width: 1390px;
+    width: 100%;
     min-width: 1390px;
     border-collapse: separate;
     border-spacing: 0;
@@ -389,6 +389,10 @@
    ========================================================== */
 
 @media (max-width: 1024px) {
+    .stundenplan-zoom-target {
+        width: max-content;
+    }
+
     .semester-page {
         touch-action: pan-x pan-y pinch-zoom;
     }
@@ -479,6 +483,7 @@
     }
 
     .stundenplan {
+        width: auto;
         min-width: 1320px;
     }
 

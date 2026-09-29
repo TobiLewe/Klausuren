@@ -18,14 +18,24 @@
   // Der Publishable Key wird nur als `apikey` gesendet, wie von Supabase
   // für Browser-Anwendungen vorgesehen.
   async function supabaseRest(path = "", options = {}) {
+    // Publishable Key als Query-Parameter verwenden. Supabase dokumentiert
+    // diesen Zugriff ausdrücklich für Browser-Aufrufe. Dadurch vermeiden wir
+    // einen zusätzlichen benutzerdefinierten `apikey`-Header.
+    const base = `${SUPABASE_REST_URL}${path}`;
+    const url = base + (base.includes("?") ? "&" : "?") +
+      `apikey=${encodeURIComponent(SUPABASE_PUBLISHABLE_KEY)}`;
+
     const headers = {
-      apikey: SUPABASE_PUBLISHABLE_KEY,
+      "Accept": "application/json",
       ...(options.headers || {})
     };
 
-    const response = await fetch(`${SUPABASE_REST_URL}${path}`, {
+    const response = await fetch(url, {
       ...options,
-      headers
+      headers,
+      mode: "cors",
+      credentials: "omit",
+      cache: "no-store"
     });
 
     const text = await response.text();
@@ -51,6 +61,54 @@
 
     return body;
   }
+
+  async function supabaseRpcForm(functionName, fields = {}) {
+    const url = `${SUPABASE_URL}/rest/v1/rpc/${functionName}?apikey=${encodeURIComponent(SUPABASE_PUBLISHABLE_KEY)}`;
+    const body = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(fields)) {
+      if (Array.isArray(value)) {
+        for (const item of value) body.append(key, String(item));
+      } else if (value !== undefined && value !== null) {
+        body.append(key, String(value));
+      }
+    }
+
+    const response = await fetch(url, {
+      method: "POST",
+      mode: "cors",
+      credentials: "omit",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body
+    });
+
+    const text = await response.text();
+    let data = null;
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = text;
+      }
+    }
+
+    if (!response.ok) {
+      const error = new Error(
+        data?.message || data?.error || `HTTP ${response.status}`
+      );
+      error.code = data?.code;
+      error.details = data?.details;
+      error.hint = data?.hint;
+      error.status = response.status;
+      throw error;
+    }
+
+    return data;
+  }
+
   const typInfo = {
     P: { label: "Praktikum", className: "typ-p" },
     V: { label: "Vorlesung", className: "typ-v" },
@@ -145,7 +203,6 @@
     try {
       const query = "?select=id,name,module,created_at&order=created_at.desc&limit=50";
       const data = await supabaseRest(query, {
-        headers: { "Accept-Profile": "public" }
       });
 
       return (data || []).map(view => ({
@@ -242,42 +299,13 @@
     if (saveButton) saveButton.disabled = true;
 
     try {
-      const existing = await supabaseRest(
-        `?select=id&name=eq.${encodeURIComponent(trimmed)}&order=created_at.asc&limit=1`,
-        {
-          headers: { "Accept-Profile": "public" }
-        }
-      );
-
-      if (existing && existing.length) {
-        await supabaseRest(
-          `?id=eq.${encodeURIComponent(existing[0].id)}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              "Content-Profile": "public",
-              "Prefer": "return=minimal"
-            },
-            body: JSON.stringify({
-              module: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
-            })
-          }
-        );
-      } else {
-        await supabaseRest("", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Content-Profile": "public",
-            "Prefer": "return=minimal"
-          },
-          body: JSON.stringify({
-            name: trimmed,
-            module: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
-          })
-        });
-      }
+      // Speichern/Überschreiben läuft über eine POST-RPC-Funktion.
+      // POST + application/x-www-form-urlencoded vermeidet die bisherige
+      // CORS-Preflight-Problematik des direkten PATCH/DELETE-Zugriffs.
+      await supabaseRpcForm("save_public_view", {
+        p_name: trimmed,
+        p_modules: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
+      });
 
       await renderSavedViews();
     } catch (error) {
@@ -292,7 +320,7 @@
       window.alert(
         detailText
           ? `Die Ansicht konnte nicht gespeichert werden.\n\n${detailText}`
-          : "Die Ansicht konnte nicht gespeichert werden. Bitte prüfe die Supabase-Einstellungen."
+          : "Die Ansicht konnte nicht gespeichert werden."
       );
     } finally {
       updateModuleFilterButton();
@@ -304,7 +332,6 @@
       const rows = await supabaseRest(
         `?select=id,name,module&id=eq.${encodeURIComponent(id)}&limit=1`,
         {
-          headers: { "Accept-Profile": "public" }
         }
       );
       const view = rows?.[0];
@@ -330,20 +357,16 @@
     if (!confirmed) return;
 
     try {
-      await supabaseRest(
-        `?id=eq.${encodeURIComponent(id)}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Profile": "public",
-            "Prefer": "return=minimal"
-          }
-        }
-      );
+      await supabaseRpcForm("delete_public_view", {
+        p_id: Number(id)
+      });
       await renderSavedViews();
     } catch (error) {
       console.error("Fehler beim Löschen der Ansicht:", error);
-      window.alert("Die Ansicht konnte nicht gelöscht werden.\n\n" + (error.message || "Unbekannter Fehler"));
+      window.alert(
+        "Die Ansicht konnte nicht gelöscht werden.\n\n" +
+        (error?.message || "Unbekannter Fehler")
+      );
     }
   }
 

@@ -760,4 +760,112 @@
     container.remove();
   }
 
+
+  async function exportPDFEigeneAnsicht() {
+    const table = document.querySelector(".stundenplan");
+    if (!table) return;
+
+    const pdfView = document.createElement("div");
+    pdfView.style.position = "fixed";
+    pdfView.style.left = "-20000px";
+    pdfView.style.top = "0";
+    pdfView.style.width = "1400px";
+    pdfView.style.background = "#ffffff";
+    pdfView.style.color = "#111111";
+    pdfView.style.padding = "30px";
+    pdfView.style.fontFamily = "Arial, sans-serif";
+
+    pdfView.innerHTML = `
+      <h1 style="font-size:26px;margin:0 0 20px;color:#111">
+        Stundenplan WS 2026/27
+      </h1>
+      <div style="font-size:14px;margin-bottom:15px;color:#444">
+        Bachelor Elektrotechnik – 5. Fachsemester
+      </div>
+    `;
+
+    const pdfTable = document.createElement("table");
+    pdfTable.style.width = "100%";
+    pdfTable.style.borderCollapse = "collapse";
+    pdfTable.style.background = "#fff";
+
+    const rows = table.querySelectorAll("tr");
+
+    rows.forEach(row => {
+      const tr = document.createElement("tr");
+
+      row.querySelectorAll("th,td").forEach(cell => {
+        const td = document.createElement(row.parentElement.tagName === "THEAD" ? "th" : "td");
+        td.innerHTML = cell.innerHTML;
+
+        td.style.border = "1px solid #bdbdbd";
+        td.style.padding = "8px";
+        td.style.verticalAlign = "top";
+        td.style.background = "#ffffff";
+        td.style.color = "#111111";
+        td.style.fontSize = "11px";
+
+        td.querySelectorAll(".kurskarte").forEach(card => {
+          card.style.background = "#f7f7f7";
+          card.style.color = "#111";
+          card.style.border = "1px solid #ccc";
+          card.style.borderLeft = "4px solid #777";
+          card.style.marginBottom = "6px";
+          card.style.padding = "7px";
+        });
+
+        tr.appendChild(td);
+      });
+
+      pdfTable.appendChild(tr);
+    });
+
+    pdfView.appendChild(pdfTable);
+    document.body.appendChild(pdfView);
+
+    const canvas = await html2canvas(pdfView, {
+      scale: 2,
+      backgroundColor: "#ffffff"
+    });
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth() - 10;
+    const pageHeight = pdf.internal.pageSize.getHeight() - 10;
+    const imgHeight = canvas.height * pageWidth / canvas.width;
+
+    let position = 5;
+    let remaining = imgHeight;
+
+    pdf.addImage(
+      canvas.toDataURL("image/png"),
+      "PNG",
+      5,
+      position,
+      pageWidth,
+      imgHeight
+    );
+
+    while (remaining > pageHeight) {
+      pdf.addPage();
+      remaining -= pageHeight;
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        5,
+        -(imgHeight - remaining),
+        pageWidth,
+        imgHeight
+      );
+    }
+
+    pdf.save("Stundenplan_WS_2026_27.pdf");
+    pdfView.remove();
+  }
+
 })();

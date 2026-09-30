@@ -714,13 +714,11 @@
 
             pdf.setFillColor(248,248,248);
             pdf.setDrawColor(190,190,190);
-            pdf.roundRect(
+            pdf.rect(
               x + 1,
               cardY,
               dayWidth - 2,
               boxHeight,
-              1.5,
-              1.5,
               "FD"
             );
 

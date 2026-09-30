@@ -2,11 +2,14 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes">
   <meta name="theme-color" content="#0b1220">
   <title>Neues Semester – Stundenplan</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="semester-style.css">
+
+  <!-- Supabase: zentraler öffentlicher Speicher für gespeicherte Ansichten -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Wird nur zum automatischen Aktualisieren aus Stundenplan.xlsx benötigt. -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -33,7 +36,49 @@
       <h2 id="plan-title">Wochenplan – Bachelor Elektrotechnik (5. Fachsemester)</h2>
     </div>
 
+    <div class="stundenplan-toolbar">
+      <div class="modul-filter" aria-label="Stundenplan filtern">
+        <label id="modul-filter-label-text">Module</label>
+        <div class="modul-select">
+          <button type="button" id="modul-filter-toggle" class="modul-filter-button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="modul-filter-label-text modul-filter-label">
+            <span id="modul-filter-label">Alle Module</span>
+            <span class="modul-filter-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div id="modul-filter-menu" class="modul-filter-menu" hidden>
+            <div id="modul-filter-options" class="modul-filter-options" role="group" aria-label="Module auswählen"></div>
+            <div class="modul-filter-footer">
+              <span id="modul-filter-count">0/6 ausgewählt</span>
+              <button type="button" id="modul-filter-reset" class="modul-filter-reset">Alle anzeigen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ansichten-select">
+        <button type="button" id="ansichten-toggle" class="ansichten-button" aria-haspopup="dialog" aria-expanded="false">
+          <span>Gespeicherte Ansichten</span>
+          <span id="ansichten-count" class="ansichten-count">0</span>
+          <span class="ansichten-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div id="ansichten-menu" class="ansichten-menu" hidden>
+          <div class="ansichten-menu-head">
+            <div>
+              <strong>Meine Ansichten</strong>
+              <span>Gespeicherte Modulauswahlen</span>
+            </div>
+          </div>
+          <div id="ansichten-list" class="ansichten-list"></div>
+          <div class="ansichten-menu-footer">
+            <button type="button" id="ansicht-speichern" class="ansicht-speichern" disabled>
+              <span aria-hidden="true">＋</span> Aktuelle Auswahl speichern
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="tabelle-container">
+      <div class="stundenplan-zoom-target">
       <table class="stundenplan" aria-label="Wochenplan">
         <colgroup>
           <col class="zeitspalte">
@@ -990,140 +1035,13 @@
     </article></td><td class="leer"></td><td class="leer"></td><td class="leer"></td></tr>
         </tbody>
       </table>
+      </div>
     </div>
 
   </section>
 </main>
 
-<script>
-(() => {
-  const semesterStart = new Date("2026-10-05T00:00:00");
-  const excelFileName = "Stundenplan.xlsx";
-  const typInfo = {
-    P: { label: "Praktikum", className: "typ-p" },
-    V: { label: "Vorlesung", className: "typ-v" },
-    Ü: { label: "Übung", className: "typ-u" },
-    S: { label: "Seminar", className: "typ-s" }
-  };
+<script src="semester-script.js"></script>
 
-  function semesterTimer() {
-    const el = document.getElementById("semester-countdown");
-    if (!el) return;
-    const diff = semesterStart - new Date();
-    if (diff <= 0) {
-      el.textContent = "Das neue Semester hat begonnen!";
-      el.classList.add("begonnen");
-      return;
-    }
-    el.classList.remove("begonnen");
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff / 3600000) % 24);
-    const m = Math.floor((diff / 60000) % 60);
-    const s = Math.floor((diff / 1000) % 60);
-    el.innerHTML = `<span>${d}<small>Tage</small></span><span>${String(h).padStart(2,"0")}<small>Std.</small></span><span>${String(m).padStart(2,"0")}<small>Min.</small></span><span>${String(s).padStart(2,"0")}<small>Sek.</small></span>`;
-  }
-
-  function esc(v) {
-    return String(v ?? "")
-      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-  }
-
-  function clean(v) { return String(v ?? "").replace(/\r\n/g,"\n").replace(/\r/g,"\n").trim(); }
-  function isTime(v) { return /^\d{1,2}:\d{2}\s*[–-]\s*\d{1,2}:\d{2}$/.test(clean(v)); }
-
-  function parseCourse(raw) {
-    raw = clean(raw);
-    if (!raw) return null;
-    const m = raw.match(/^(.+?)\s+\((P|V|Ü|S),\s*([^)]*)\)\s*·\s*Raum:\s*(.+)$/s);
-    if (!m) return {code:"",name:raw,type:"",group:"",room:""};
-    const left = m[1].trim();
-    const p = left.indexOf(" ");
-    return {
-      code: p > 0 ? left.slice(0,p) : left,
-      name: p > 0 ? left.slice(p+1) : "",
-      type: m[2], group: m[3].trim(), room: m[4].trim()
-    };
-  }
-
-  function card(raw) {
-    const c = parseCourse(raw);
-    if (!c) return "";
-    const info = typInfo[c.type] || {label:c.type || "Kurs", className:"typ-default"};
-    const pg = c.group ? `<span class="kurs-gruppe">${esc(c.group.replace("PG","").trim())} PG</span>` : "";
-    const room = c.room ? `<span class="kurs-raum">Raum ${esc(c.room)}</span>` : "";
-    return `<article class="kurskarte ${info.className}">
-      <div class="kurs-topline"><span class="kurs-code">${esc(c.code)}</span>${c.type ? `<span class="kurs-typ">${esc(info.label)}</span>` : ""}</div>
-      <div class="kurs-name">${esc(c.name)}</div>
-      <div class="kurs-meta">${pg}${room}</div>
-    </article>`;
-  }
-
-  function parseWorkbook(workbook) {
-    const sheetName = workbook.SheetNames[0];
-    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {header:1, defval:"", raw:false, blankrows:true});
-    const headerIndex = rows.findIndex(r => clean(r[0]).toLowerCase()==="zeit" && clean(r[1]).toLowerCase()==="montag");
-    if (headerIndex < 0) throw new Error('Keine Kopfzeile "Zeit | Montag | Dienstag | Mittwoch | Donnerstag | Freitag" gefunden.');
-    const header = rows[headerIndex].slice(0,6).map(clean);
-    const days = header.slice(1,6);
-    const planRows = [];
-    let title = clean(rows[0]?.[0]) || "Stundenplan";
-    let subtitle = clean(rows[1]?.[0]);
-    let legendText = "", sourceText = "";
-    for (let i=headerIndex+1; i<rows.length; i++) {
-      const r = rows[i] || [];
-      const first = clean(r[0]);
-      if (!first) continue;
-      if (first.toLowerCase().startsWith("legende:")) { legendText=first; continue; }
-      if (first.toLowerCase().startsWith("quelle:")) { sourceText=first; continue; }
-      if (!isTime(first)) continue;
-      planRows.push({time:first, cells:days.map((_,j)=>clean(r[j+1]))});
-    }
-    if (!planRows.length) throw new Error("Keine Zeitzeilen gefunden.");
-    return {title,subtitle,days,rows:planRows,legend:legendText,source:sourceText};
-  }
-
-  function render(plan) {
-    const titleEl = document.getElementById("plan-title");
-    if (titleEl) titleEl.textContent = plan.title;
-    const head = document.getElementById("stundenplan-head");
-    head.innerHTML = `<tr><th scope="col" class="zeitkopf">Zeit</th>${plan.days.map(d=>`<th scope="col">${esc(d)}</th>`).join("")}</tr>`;
-    document.getElementById("stundenplan-body").innerHTML = plan.rows.map(r => `<tr>
-      <th scope="row" class="uhrzeit">${esc(r.time)}</th>
-      ${r.cells.map(c=>c ? `<td>${c.split(/\n\s*\n+/).map(card).join("")}</td>` : '<td class="leer"></td>').join("")}
-    </tr>`).join("");
-  }
-
-  async function autoLoadExcel() {
-    const status = document.getElementById("excel-status");
-    if (!status) return;
-
-    if (typeof XLSX === "undefined") {
-      status.textContent = "Excel-Bibliothek nicht verfügbar – die vorhandene Stundenplanansicht bleibt sichtbar.";
-      status.className = "excel-status-line warning";
-      return;
-    }
-
-    try {
-      const url = new URL(excelFileName, document.baseURI);
-      url.searchParams.set("v", Date.now());
-      const response = await fetch(url.href, {cache:"no-store"});
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const workbook = XLSX.read(await response.arrayBuffer(), {type:"array"});
-      render(parseWorkbook(workbook));
-      status.textContent = "✓ Stundenplan.xlsx erfolgreich geladen";
-      status.className = "excel-status-line success";
-    } catch (err) {
-      console.warn("Excel-Abgleich:", err);
-      status.textContent = "Hinweis: Stundenplan.xlsx konnte gerade nicht geladen werden – die vorhandene Ansicht bleibt sichtbar.";
-      status.className = "excel-status-line warning";
-    }
-  }
-
-  semesterTimer();
-  setInterval(semesterTimer,1000);
-  window.addEventListener("load", autoLoadExcel);
-})();
-</script>
 </body>
 </html>

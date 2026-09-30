@@ -616,231 +616,13 @@
     autoLoadExcel();
   });
 
-  async function downloadFullPlanPDF() {
-    const target = document.querySelector('.stundenplan');
-    if (!target) return;
-
-    const canvas = await html2canvas(target, {
-      scale: 2,
-      backgroundColor: '#222',
-      useCORS: true,
-      width: target.scrollWidth,
-      height: target.scrollHeight,
-      windowWidth: target.scrollWidth,
-      windowHeight: target.scrollHeight
-    });
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = pageWidth - 10;
-    const imgHeight = canvas.height * imgWidth / canvas.width;
-    const img = canvas.toDataURL('image/png');
-
-    let heightLeft = imgHeight;
-    let position = 5;
-
-    pdf.setFontSize(14);
-    pdf.text('Stundenplan WS 2026/27', 5, 5);
-    position = 10;
-
-    pdf.addImage(img, 'PNG', 5, position, imgWidth, imgHeight);
-    heightLeft -= (pageHeight - position);
-
-    while (heightLeft > 0) {
-      pdf.addPage();
-      position = heightLeft - imgHeight + 5;
-      pdf.addImage(img, 'PNG', 5, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-
-    pdf.save('Stundenplan_WS_2026_27.pdf');
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.createElement('button');
-    btn.textContent = '📄 PDF herunterladen';
-    btn.className = 'pdf-download-button';
-    btn.onclick = exportOptimizedPDF;
-    document.querySelector('.stundenplan-toolbar')?.appendChild(btn);
-  });
-
-
-  
-
-  );
-
-    clone.querySelectorAll(".kurskarte").forEach(card => {
-      card.style.background = "#f8f8f8";
-      card.style.color = "#111";
-      card.style.border = "1px solid #ccc";
-      card.style.transform = "none";
-    });
-
-    const canvas = await html2canvas(container, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true
-    });
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "mm",
-      format: "a4"
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth() - 8;
-    const pageHeight = pdf.internal.pageSize.getHeight() - 8;
-    const imgHeight = canvas.height * pageWidth / canvas.width;
-
-    let position = 4;
-    let remaining = imgHeight;
-
-    pdf.addImage(
-      canvas.toDataURL("image/png"),
-      "PNG",
-      4,
-      position,
-      pageWidth,
-      imgHeight
-    );
-
-    while (remaining > pageHeight) {
-      remaining -= pageHeight;
-      pdf.addPage();
-      pdf.addImage(
-        canvas.toDataURL("image/png"),
-        "PNG",
-        4,
-        -(imgHeight - remaining),
-        pageWidth,
-        imgHeight
-      );
-    }
-
-    pdf.save("Stundenplan_WS_2026_27.pdf");
-    container.remove();
-  }
-
-
-  async function exportPDFEigeneAnsicht() {
+  function exportStundenplanPDF() {
     const table = document.querySelector(".stundenplan");
-    if (!table) return;
-
-    const pdfView = document.createElement("div");
-    pdfView.style.position = "fixed";
-    pdfView.style.left = "-20000px";
-    pdfView.style.top = "0";
-    pdfView.style.width = "1400px";
-    pdfView.style.background = "#ffffff";
-    pdfView.style.color = "#111111";
-    pdfView.style.padding = "30px";
-    pdfView.style.fontFamily = "Arial, sans-serif";
-
-    pdfView.innerHTML = `
-      <h1 style="font-size:26px;margin:0 0 20px;color:#111">
-        Stundenplan WS 2026/27
-      </h1>
-      <div style="font-size:14px;margin-bottom:15px;color:#444">
-        Bachelor Elektrotechnik – 5. Fachsemester
-      </div>
-    `;
-
-    const pdfTable = document.createElement("table");
-    pdfTable.style.width = "100%";
-    pdfTable.style.borderCollapse = "collapse";
-    pdfTable.style.background = "#fff";
-
-    const rows = table.querySelectorAll("tr");
-
-    rows.forEach(row => {
-      const tr = document.createElement("tr");
-
-      row.querySelectorAll("th,td").forEach(cell => {
-        const td = document.createElement(row.parentElement.tagName === "THEAD" ? "th" : "td");
-        td.innerHTML = cell.innerHTML;
-
-        td.style.border = "1px solid #bdbdbd";
-        td.style.padding = "8px";
-        td.style.verticalAlign = "top";
-        td.style.background = "#ffffff";
-        td.style.color = "#111111";
-        td.style.fontSize = "11px";
-
-        td.querySelectorAll(".kurskarte").forEach(card => {
-          card.style.background = "#f7f7f7";
-          card.style.color = "#111";
-          card.style.border = "1px solid #ccc";
-          card.style.borderLeft = "4px solid #777";
-          card.style.marginBottom = "6px";
-          card.style.padding = "7px";
-        });
-
-        tr.appendChild(td);
-      });
-
-      pdfTable.appendChild(tr);
-    });
-
-    pdfView.appendChild(pdfTable);
-    document.body.appendChild(pdfView);
-
-    const canvas = await html2canvas(pdfView, {
-      scale: 2,
-      backgroundColor: "#ffffff"
-    });
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "mm",
-      format: "a4"
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth() - 10;
-    const pageHeight = pdf.internal.pageSize.getHeight() - 10;
-    const imgHeight = canvas.height * pageWidth / canvas.width;
-
-    let position = 5;
-    let remaining = imgHeight;
-
-    pdf.addImage(
-      canvas.toDataURL("image/png"),
-      "PNG",
-      5,
-      position,
-      pageWidth,
-      imgHeight
-    );
-
-    while (remaining > pageHeight) {
-      pdf.addPage();
-      remaining -= pageHeight;
-      pdf.addImage(
-        canvas.toDataURL("image/png"),
-        "PNG",
-        5,
-        -(imgHeight - remaining),
-        pageWidth,
-        imgHeight
-      );
+    if (!table || !window.jspdf) {
+      alert("PDF konnte nicht erstellt werden.");
+      return;
     }
 
-    pdf.save("Stundenplan_WS_2026_27.pdf");
-    pdfView.remove();
-  }
-
-})();
-
-
-  async function exportOptimizedPDF() {
-    const table = document.querySelector(".stundenplan");
-    if (!table) return;
-
     const { jsPDF } = window.jspdf;
 
     const pdf = new jsPDF({
@@ -848,91 +630,99 @@
       unit: "mm",
       format: "a4"
     });
-
-    const pageWidth = 297;
-    const pageHeight = 210;
 
     const margin = 8;
-    const titleHeight = 18;
-    const headerHeight = 10;
-    const timeWidth = 22;
-    const dayWidth = (pageWidth - 2 * margin - timeWidth) / 5;
+    const pageWidth = 297;
+    const usableWidth = pageWidth - margin * 2;
+
+    const timeWidth = 24;
+    const dayWidth = (usableWidth - timeWidth) / 5;
+
+    let y = 22;
+
+    function header() {
+      pdf.setTextColor(20,20,20);
+      pdf.setFontSize(18);
+      pdf.text("Stundenplan WS 2026/27", margin, 12);
+
+      pdf.setFontSize(8);
+      pdf.text("Bachelor Elektrotechnik – 5. Fachsemester", margin, 17);
+
+      pdf.setFillColor(240,240,240);
+      pdf.rect(margin, y, usableWidth, 9, "F");
+
+      pdf.setFontSize(9);
+      const heads = ["Zeit","Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
+
+      heads.forEach((h,i)=>{
+        const x = i === 0 ? margin : margin + timeWidth + (i-1)*dayWidth;
+        pdf.text(h, x + 2, y + 6);
+      });
+
+      y += 9;
+    }
+
+    function addPageIfNeeded(height) {
+      if (y + height > 200) {
+        pdf.addPage();
+        y = 22;
+        header();
+      }
+    }
+
+    header();
 
     const rows = [...table.querySelectorAll("tbody tr")];
 
-    function drawHeader() {
-      pdf.setFillColor(245,245,245);
-      pdf.rect(margin, margin + titleHeight, pageWidth - 2*margin, headerHeight, "F");
-
-      pdf.setFontSize(16);
-      pdf.setTextColor(20,20,20);
-      pdf.text("Stundenplan WS 2026/27", margin, margin + 8);
-
-      pdf.setFontSize(8);
-
-      const headers = ["Zeit","Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
-
-      headers.forEach((h,i)=>{
-        const x = margin + (i === 0 ? 0 : timeWidth + (i-1)*dayWidth);
-        const w = i === 0 ? timeWidth : dayWidth;
-
-        pdf.rect(x, margin + titleHeight, w, headerHeight);
-        pdf.text(h, x + 2, margin + titleHeight + 6);
-      });
-    }
-
-    function drawCourse(text, x, y, w, h) {
-      if (!text.trim()) return;
-
-      pdf.setFillColor(250,250,250);
-      pdf.setDrawColor(190,190,190);
-      pdf.roundRect(x+1, y+1, w-2, h-2, 2, 2, "FD");
-
-      pdf.setFontSize(7);
-      pdf.setTextColor(20,20,20);
-
-      const lines = text.split("\n").slice(0,4);
-
-      lines.forEach((line,index)=>{
-        pdf.text(line.substring(0,35), x+3, y+5+(index*4));
-      });
-    }
-
-    let y = margin + titleHeight + headerHeight;
-    let pageRows = 0;
-
-    drawHeader();
-
-    rows.forEach((row)=>{
-
-      if (y > pageHeight - 15) {
-        pdf.addPage();
-        y = margin + titleHeight + headerHeight;
-        drawHeader();
-      }
+    rows.forEach(row=>{
+      const height = 18;
+      addPageIfNeeded(height);
 
       const cells = [...row.children];
 
-      const rowHeight = 18;
-
+      pdf.setDrawColor(210,210,210);
       pdf.setFontSize(7);
       pdf.setTextColor(20,20,20);
 
-      pdf.rect(margin, y, timeWidth, rowHeight);
+      pdf.rect(margin,y,timeWidth,height);
       pdf.text(cells[0]?.innerText || "", margin+2, y+10);
 
-      for(let i=1;i<6;i++){
-        const x = margin + timeWidth + (i-1)*dayWidth;
-        pdf.rect(x, y, dayWidth, rowHeight);
+      for(let d=1; d<=5; d++){
+        const x = margin + timeWidth + (d-1)*dayWidth;
 
-        const courses = cells[i]?.innerText || "";
-        drawCourse(courses, x, y, dayWidth, rowHeight);
+        pdf.rect(x,y,dayWidth,height);
+
+        const text = (cells[d]?.innerText || "")
+          .split("\n")
+          .map(t=>t.trim())
+          .filter(Boolean);
+
+        let ty = y + 5;
+        text.slice(0,4).forEach(line=>{
+          pdf.text(line.substring(0,32), x+2, ty);
+          ty += 3;
+        });
       }
 
-      y += rowHeight;
+      y += height;
     });
 
     pdf.save("Stundenplan_WS_2026_27.pdf");
+  }
+
+
+  function initPDFButton() {
+    const toolbar = document.querySelector(".stundenplan-toolbar");
+    if (!toolbar || document.getElementById("pdf-download-button")) return;
+
+    const button = document.createElement("button");
+    button.id = "pdf-download-button";
+    button.className = "ansichten-button";
+    button.type = "button";
+    button.textContent = "📄 PDF herunterladen";
+    button.addEventListener("click", exportStundenplanPDF);
+
+    toolbar.appendChild(button);
   }
 
 })();

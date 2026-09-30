@@ -668,4 +668,82 @@
     document.querySelector('.stundenplan-toolbar')?.appendChild(btn);
   });
 
+
+  function createOptimizedPdfView() {
+    const source = document.querySelector(".stundenplan");
+    if (!source) return null;
+
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "fixed";
+    wrapper.style.left = "-10000px";
+    wrapper.style.top = "0";
+    wrapper.style.width = "1400px";
+    wrapper.style.background = "#ffffff";
+    wrapper.style.color = "#111";
+    wrapper.style.padding = "20px";
+    wrapper.style.fontFamily = "Arial, sans-serif";
+
+    const title = document.createElement("h1");
+    title.textContent = "Stundenplan WS 2026/27";
+    title.style.color = "#111";
+    title.style.fontSize = "24px";
+    title.style.marginBottom = "20px";
+    wrapper.appendChild(title);
+
+    const clone = source.cloneNode(true);
+    clone.style.width = "100%";
+    clone.style.minWidth = "0";
+    clone.style.background = "#fff";
+    clone.style.color = "#111";
+
+    clone.querySelectorAll("th, td").forEach(cell => {
+      cell.style.background = "#fff";
+      cell.style.color = "#111";
+      cell.style.border = "1px solid #ccc";
+    });
+
+    clone.querySelectorAll(".kurskarte").forEach(card => {
+      card.style.background = "#fafafa";
+      card.style.color = "#111";
+      card.style.border = "1px solid #ccc";
+    });
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+    return wrapper;
+  }
+
+  async function exportOptimizedPDF() {
+    const view = createOptimizedPdfView();
+    if (!view) return;
+
+    const canvas = await html2canvas(view, {
+      scale: 2,
+      backgroundColor: "#ffffff"
+    });
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const width = pdf.internal.pageSize.getWidth() - 10;
+    const height = canvas.height * width / canvas.width;
+
+    pdf.addImage(
+      canvas.toDataURL("image/png"),
+      "PNG",
+      5,
+      5,
+      width,
+      Math.min(height, 200)
+    );
+
+    pdf.save("Stundenplan_WS_2026_27.pdf");
+    view.remove();
+  }
+
+
 })();

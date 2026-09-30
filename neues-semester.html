@@ -13,6 +13,8 @@
 
   <!-- Wird nur zum automatischen Aktualisieren aus Stundenplan.xlsx benötigt. -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="semester-page">
 <a href="index.html" class="zurueck-button semester-back">← Zurück</a>
@@ -54,7 +56,9 @@
         </div>
       </div>
 
-      <div class="ansichten-select">
+      <button type="button" id="pdf-download-button" class="pdf-download-button">📄 PDF herunterladen</button>
+
+<div class="ansichten-select">
         <button type="button" id="ansichten-toggle" class="ansichten-button" aria-haspopup="dialog" aria-expanded="false">
           <span>Gespeicherte Ansichten</span>
           <span id="ansichten-count" class="ansichten-count">0</span>

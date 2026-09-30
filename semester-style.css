@@ -1224,3 +1224,20 @@ html {
         max-width: 100%;
     }
 }
+
+
+.pdf-download-button {
+    min-height: 40px;
+    padding: 9px 14px;
+    border: 1px solid #5b5b5b;
+    border-radius: 10px;
+    background: #2f2f2f;
+    color: #f3f3f3;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pdf-download-button:hover {
+    background: #3a3a3a;
+}

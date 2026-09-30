@@ -615,4 +615,51 @@
     populateModuleFilter();
     autoLoadExcel();
   });
+
+  async function downloadPlanAsPDF() {
+    const table = document.querySelector(".stundenplan");
+    if (!table) return;
+
+    try {
+      const canvas = await html2canvas(table, {
+        scale: 2,
+        backgroundColor: "#222"
+      });
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4"
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = canvas.height * pageWidth / canvas.width;
+
+      pdf.setFontSize(16);
+      pdf.text("Stundenplan WS 2026/27", 10, 12);
+
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        10,
+        18,
+        pageWidth - 20,
+        Math.min(imgHeight, 170)
+      );
+
+      pdf.save("Stundenplan_WS_2026_27.pdf");
+
+    } catch (e) {
+      console.error("PDF Fehler:", e);
+      alert("PDF konnte nicht erstellt werden.");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("pdf-download-button");
+    if (btn) btn.addEventListener("click", downloadPlanAsPDF);
+  });
+
+
 })();

@@ -671,41 +671,7 @@
 
   
 
-  async function exportOptimizedPDF() {
-    const table = document.querySelector(".stundenplan");
-    if (!table) return;
-
-    const clone = table.cloneNode(true);
-
-    const container = document.createElement("div");
-    container.style.position = "fixed";
-    container.style.left = "-20000px";
-    container.style.top = "0";
-    container.style.width = "1400px";
-    container.style.background = "white";
-    container.style.padding = "20px";
-    container.style.fontFamily = "Arial, sans-serif";
-
-    const title = document.createElement("h1");
-    title.textContent = "Stundenplan WS 2026/27";
-    title.style.color = "#111";
-    title.style.fontSize = "26px";
-    title.style.marginBottom = "20px";
-
-    container.appendChild(title);
-    container.appendChild(clone);
-    document.body.appendChild(container);
-
-    clone.style.width = "1360px";
-    clone.style.minWidth = "0";
-    clone.style.background = "white";
-
-    clone.querySelectorAll("th, td").forEach(cell => {
-      cell.style.background = "white";
-      cell.style.color = "#111";
-      cell.style.border = "1px solid #bbb";
-      cell.style.padding = "8px";
-    });
+  );
 
     clone.querySelectorAll(".kurskarte").forEach(card => {
       card.style.background = "#f8f8f8";
@@ -869,3 +835,102 @@
   }
 
 })();
+
+
+  async function exportOptimizedPDF() {
+    const table = document.querySelector(".stundenplan");
+    if (!table) return;
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const pageWidth = 297;
+    const pageHeight = 210;
+
+    const margin = 8;
+    const titleHeight = 18;
+    const headerHeight = 10;
+    const timeWidth = 22;
+    const dayWidth = (pageWidth - 2 * margin - timeWidth) / 5;
+
+    const rows = [...table.querySelectorAll("tbody tr")];
+
+    function drawHeader() {
+      pdf.setFillColor(245,245,245);
+      pdf.rect(margin, margin + titleHeight, pageWidth - 2*margin, headerHeight, "F");
+
+      pdf.setFontSize(16);
+      pdf.setTextColor(20,20,20);
+      pdf.text("Stundenplan WS 2026/27", margin, margin + 8);
+
+      pdf.setFontSize(8);
+
+      const headers = ["Zeit","Montag","Dienstag","Mittwoch","Donnerstag","Freitag"];
+
+      headers.forEach((h,i)=>{
+        const x = margin + (i === 0 ? 0 : timeWidth + (i-1)*dayWidth);
+        const w = i === 0 ? timeWidth : dayWidth;
+
+        pdf.rect(x, margin + titleHeight, w, headerHeight);
+        pdf.text(h, x + 2, margin + titleHeight + 6);
+      });
+    }
+
+    function drawCourse(text, x, y, w, h) {
+      if (!text.trim()) return;
+
+      pdf.setFillColor(250,250,250);
+      pdf.setDrawColor(190,190,190);
+      pdf.roundRect(x+1, y+1, w-2, h-2, 2, 2, "FD");
+
+      pdf.setFontSize(7);
+      pdf.setTextColor(20,20,20);
+
+      const lines = text.split("\n").slice(0,4);
+
+      lines.forEach((line,index)=>{
+        pdf.text(line.substring(0,35), x+3, y+5+(index*4));
+      });
+    }
+
+    let y = margin + titleHeight + headerHeight;
+    let pageRows = 0;
+
+    drawHeader();
+
+    rows.forEach((row)=>{
+
+      if (y > pageHeight - 15) {
+        pdf.addPage();
+        y = margin + titleHeight + headerHeight;
+        drawHeader();
+      }
+
+      const cells = [...row.children];
+
+      const rowHeight = 18;
+
+      pdf.setFontSize(7);
+      pdf.setTextColor(20,20,20);
+
+      pdf.rect(margin, y, timeWidth, rowHeight);
+      pdf.text(cells[0]?.innerText || "", margin+2, y+10);
+
+      for(let i=1;i<6;i++){
+        const x = margin + timeWidth + (i-1)*dayWidth;
+        pdf.rect(x, y, dayWidth, rowHeight);
+
+        const courses = cells[i]?.innerText || "";
+        drawCourse(courses, x, y, dayWidth, rowHeight);
+      }
+
+      y += rowHeight;
+    });
+
+    pdf.save("Stundenplan_WS_2026_27.pdf");
+  }

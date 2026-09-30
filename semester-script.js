@@ -669,57 +669,55 @@
   });
 
 
-  function createOptimizedPdfView() {
-    const source = document.querySelector(".stundenplan");
-    if (!source) return null;
+  
 
-    const wrapper = document.createElement("div");
-    wrapper.style.position = "fixed";
-    wrapper.style.left = "-10000px";
-    wrapper.style.top = "0";
-    wrapper.style.width = "1400px";
-    wrapper.style.background = "#ffffff";
-    wrapper.style.color = "#111";
-    wrapper.style.padding = "20px";
-    wrapper.style.fontFamily = "Arial, sans-serif";
+  async function exportOptimizedPDF() {
+    const table = document.querySelector(".stundenplan");
+    if (!table) return;
+
+    const clone = table.cloneNode(true);
+
+    const container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.left = "-20000px";
+    container.style.top = "0";
+    container.style.width = "1400px";
+    container.style.background = "white";
+    container.style.padding = "20px";
+    container.style.fontFamily = "Arial, sans-serif";
 
     const title = document.createElement("h1");
     title.textContent = "Stundenplan WS 2026/27";
     title.style.color = "#111";
-    title.style.fontSize = "24px";
+    title.style.fontSize = "26px";
     title.style.marginBottom = "20px";
-    wrapper.appendChild(title);
 
-    const clone = source.cloneNode(true);
-    clone.style.width = "100%";
+    container.appendChild(title);
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
+    clone.style.width = "1360px";
     clone.style.minWidth = "0";
-    clone.style.background = "#fff";
-    clone.style.color = "#111";
+    clone.style.background = "white";
 
     clone.querySelectorAll("th, td").forEach(cell => {
-      cell.style.background = "#fff";
+      cell.style.background = "white";
       cell.style.color = "#111";
-      cell.style.border = "1px solid #ccc";
+      cell.style.border = "1px solid #bbb";
+      cell.style.padding = "8px";
     });
 
     clone.querySelectorAll(".kurskarte").forEach(card => {
-      card.style.background = "#fafafa";
+      card.style.background = "#f8f8f8";
       card.style.color = "#111";
       card.style.border = "1px solid #ccc";
+      card.style.transform = "none";
     });
 
-    wrapper.appendChild(clone);
-    document.body.appendChild(wrapper);
-    return wrapper;
-  }
-
-  async function exportOptimizedPDF() {
-    const view = createOptimizedPdfView();
-    if (!view) return;
-
-    const canvas = await html2canvas(view, {
+    const canvas = await html2canvas(container, {
       scale: 2,
-      backgroundColor: "#ffffff"
+      backgroundColor: "#ffffff",
+      useCORS: true
     });
 
     const { jsPDF } = window.jspdf;
@@ -729,21 +727,37 @@
       format: "a4"
     });
 
-    const width = pdf.internal.pageSize.getWidth() - 10;
-    const height = canvas.height * width / canvas.width;
+    const pageWidth = pdf.internal.pageSize.getWidth() - 8;
+    const pageHeight = pdf.internal.pageSize.getHeight() - 8;
+    const imgHeight = canvas.height * pageWidth / canvas.width;
+
+    let position = 4;
+    let remaining = imgHeight;
 
     pdf.addImage(
       canvas.toDataURL("image/png"),
       "PNG",
-      5,
-      5,
-      width,
-      Math.min(height, 200)
+      4,
+      position,
+      pageWidth,
+      imgHeight
     );
 
-    pdf.save("Stundenplan_WS_2026_27.pdf");
-    view.remove();
-  }
+    while (remaining > pageHeight) {
+      remaining -= pageHeight;
+      pdf.addPage();
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        4,
+        -(imgHeight - remaining),
+        pageWidth,
+        imgHeight
+      );
+    }
 
+    pdf.save("Stundenplan_WS_2026_27.pdf");
+    container.remove();
+  }
 
 })();

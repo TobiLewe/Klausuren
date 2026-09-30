@@ -718,7 +718,7 @@
               room
             ].filter(Boolean);
 
-            const boxHeight = Math.min(11, Math.max(9, (height - 8) / Math.max(1, cards.length) - 2));
+            const boxHeight = Math.min(14, Math.max(11, (height - 8) / Math.max(1, cards.length) - 1));
 
             let boxColor = [248,248,248];
             let borderColor = [190,190,190];
@@ -751,7 +751,7 @@
 
             pdf.setFontSize(6);
 
-            let textY = cardY + 4;
+            let textY = cardY + 4.5;
             lines.forEach(line => {
               const wrapped = pdf.splitTextToSize(line, dayWidth - 6);
               wrapped.slice(0, 2).forEach(part => {
@@ -760,7 +760,7 @@
               });
             });
 
-            cardY += boxHeight + 1;
+            cardY += boxHeight + 1.5;
           });
         }
       }

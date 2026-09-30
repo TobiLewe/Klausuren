@@ -692,16 +692,32 @@
 
         pdf.rect(x,y,dayWidth,height);
 
-        const text = (cells[d]?.innerText || "")
-          .split("\n")
-          .map(t=>t.trim())
-          .filter(Boolean);
+        const cell = cells[d];
+        const cards = cell ? [...cell.querySelectorAll(".kurskarte:not([hidden])")] : [];
 
-        let ty = y + 5;
-        text.slice(0,4).forEach(line=>{
-          pdf.text(line.substring(0,32), x+2, ty);
-          ty += 3;
-        });
+        let ty = y + 4;
+
+        if (cards.length) {
+          cards.forEach(card => {
+            const code = card.querySelector(".kurs-code")?.innerText || "";
+            const name = card.querySelector(".kurs-name")?.innerText || "";
+            const typ = card.querySelector(".kurs-typ")?.innerText || "";
+            const room = card.querySelector(".kurs-raum")?.innerText || "";
+
+            const lines = [
+              `${code} ${typ}`.trim(),
+              name,
+              room
+            ].filter(Boolean);
+
+            lines.forEach(line => {
+              pdf.text(line.substring(0, 34), x + 2, ty);
+              ty += 3;
+            });
+
+            ty += 2;
+          });
+        }
       }
 
       y += height;
@@ -717,7 +733,7 @@
 
     const button = document.createElement("button");
     button.id = "pdf-download-button";
-    button.className = "ansichten-button";
+    button.className = "pdf-export-button";
     button.type = "button";
     button.textContent = "📄 PDF herunterladen";
     button.addEventListener("click", exportStundenplanPDF);

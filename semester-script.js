@@ -631,14 +631,14 @@
       format: "a4"
     });
 
-    const margin = 8;
+    const margin = 5;
     const pageWidth = 297;
     const usableWidth = pageWidth - margin * 2;
 
     const timeWidth = 24;
     const dayWidth = (usableWidth - timeWidth) / 5;
 
-    let y = 22;
+    let y = 18;
 
     function header() {
       pdf.setTextColor(20,20,20);
@@ -663,7 +663,7 @@
     }
 
     function addPageIfNeeded(height) {
-      if (y + height > 200) {
+      if (y + height > 202) {
         pdf.addPage();
         y = 22;
         header();
@@ -683,7 +683,7 @@
         )
       );
 
-      const height = Math.max(18, maxCards * 15 + 4);
+      const height = Math.max(16, maxCards * 13 + 3);
       addPageIfNeeded(height);
 
       const cells = [...row.children];
@@ -741,7 +741,7 @@
               });
             });
 
-            cardY += boxHeight + 2;
+            cardY += boxHeight + 1;
           });
         }
       }

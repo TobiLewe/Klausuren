@@ -695,7 +695,7 @@
         const cell = cells[d];
         const cards = cell ? [...cell.querySelectorAll(".kurskarte:not([hidden])")] : [];
 
-        let ty = y + 4;
+        let ty = y + 5;
 
         if (cards.length) {
           cards.forEach(card => {
@@ -704,18 +704,22 @@
             const typ = card.querySelector(".kurs-typ")?.innerText || "";
             const room = card.querySelector(".kurs-raum")?.innerText || "";
 
-            const lines = [
+            const text = [
               `${code} ${typ}`.trim(),
               name,
               room
-            ].filter(Boolean);
+            ].filter(Boolean).join(" | ");
 
-            lines.forEach(line => {
-              pdf.text(line.substring(0, 34), x + 2, ty);
-              ty += 3;
+            const wrapped = pdf.splitTextToSize(text, dayWidth - 4);
+
+            pdf.setFontSize(6.5);
+
+            wrapped.forEach(line => {
+              pdf.text(line, x + 2, ty);
+              ty += 3.2;
             });
 
-            ty += 2;
+            ty += 3;
           });
         }
       }

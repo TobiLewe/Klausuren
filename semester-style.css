@@ -1242,3 +1242,23 @@ html {
     flex-wrap: wrap;
     gap: 12px;
 }
+
+.pdf-export-button {
+    min-height: 40px;
+    padding: 9px 14px;
+    border: 1px solid #5b5b5b;
+    border-radius: 10px;
+    background: #2f2f2f;
+    color: #f3f3f3;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: auto;
+    white-space: nowrap;
+}
+
+.pdf-export-button:hover {
+    background: #343434;
+    border-color: #777;
+}

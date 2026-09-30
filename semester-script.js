@@ -675,7 +675,15 @@
     const rows = [...table.querySelectorAll("tbody tr")];
 
     rows.forEach(row=>{
-      const height = 18;
+      const cellsForHeight = [...row.children].slice(1,6);
+      const maxCards = Math.max(
+        1,
+        ...cellsForHeight.map(cell =>
+          cell ? cell.querySelectorAll(".kurskarte:not([hidden])").length : 0
+        )
+      );
+
+      const height = Math.max(18, maxCards * 15 + 4);
       addPageIfNeeded(height);
 
       const cells = [...row.children];
@@ -710,7 +718,7 @@
               room
             ].filter(Boolean);
 
-            const boxHeight = 13;
+            const boxHeight = Math.min(20, Math.max(13, (height - 6) / Math.max(1, cards.length) - 2));
 
             pdf.setFillColor(248,248,248);
             pdf.setDrawColor(190,190,190);

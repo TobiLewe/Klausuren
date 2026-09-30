@@ -664,7 +664,7 @@
     const btn = document.createElement('button');
     btn.textContent = '📄 PDF herunterladen';
     btn.className = 'pdf-download-button';
-    btn.onclick = downloadFullPlanPDF;
+    btn.onclick = exportOptimizedPDF;
     document.querySelector('.stundenplan-toolbar')?.appendChild(btn);
   });
 

@@ -695,7 +695,7 @@
         const cell = cells[d];
         const cards = cell ? [...cell.querySelectorAll(".kurskarte:not([hidden])")] : [];
 
-        let ty = y + 5;
+        let cardY = y + 2;
 
         if (cards.length) {
           cards.forEach(card => {
@@ -704,22 +704,38 @@
             const typ = card.querySelector(".kurs-typ")?.innerText || "";
             const room = card.querySelector(".kurs-raum")?.innerText || "";
 
-            const text = [
+            const lines = [
               `${code} ${typ}`.trim(),
               name,
               room
-            ].filter(Boolean).join(" | ");
+            ].filter(Boolean);
 
-            const wrapped = pdf.splitTextToSize(text, dayWidth - 4);
+            const boxHeight = 13;
 
-            pdf.setFontSize(6.5);
+            pdf.setFillColor(248,248,248);
+            pdf.setDrawColor(190,190,190);
+            pdf.roundRect(
+              x + 1,
+              cardY,
+              dayWidth - 2,
+              boxHeight,
+              1.5,
+              1.5,
+              "FD"
+            );
 
-            wrapped.forEach(line => {
-              pdf.text(line, x + 2, ty);
-              ty += 3.2;
+            pdf.setFontSize(6);
+
+            let textY = cardY + 4;
+            lines.forEach(line => {
+              const wrapped = pdf.splitTextToSize(line, dayWidth - 6);
+              wrapped.slice(0, 2).forEach(part => {
+                pdf.text(part, x + 3, textY);
+                textY += 2.5;
+              });
             });
 
-            ty += 3;
+            cardY += boxHeight + 2;
           });
         }
       }

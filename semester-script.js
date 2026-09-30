@@ -720,8 +720,25 @@
 
             const boxHeight = Math.min(20, Math.max(13, (height - 6) / Math.max(1, cards.length) - 2));
 
-            pdf.setFillColor(248,248,248);
-            pdf.setDrawColor(190,190,190);
+            let boxColor = [248,248,248];
+            let borderColor = [190,190,190];
+
+            if (typ.includes("Vorlesung")) {
+              boxColor = [220,245,225];
+              borderColor = [120,180,130];
+            } else if (typ.includes("Übung")) {
+              boxColor = [250,240,190];
+              borderColor = [200,170,80];
+            } else if (typ.includes("Praktikum")) {
+              boxColor = [210,235,255];
+              borderColor = [100,160,210];
+            } else if (typ.includes("Seminar")) {
+              boxColor = [230,220,250];
+              borderColor = [150,120,190];
+            }
+
+            pdf.setFillColor(...boxColor);
+            pdf.setDrawColor(...borderColor);
             pdf.rect(
               x + 1,
               cardY,

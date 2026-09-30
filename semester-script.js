@@ -620,40 +620,52 @@
     const table = document.querySelector(".stundenplan");
     if (!table) return;
 
-    try {
-      const canvas = await html2canvas(table, {
-        scale: 2,
-        backgroundColor: "#222"
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4"
+    });
+
+    pdf.setFillColor(34, 34, 34);
+    pdf.rect(0, 0, 297, 210, "F");
+
+    pdf.setTextColor(255,255,255);
+    pdf.setFontSize(16);
+    pdf.text("Stundenplan WS 2026/27", 10, 12);
+
+    const rows = [];
+    table.querySelectorAll("tr").forEach(row => {
+      const cells = [];
+      row.querySelectorAll("th,td").forEach(cell => {
+        cells.push(cell.innerText.replace(/\n+/g, " ").trim());
       });
+      if (cells.length) rows.push(cells);
+    });
 
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "mm",
-        format: "a4"
-      });
+    pdf.autoTable({
+      head: [rows[0]],
+      body: rows.slice(1),
+      startY: 20,
+      theme: "grid",
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        textColor: [255,255,255],
+        fillColor: [45,45,45]
+      },
+      headStyles: {
+        fillColor: [58,58,58],
+        textColor: [255,255,255]
+      },
+      margin: {
+        left: 5,
+        right: 5
+      }
+    });
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const imgHeight = canvas.height * pageWidth / canvas.width;
-
-      pdf.setFontSize(16);
-      pdf.text("Stundenplan WS 2026/27", 10, 12);
-
-      pdf.addImage(
-        canvas.toDataURL("image/png"),
-        "PNG",
-        10,
-        18,
-        pageWidth - 20,
-        Math.min(imgHeight, 170)
-      );
-
-      pdf.save("Stundenplan_WS_2026_27.pdf");
-
-    } catch (e) {
-      console.error("PDF Fehler:", e);
-      alert("PDF konnte nicht erstellt werden.");
-    }
+    pdf.save("Stundenplan_WS_2026_27.pdf");
   }
 
   document.addEventListener("DOMContentLoaded", () => {

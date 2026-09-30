@@ -606,43 +606,66 @@
     }, 500);
   }
 
-
-  function initPDFExport() {
-    if (document.getElementById("stundenplan-pdf-button")) return;
-
-    const toolbar = document.querySelector(".stundenplan-toolbar");
-    if (!toolbar) return;
-
-    const button = document.createElement("button");
-    button.id = "stundenplan-pdf-button";
-    button.type = "button";
-    button.textContent = "📄 PDF herunterladen";
-
-    button.style.minHeight = "40px";
-    button.style.padding = "9px 14px";
-    button.style.border = "1px solid #5b5b5b";
-    button.style.borderRadius = "10px";
-    button.style.background = "#2f2f2f";
-    button.style.color = "#f3f3f3";
-    button.style.fontSize = "13px";
-    button.style.fontWeight = "700";
-    button.style.cursor = "pointer";
-
-    button.addEventListener("click", () => {
-      window.print();
-    });
-
-    toolbar.appendChild(button);
-  }
-
   semesterTimer();
   setInterval(semesterTimer,1000);
   window.addEventListener("load", () => {
-    initPDFExport();
     initModuleFilter();
     initSavedViews();
     initTouchZoom();
     populateModuleFilter();
     autoLoadExcel();
   });
+
+  async function downloadFullPlanPDF() {
+    const target = document.querySelector('.stundenplan');
+    if (!target) return;
+
+    const canvas = await html2canvas(target, {
+      scale: 2,
+      backgroundColor: '#222',
+      useCORS: true,
+      width: target.scrollWidth,
+      height: target.scrollHeight,
+      windowWidth: target.scrollWidth,
+      windowHeight: target.scrollHeight
+    });
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth - 10;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    const img = canvas.toDataURL('image/png');
+
+    let heightLeft = imgHeight;
+    let position = 5;
+
+    pdf.setFontSize(14);
+    pdf.text('Stundenplan WS 2026/27', 5, 5);
+    position = 10;
+
+    pdf.addImage(img, 'PNG', 5, position, imgWidth, imgHeight);
+    heightLeft -= (pageHeight - position);
+
+    while (heightLeft > 0) {
+      pdf.addPage();
+      position = heightLeft - imgHeight + 5;
+      pdf.addImage(img, 'PNG', 5, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save('Stundenplan_WS_2026_27.pdf');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.createElement('button');
+    btn.textContent = '📄 PDF herunterladen';
+    btn.className = 'pdf-download-button';
+    btn.onclick = downloadFullPlanPDF;
+    document.querySelector('.stundenplan-toolbar')?.appendChild(btn);
+  });
+
 })();

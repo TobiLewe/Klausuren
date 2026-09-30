@@ -725,4 +725,8 @@
     toolbar.appendChild(button);
   }
 
+  document.addEventListener("DOMContentLoaded", () => {
+    initPDFButton();
+  });
+
 })();

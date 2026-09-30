@@ -718,21 +718,23 @@
               room
             ].filter(Boolean);
 
-            const boxHeight = Math.min(20, Math.max(13, (height - 6) / Math.max(1, cards.length) - 2));
+            const boxHeight = Math.min(11, Math.max(9, (height - 8) / Math.max(1, cards.length) - 2));
 
             let boxColor = [248,248,248];
             let borderColor = [190,190,190];
 
-            if (typ.includes("Vorlesung")) {
+            const typeText = typ.toLowerCase();
+
+            if (typeText.includes("vorlesung")) {
               boxColor = [220,245,225];
               borderColor = [120,180,130];
-            } else if (typ.includes("Übung")) {
+            } else if (typeText.includes("übung")) {
               boxColor = [250,240,190];
               borderColor = [200,170,80];
-            } else if (typ.includes("Praktikum")) {
+            } else if (typeText.includes("praktikum")) {
               boxColor = [210,235,255];
               borderColor = [100,160,210];
-            } else if (typ.includes("Seminar")) {
+            } else if (typeText.includes("seminar")) {
               boxColor = [230,220,250];
               borderColor = [150,120,190];
             }

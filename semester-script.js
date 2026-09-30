@@ -740,7 +740,7 @@
             }
 
             pdf.setFillColor(...boxColor);
-            pdf.setDrawColor(...borderColor);
+            pdf.setDrawColor(190,190,190);
             pdf.rect(
               x + 1,
               cardY,

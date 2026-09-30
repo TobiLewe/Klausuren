@@ -934,3 +934,5 @@
 
     pdf.save("Stundenplan_WS_2026_27.pdf");
   }
+
+})();

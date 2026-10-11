@@ -1,0 +1,189 @@
+/* ==========================================
+   FRISTEN-SEITE
+   ========================================== */
+
+.fristen-page {
+    min-height: 100vh;
+    padding: 42px 20px 60px;
+    background: #222;
+    color: #f5f5f5;
+    text-align: center;
+}
+
+.fristen-main {
+    width: min(900px, 100%);
+    margin: 0 auto;
+}
+
+.fristen-header {
+    margin: 28px auto 28px;
+}
+
+.fristen-kicker {
+    margin: 0 0 10px;
+    color: #b9b9b9;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.fristen-header h1 {
+    margin: 0 0 12px;
+    font-size: clamp(34px, 4vw, 46px);
+}
+
+.fristen-einleitung {
+    margin: 0;
+    color: #c8c8c8;
+    font-size: 16px;
+}
+
+.fristen-hinweis {
+    margin: 0 auto 24px;
+    padding: 12px 16px;
+    border: 1px solid rgba(244, 215, 125, 0.35);
+    border-radius: 10px;
+    background: rgba(244, 215, 125, 0.08);
+    color: #f4d77d;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.fristen-liste {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    text-align: left;
+}
+
+.frist-karte {
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 14px;
+    background: #2d2d2d;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+}
+
+.frist-kopf {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.frist-kategorie {
+    color: #b9b9b9;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.platzhalter-markierung {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    border-radius: 20px;
+    background: #444;
+    color: #f4d77d;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.frist-karte h2 {
+    margin: 0 0 9px;
+    font-size: 21px;
+    line-height: 1.25;
+}
+
+.frist-beschreibung {
+    min-height: 40px;
+    margin: 0 0 20px;
+    color: #c4c4c4;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.frist-fuss {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.frist-datum-block {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.frist-datum-block span {
+    color: #a9a9a9;
+    font-size: 12px;
+}
+
+.frist-datum-block strong {
+    font-size: 17px;
+}
+
+.frist-countdown {
+    margin: 0;
+    color: #a9e7b8;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.frist-countdown.abgelaufen {
+    color: #f0a5a5;
+}
+
+.frist-countdown.heute {
+    color: #f4d77d;
+}
+
+@media (max-width: 700px) {
+    .fristen-page {
+        padding: 75px 14px 40px;
+    }
+
+    .fristen-header {
+        margin-top: 24px;
+    }
+
+    .fristen-hinweis {
+        font-size: 13px;
+    }
+
+    .fristen-liste {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .frist-karte {
+        padding: 18px;
+    }
+
+    .frist-karte h2 {
+        font-size: 19px;
+    }
+}
+
+@media (max-width: 400px) {
+    .frist-fuss {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .frist-countdown {
+        text-align: left;
+    }
+
+    .frist-kategorie {
+        font-size: 10px;
+    }
+}

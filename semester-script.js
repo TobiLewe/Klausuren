@@ -1,5 +1,5 @@
 (() => {
-  const semesterStart = new Date("2026-10-05T00:00:00");
+  const semesterEnd = new Date("2027-01-30T00:00:00");
   const excelFileName = "Stundenplan.xlsx";
 
   // ==========================================================
@@ -25,19 +25,22 @@
 
   function semesterTimer() {
     const el = document.getElementById("semester-countdown");
+    const label = document.querySelector(".timer-label");
     if (!el) return;
-    const diff = semesterStart - new Date();
+
+    // Bis einschließlich 29.01.2027; der Timer endet am 30.01.2027 um 00:00.
+    const diff = semesterEnd - new Date();
     if (diff <= 0) {
-      el.textContent = "Das neue Semester hat begonnen!";
+      if (label) label.textContent = "Das Semester ist vorbei";
+      el.textContent = "";
       el.classList.add("begonnen");
       return;
     }
+
+    if (label) label.textContent = "Das Semester dauert noch";
     el.classList.remove("begonnen");
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff / 3600000) % 24);
-    const m = Math.floor((diff / 60000) % 60);
-    const s = Math.floor((diff / 1000) % 60);
-    el.innerHTML = `<span>${d}<small>Tage</small></span><span>${String(h).padStart(2,"0")}<small>Std.</small></span><span>${String(m).padStart(2,"0")}<small>Min.</small></span><span>${String(s).padStart(2,"0")}<small>Sek.</small></span>`;
+    const days = Math.ceil(diff / 86400000);
+    el.textContent = `${days} Tage`;
   }
 
   function esc(v) {

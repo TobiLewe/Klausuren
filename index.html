@@ -1,87 +1,43 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
     <meta charset="UTF-8">
-    <title>Klausuren</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#222222">
+    <title>Studium</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="studium.css">
 </head>
+<body class="studium-page">
+    <main class="studium-main">
+        <header class="studium-header">
+            <p class="studium-kicker">HOCHSCHULE BOCHUM · ELEKTROTECHNIK</p>
+            <h1>Studium</h1>
+            <p class="studium-einleitung">Alle wichtigen Informationen und Termine rund um dein Studium an einem Ort.</p>
+        </header>
 
-<body>
+        <nav class="studium-kacheln" aria-label="Studienbereiche">
+            <a class="studium-karte" href="klausuren.html">
+                <span class="studium-nummer">01</span>
+                <span class="studium-karten-titel">Klausuren</span>
+                <span class="studium-karten-text">Vergangene und kommende Prüfungen sowie den Überblick über deine Klausurtermine ansehen.</span>
+                <span class="studium-linktext">Zu Klausuren <span aria-hidden="true">→</span></span>
+            </a>
 
-    <!-- Navigation links oben links -->
-    <nav class="hauptseiten-navigation" aria-label="Seitennavigation">
-        <a href="neues-semester.html" class="semester-button">
-            WS 26/27
-        </a>
-        <a href="fristen.html" class="semester-button fristen-nav-button">
-            Fristen
-        </a>
-    </nav>
+            <a class="studium-karte" href="neues-semester.html">
+                <span class="studium-nummer">02</span>
+                <span class="studium-karten-titel">WS 26/27</span>
+                <span class="studium-karten-text">Stundenplan, Modulauswahl und Countdown bis zum Ende des Wintersemesters öffnen.</span>
+                <span class="studium-linktext">Zum Semester <span aria-hidden="true">→</span></span>
+            </a>
 
-
-    <h1>Klausuren</h1>
-
-
-    <!-- ==============================
-         TAGE / WOCHEN SCHALTER
-         ============================== -->
-
-    <div class="umschalter">
-
-        <button id="tage-button" class="aktiv">
-            Tage
-        </button>
-
-        <button id="wochen-button">
-            Wochen
-        </button>
-
-    </div>
-
-
-    <!-- ==============================
-         KLAUSUREN
-         ============================== -->
-
-    <div class="klausuren-container">
-
-
-        <!-- VERGANGENE KLAUSUREN -->
-
-        <div class="bereich">
-
-            <h2 class="bereich-titel">
-                VERGANGENE KLAUSUREN
-            </h2>
-
-            <p class="keine-klausuren">
-                Keine vergangenen Klausuren.
-            </p>
-
-        </div>
-
-
-        <!-- KOMMENDE KLAUSUREN -->
-
-        <div class="bereich">
-
-            <h2 class="bereich-titel">
-                KOMMENDE KLAUSUREN
-            </h2>
-
-            <p class="keine-klausuren">
-                Keine kommenden Klausuren.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <script src="script.js"></script>
-
+            <a class="studium-karte" href="fristen.html">
+                <span class="studium-nummer">03</span>
+                <span class="studium-karten-titel">Fristen</span>
+                <span class="studium-karten-text">Wichtige Abgabe-, Anmelde- und organisatorische Termine im Blick behalten.</span>
+                <span class="studium-linktext">Zu Fristen <span aria-hidden="true">→</span></span>
+            </a>
+        </nav>
+    </main>
 </body>
-
 </html>

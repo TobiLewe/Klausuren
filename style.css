@@ -23,35 +23,10 @@ body {
 }
 
 
-/* ==========================================
-   BUTTON NEUES SEMESTER
-   ========================================== */
-
+/* Alte Navigationsbuttons (semester-button) sind deaktiviert.
+   Unterseiten verwenden ausschließlich den Zurück-Button. */
 .semester-button {
-    position: absolute;
-
-    top: 25px;
-    left: 25px;
-
-    background-color: #333;
-
-    color: white;
-
-    text-decoration: none;
-
-    border: 1px solid #666;
-
-    padding: 10px 18px;
-
-    border-radius: 8px;
-
-    font-size: 15px;
-
-    transition: 0.2s;
-}
-
-.semester-button:hover {
-    background-color: #444;
+    display: none !important;
 }
 
 
@@ -296,7 +271,6 @@ h1 {
     }
 
 
-    .semester-button,
     .zurueck-button {
 
         top: 20px;

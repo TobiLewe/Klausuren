@@ -172,3 +172,8 @@
         font-size: 10px;
     }
 }
+
+/* Kategorie-Text links oben auf jeder Fristenkarte ausblenden. */
+.frist-kategorie {
+    display: none !important;
+}

@@ -57,18 +57,11 @@
 .frist-kopf {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 10px;
     margin-bottom: 16px;
 }
 
-.frist-kategorie {
-    color: #b9b9b9;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-}
 
 .platzhalter-markierung {
     flex: 0 0 auto;
@@ -167,13 +160,5 @@
     .frist-countdown {
         text-align: left;
     }
-
-    .frist-kategorie {
-        font-size: 10px;
-    }
 }
 
-/* Kategorie-Text links oben auf jeder Fristenkarte ausblenden. */
-.frist-kategorie {
-    display: none !important;
-}

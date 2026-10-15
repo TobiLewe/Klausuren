@@ -118,14 +118,6 @@
                 el('p', 'projekt-idee-beschreibung', idea.description)
             );
 
-            if (idea.implementation && idea.implementation.trim()) {
-                const details = el('div', 'projekt-idee-umsetzung');
-                details.append(
-                    el('strong', '', 'Umsetzung und benötigte Mittel'),
-                    el('span', '', idea.implementation)
-                );
-                card.append(details);
-            }
             list.append(card);
         }
         updateFormState();
@@ -222,7 +214,6 @@
         const personName = String(formData.get('person_name') || '').trim();
         const title = String(formData.get('title') || '').trim();
         const description = String(formData.get('description') || '').trim();
-        const implementation = String(formData.get('implementation') || '').trim();
 
         if (!personName || !title || !description) {
             setFormStatus('Bitte fülle deinen Namen, den Titel und die Beschreibung aus.', true);
@@ -242,8 +233,7 @@
             p_password: accessPassword,
             p_person_name: personName,
             p_title: title,
-            p_description: description,
-            p_implementation: implementation
+            p_description: description
         });
         isSaving = false;
 

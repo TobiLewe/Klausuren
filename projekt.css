@@ -89,13 +89,6 @@
     color: #f0b6b6;
 }
 
-.projekt-optional {
-    margin-left: 5px;
-    color: #aaa;
-    font-size: 12px;
-    font-weight: 400;
-}
-
 .projekt-feld input,
 .projekt-feld textarea {
     width: 100%;
@@ -227,28 +220,13 @@
     font-size: 13px;
 }
 
-.projekt-idee-beschreibung,
-.projekt-idee-umsetzung {
+.projekt-idee-beschreibung {
     margin: 0;
     color: #dedede;
     font-size: 14px;
     line-height: 1.55;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-}
-
-.projekt-idee-umsetzung {
-    margin-top: 14px;
-    padding-top: 13px;
-    border-top: 1px solid rgba(255, 255, 255, .09);
-    color: #bbb;
-}
-
-.projekt-idee-umsetzung strong {
-    display: block;
-    margin-bottom: 5px;
-    color: #e0e0e0;
-    font-size: 12px;
 }
 
 .projekt-idee-leer {

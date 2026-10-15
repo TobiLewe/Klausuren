@@ -4,64 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#222222">
-    <title>Projektideen – Studium</title>
-    <link rel="stylesheet" href="style.css?v=20261015-projekt">
-    <link rel="stylesheet" href="projekt.css?v=20261015-projekt">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Projekt – Studium</title>
+    <link rel="stylesheet" href="style.css?v=20261015-projekt-passwort">
+    <link rel="stylesheet" href="projekt.css?v=20261015-projekt-passwort">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js?v=20261015-projekt"></script>
+    <script src="supabase-config.js?v=20261015-projekt-passwort"></script>
 </head>
 <body class="projekt-page">
     <a href="index.html" class="zurueck-button">← Zurück</a>
 
     <main class="projekt-main">
-        <header class="projekt-header">
+        <section id="projekt-anmeldung" class="projekt-auth-panel" aria-labelledby="projekt-login-titel">
             <p class="projekt-kicker">HOCHSCHULE BOCHUM · PROJEKTGRUPPE</p>
-            <h1>Projektideen</h1>
-            <p class="projekt-einleitung">Tragt eure Vorschläge ein. Alle sechs Ideen werden hier gesammelt, damit ihr sie anschließend gemeinsam vergleichen könnt.</p>
-        </header>
+            <h1 id="projekt-login-titel">Projektbereich</h1>
+            <p class="projekt-einleitung">Gib das gemeinsame Gruppenpasswort ein, um die Projektideen anzusehen und einen eigenen Vorschlag einzutragen.</p>
 
-        <section class="projekt-formular-bereich" aria-labelledby="projekt-formular-titel">
-            <div class="projekt-section-kopf">
-                <h2 id="projekt-formular-titel">Idee einreichen</h2>
-                <p id="projekt-plaetze-status" class="projekt-plaetze-status">Freie Plätze werden geladen …</p>
-            </div>
-            <form id="projekt-formular" class="projekt-formular">
+            <form id="projekt-login-form" class="projekt-formular projekt-login-formular">
                 <div class="projekt-feld">
-                    <label for="person-name">Dein Name <span aria-hidden="true">*</span></label>
-                    <input id="person-name" name="person_name" type="text" maxlength="80" autocomplete="name" required placeholder="Vorname oder Name">
+                    <label for="projekt-login-passwort">Gruppenpasswort</label>
+                    <input id="projekt-login-passwort" name="password" type="password" autocomplete="off" required minlength="1" maxlength="128" placeholder="Gruppenpasswort eingeben">
                 </div>
-                <div class="projekt-feld">
-                    <label for="projekt-titel">Titel der Projektidee <span aria-hidden="true">*</span></label>
-                    <input id="projekt-titel" name="title" type="text" maxlength="120" required placeholder="Worum geht es bei deiner Idee?">
-                </div>
-                <div class="projekt-feld">
-                    <label for="projekt-beschreibung">Beschreibung <span aria-hidden="true">*</span></label>
-                    <textarea id="projekt-beschreibung" name="description" rows="4" maxlength="2000" required placeholder="Was soll entwickelt oder gebaut werden? Welches Problem löst das Projekt?"></textarea>
-                </div>
-                <div class="projekt-feld">
-                    <label for="projekt-umsetzung">Umsetzung und benötigte Mittel <span class="projekt-optional">optional</span></label>
-                    <textarea id="projekt-umsetzung" name="implementation" rows="3" maxlength="2000" placeholder="Zum Beispiel Bauteile, Software, Werkzeuge oder besondere Anforderungen"></textarea>
-                </div>
-                <div class="projekt-formular-fuss">
-                    <p class="projekt-pflichtfeld-hinweis">* Pflichtfeld</p>
-                    <button id="projekt-absenden" class="projekt-submit" type="submit">Idee speichern</button>
-                </div>
+                <button id="projekt-login-button" class="projekt-submit" type="submit">Projektseite öffnen</button>
             </form>
-            <p id="projekt-form-status" class="projekt-form-status" role="status" aria-live="polite"></p>
+            <p id="projekt-login-status" class="projekt-form-status" role="status" aria-live="polite"></p>
+            <p class="projekt-auth-hinweis">Das Passwort wird bei jedem neuen Öffnen erneut abgefragt und nicht im Browser gespeichert.</p>
         </section>
 
-        <section class="projektideen-bereich" aria-labelledby="projektideen-titel">
-            <div class="projekt-section-kopf">
-                <h2 id="projektideen-titel">Die sechs Projektplätze</h2>
-                <p class="projekt-hinweis">Jeder Platz kann einmal belegt werden.</p>
-            </div>
-            <div id="projektideen-liste" class="projektideen-liste" aria-live="polite">
-                <p class="projekt-ladehinweis">Projektideen werden geladen …</p>
-            </div>
+        <section id="projekt-bereich" hidden>
+            <header class="projekt-header">
+                <p class="projekt-kicker">HOCHSCHULE BOCHUM · PROJEKTGRUPPE</p>
+                <h1>Projektideen</h1>
+                <p class="projekt-einleitung">Tragt eure Vorschläge ein. Alle sechs Ideen werden hier gesammelt, damit ihr sie anschließend gemeinsam vergleichen könnt.</p>
+                <div class="projekt-angemeldet-zeile">
+                    <p id="projekt-angemeldet-als" class="projekt-angemeldet-als">Gemeinsamer Gruppenzugang aktiv</p>
+                    <button id="projekt-abmelden" class="projekt-abmelden" type="button">Sperren</button>
+                </div>
+            </header>
+
+            <section class="projekt-formular-bereich" aria-labelledby="projekt-formular-titel">
+                <div class="projekt-section-kopf">
+                    <h2 id="projekt-formular-titel">Deine Projektidee</h2>
+                    <p id="projekt-plaetze-status" class="projekt-plaetze-status">Freie Plätze werden geladen …</p>
+                </div>
+                <form id="projekt-formular" class="projekt-formular">
+                    <div class="projekt-feld">
+                        <label for="projekt-person">Dein Name <span aria-hidden="true">*</span></label>
+                        <input id="projekt-person" name="person_name" type="text" maxlength="80" required autocomplete="name" placeholder="Wie sollen wir dich anzeigen?">
+                    </div>
+                    <div class="projekt-feld">
+                        <label for="projekt-titel">Titel der Projektidee <span aria-hidden="true">*</span></label>
+                        <input id="projekt-titel" name="title" type="text" maxlength="120" required placeholder="Worum geht es bei deiner Idee?">
+                    </div>
+                    <div class="projekt-feld">
+                        <label for="projekt-beschreibung">Beschreibung <span aria-hidden="true">*</span></label>
+                        <textarea id="projekt-beschreibung" name="description" rows="4" maxlength="2000" required placeholder="Was soll entwickelt oder gebaut werden? Welches Problem löst das Projekt?"></textarea>
+                    </div>
+                    <div class="projekt-feld">
+                        <label for="projekt-umsetzung">Umsetzung und benötigte Mittel <span class="projekt-optional">optional</span></label>
+                        <textarea id="projekt-umsetzung" name="implementation" rows="3" maxlength="2000" placeholder="Zum Beispiel Bauteile, Software, Werkzeuge oder besondere Anforderungen"></textarea>
+                    </div>
+                    <div class="projekt-formular-fuss">
+                        <p class="projekt-pflichtfeld-hinweis">* Pflichtfeld · bitte nur eine Idee pro Person</p>
+                        <button id="projekt-absenden" class="projekt-submit" type="submit">Idee speichern</button>
+                    </div>
+                </form>
+                <p id="projekt-eigene-idee-status" class="projekt-eigene-idee-status" hidden></p>
+                <p id="projekt-form-status" class="projekt-form-status" role="status" aria-live="polite"></p>
+            </section>
+
+            <section class="projektideen-bereich" aria-labelledby="projektideen-titel">
+                <div class="projekt-section-kopf">
+                    <h2 id="projektideen-titel">Die sechs Projektplätze</h2>
+                    <p class="projekt-hinweis">Alle Personen mit dem Gruppenpasswort sehen dieselben Vorschläge.</p>
+                </div>
+                <div id="projektideen-liste" class="projektideen-liste" aria-live="polite">
+                    <p class="projekt-ladehinweis">Projektideen werden geladen …</p>
+                </div>
+            </section>
+            <p class="projekt-sicherheitshinweis">Das Passwort wird serverseitig geprüft und nicht in dieser Datei hinterlegt. Da alle dasselbe Passwort verwenden, kann die Website einzelne Gruppenmitglieder nicht sicher identifizieren.</p>
         </section>
-        <p class="projekt-sicherheitshinweis">Die Seite funktioniert ohne Anmeldung. Deshalb kann sie technisch nicht überprüfen, ob eine Einreichung wirklich von einer Person aus eurer Gruppe stammt. Bereits gespeicherte Ideen können über die Website nicht bearbeitet oder gelöscht werden.</p>
     </main>
 
-    <script src="projekt.js?v=20261015-projekt"></script>
+    <script src="projekt.js?v=20261015-projekt-passwort"></script>
 </body>
 </html>

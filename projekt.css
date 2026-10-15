@@ -318,3 +318,101 @@
         width: 100%;
     }
 }
+
+/* Authentifizierung für den geschützten Projektbereich */
+[hidden] {
+    display: none !important;
+}
+
+.projekt-auth-panel {
+    width: min(490px, 100%);
+    margin: 7vh auto 0;
+    padding: clamp(22px, 4vw, 34px);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 16px;
+    background: #2b2b2b;
+    box-shadow: 0 16px 38px rgba(0, 0, 0, .25);
+}
+
+.projekt-auth-panel h1 {
+    margin: 0 0 12px;
+    font-size: clamp(30px, 4vw, 38px);
+    text-align: center;
+}
+
+.projekt-auth-panel .projekt-kicker,
+.projekt-auth-panel .projekt-einleitung {
+    text-align: center;
+}
+
+.projekt-login-formular {
+    margin-top: 25px;
+}
+
+.projekt-login-formular .projekt-submit {
+    justify-self: start;
+    min-width: 140px;
+}
+
+.projekt-auth-hinweis {
+    margin: 17px 0 0;
+    color: #999;
+    font-size: 12px;
+    line-height: 1.55;
+    text-align: center;
+}
+
+.projekt-angemeldet-zeile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 20px auto 0;
+}
+
+.projekt-angemeldet-als {
+    margin: 0;
+    color: #c8c8c8;
+    font-size: 14px;
+}
+
+.projekt-abmelden {
+    border: 1px solid #666;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: transparent;
+    color: #eee;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.projekt-abmelden:hover:not(:disabled) {
+    background: #3b3b3b;
+}
+
+.projekt-abmelden:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+.projekt-eigene-idee-status {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border: 1px solid rgba(169, 219, 178, .25);
+    border-radius: 8px;
+    color: #b9dbbf;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@media (max-width: 520px) {
+    .projekt-auth-panel {
+        margin-top: 3vh;
+    }
+
+    .projekt-login-formular .projekt-submit {
+        width: 100%;
+    }
+}

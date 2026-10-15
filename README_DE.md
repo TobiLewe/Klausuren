@@ -1,68 +1,79 @@
-# Studium – dynamische Version (ohne Anmeldung)
+# Studium – dynamische Website mit Projektbereich und gemeinsamem Passwort
 
-## Was sich geändert hat
+## Funktionen
 
-- **Fristen** werden aus `public.fristen` in Supabase geladen. Die drei vorhandenen Fristen wurden als Startdaten in `database-setup.sql` übernommen.
-- **Klausuren** werden aus `public.klausuren` geladen, automatisch in vergangene und kommende Termine sortiert und mit Tage-/Wochenanzeige dargestellt. Es wurden absichtlich keine Klausur-Platzhaltertermine erfunden.
-- **Projekt** ist eine neue Seite für die Sechsergruppe. Jede Einreichung enthält Name, Titel, Beschreibung und optional Angaben zur Umsetzung. Die ersten sechs Einreichungen belegen jeweils einen festen Platz und werden für alle Besucher angezeigt. Die Liste aktualisiert sich automatisch alle 20 Sekunden.
-- **Stundenplan** mit Excel-Import, Modulfilter und PDF-Export bleibt erhalten.
-- Gemeinsame gespeicherte Stundenplanansichten bleiben öffentlich lesbar. Neu gespeicherte Ansichten werden lokal im Browser gespeichert. Das öffentliche Frontend kann gemeinsame Datenbankansichten nicht mehr ändern oder löschen.
-- Die öffentlichen Seiten erfordern keine Anmeldung. `fristen`, `klausuren` und gemeinsame gespeicherte Stundenplanansichten sind über die Browser-API nur lesbar. Bei `projektideen` sind zusätzlich Einreichungen erlaubt; Änderungen und Löschungen sind gesperrt.
+- **Fristen** werden aus `public.fristen` in Supabase geladen. Die bisherigen drei Fristen sind im SQL als Startdaten enthalten.
+- **Klausuren** werden aus `public.klausuren` geladen, automatisch in vergangene und kommende Termine sortiert und mit Tage-/Wochenanzeige dargestellt.
+- **Projekt** verwendet ein gemeinsames Gruppenpasswort für alle sechs Personen. Es gibt keine E-Mail-Konten und keine öffentliche Registrierung.
+- Das Passwort muss bei jedem neuen Öffnen der Seite erneut eingegeben werden. Es wird nur im Arbeitsspeicher gehalten, nicht in `localStorage`, `sessionStorage` oder einem Cookie.
+- Das Passwort steht nicht in HTML oder JavaScript. Supabase prüft es serverseitig und speichert nur einen bcrypt-Hash in einem nicht öffentlichen Schema.
+- Projektideen können nicht direkt über die Tabellen-API gelesen oder geschrieben werden. Lesen und Einreichen erfolgen über RPC-Funktionen, die das Passwort prüfen. Plätze werden unter einer Datenbanksperre vergeben.
+- Weil alle dasselbe Passwort nutzen, kann die Datenbank nicht zuverlässig beweisen, welche Person einen Namen eingetragen hat. Der Name wird daher im Formular angegeben; pro bereits verwendetem Namen wird eine weitere Idee blockiert, dies ersetzt aber keine persönliche Anmeldung.
+- **Stundenplan** mit Excel-Import, Modulfilter und PDF-Export bleibt erhalten. Gemeinsame gespeicherte Ansichten bleiben lesbar; Schreiben über die öffentliche Browser-API ist gesperrt.
 
-## Einrichten
+## Einrichtung – bitte in dieser Reihenfolge
 
-1. Sichere dein bisheriges GitHub-Repository.
-2. Öffne dein bestehendes Supabase-Projekt und gehe zu **SQL Editor**.
-3. Öffne die aktuelle `database-setup.sql`, kopiere den gesamten Inhalt in eine neue SQL-Abfrage und führe sie aus. Wenn du das frühere Skript bereits ausgeführt hast, führe jetzt diese aktualisierte Version aus. Sie löscht keine vorhandenen Fristen, Klausuren oder gespeicherten Stundenplanansichten; sie richtet die Berechtigungen neu ein und erstellt `projektideen`.
-4. Lade alle Dateien aus diesem Ordner in das Hauptverzeichnis deines GitHub-Repositories hoch und ersetze die gleichnamigen Dateien.
-5. Committe die Änderungen und öffne die veröffentlichte Website neu (bei Bedarf `Strg + F5`).
+### 1. SQL-Grundkonfiguration ausführen
 
-`supabase-config.js` enthält die URL und den Publishable-Key des bestehenden Projekts. Ein Publishable-Key ist im Browser öffentlich sichtbar; er darf deshalb nur zusammen mit den unten eingerichteten Datenbankberechtigungen verwendet werden. Keine Service-Role- oder Secret-Keys in die Website eintragen.
+1. Öffne das bestehende Projekt im [Supabase-Dashboard](https://supabase.com/dashboard).
+2. Gehe zu **SQL Editor** und öffne eine neue Abfrage.
+3. Öffne `database-setup.sql`, kopiere den gesamten Inhalt hinein und klicke auf **Run**.
+4. Prüfe, ob die Abfrage ohne Fehlermeldung beendet wurde.
+
+Das Skript richtet bzw. aktualisiert `fristen`, `klausuren`, `projektideen` und die passwortgeschützten Funktionen. Es löscht keine vorhandenen Projektideen. Bereits vorhandene Testeinträge behalten ihre Plätze. Prüfe nach dem SQL-Lauf unter **Table Editor → projektideen**, ob du Testeinträge behalten möchtest oder sicher nicht mehr benötigte Einträge entfernen willst.
+
+### 2. Gemeinsames Passwort einrichten
+
+1. Öffne `projekt-passwort-einrichten.sql` nur, um den Befehl mit dem Platzhalter zu sehen.
+2. Kopiere die Zeile `select studium_private.set_project_password('HIER_EUER_PASSWORT_EINTRAGEN');` in eine **neue Abfrage** im Supabase SQL Editor.
+3. Ersetze den Platzhalter direkt im SQL Editor durch euer gemeinsames Passwort und klicke auf **Run**. Mindestens 10 Zeichen sind erforderlich; 12 oder mehr Zeichen sind empfehlenswert. Maximal sind 72 UTF-8-Bytes möglich. Die erwartete Rückgabe ist eine Zeile mit `set_project_password` und leerem Wert.
+4. **Wichtig:** Schreibe das echte Passwort nicht in eine lokale Datei, lade es nicht auf GitHub hoch und speichere die geänderte Abfrage nicht als gemeinsame Query. In der bereitgestellten Datei steht absichtlich nur ein Platzhalter.
+
+Das Passwort wird serverseitig mit bcrypt gehasht. Wenn du es später ändern möchtest, führe denselben Befehl erneut mit dem neuen Passwort aus. Verwende eine ausreichend lange Passphrase, die nicht bei anderen Konten zum Einsatz kommt.
+
+### 3. Website auf GitHub Pages aktualisieren
+
+1. Entpacke das komplette Website-ZIP.
+2. Kopiere den **Inhalt** des Ordners `studium-dynamisch` direkt in das Hauptverzeichnis deines bestehenden GitHub-Repositories, dort wo auch `index.html` liegt.
+3. Ersetze gleichnamige Dateien.
+4. Committe und pushe die Änderungen.
+5. Öffne `https://tobilewe.de/projekt.html` in einem neuen Tab. Gib das gemeinsame Passwort ein.
+6. Teste anschließend, ob die Projektideen geladen werden und ob eine Testidee gespeichert werden kann.
+
+Die anderen Seiten bleiben öffentlich. Beim erneuten Öffnen der Projektseite muss das Passwort wieder eingegeben werden. Der Button **Sperren** blendet den Projektbereich aus und entfernt das Passwort aus dem JavaScript-Arbeitsspeicher.
+
+## Sicherheit und Grenzen
+
+- `supabase-config.js` enthält die Projekt-URL und den **Publishable Key**. Dieser Schlüssel ist für den Browser gedacht und kein Secret. Niemals Service-Role- oder Secret-Keys in HTML/JavaScript eintragen.
+- Das Gruppenpasswort ist nicht im Website-Quellcode enthalten. Supabase vergleicht die Eingabe serverseitig mit einem bcrypt-Hash. Direkte Tabellen-Lese- und Schreibrechte für Browser-Rollen sind entzogen; die Website verwendet passwortgeprüfte Funktionen.
+- Ein gemeinsames Passwort bleibt ein geteilter Zugang: Jeder, der es kennt, kann die Projektideen ansehen und Einreichungen vornehmen. Ohne individuelle Konten lässt sich nicht sicher feststellen, wer hinter einem frei eingegebenen Namen steckt. Teile das Passwort daher nur mit eurer Gruppe.
+- Nach einem erfolgreichen Seitenaufruf bleibt das Passwort nur im Arbeitsspeicher der aktuell geöffneten Seite. Ein Neuladen, erneutes Öffnen oder Sperren verlangt eine neue Eingabe.
+- Die Website kann bestehende Projektideen derzeit nicht bearbeiten oder löschen. Korrekturen oder das Entfernen eines Testeintrags erfolgen im Supabase Table Editor.
+- Wenn das SQL mit einer Fehlermeldung abbricht, führe nicht das alte Skript erneut aus. Sichere die vollständige Fehlermeldung und prüfe den gemeldeten Schritt.
 
 ## Fristen verwalten
 
 Nach Ausführung des SQL-Skripts: Supabase → **Table Editor** → `fristen`.
 
-Felder:
 - `title`: Titel der Frist
 - `description`: Beschreibung
-- `category`: Kennzeichnung rechts oben, z. B. `Abgabe` oder `Anmeldung`
-- `start_date`: optionaler Beginn einer Anmelde-/Fristspanne (Format `YYYY-MM-DD`)
-- `due_date`: Ende der Frist (Format `YYYY-MM-DD`); steuert den Countdown
-- `sort_order`: optionale Reihenfolge bei gleichem Datum
-
-Die drei bisher in `fristen.html` eingetragenen Termine werden automatisch in die Tabelle übernommen, wenn das SQL-Skript ausgeführt wird.
+- `category`: Kennzeichnung, z. B. `Abgabe` oder `Anmeldung`
+- `start_date`: optionaler Beginn (`YYYY-MM-DD`)
+- `due_date`: Ende der Frist (`YYYY-MM-DD`)
+- `sort_order`: optionale Reihenfolge
 
 ## Klausuren verwalten
 
 Supabase → **Table Editor** → `klausuren` → **Insert row**.
 
-Felder:
-- `title`: Modul/Klausurname (Pflicht)
+- `title`: Modul/Klausurname
 - `description`: optionale Notiz
-- `exam_date`: Klausurdatum (Pflicht, `YYYY-MM-DD`)
+- `exam_date`: Klausurdatum (`YYYY-MM-DD`)
 - `exam_time`: optionale Uhrzeit, z. B. `09:00`
 - `location`: optionaler Raum/Ort
-- `sort_order`: optionale Reihenfolge bei gleichem Datum
+- `sort_order`: optionale Reihenfolge
 - `id` und `created_at`: automatisch erzeugt
-
-Die Klausuren erscheinen dann automatisch auf der Website, in der Vergangen-/Kommend-Spalte passend zum Datum.
 
 ## Projektideen verwalten
 
-Die Seite `projekt.html` schreibt in die Tabelle `projektideen`. Die ersten sechs Einreichungen belegen die Plätze 1 bis 6. Ein Eintrag enthält:
-
-- `slot_number`: automatisch gewählter Platz 1–6
-- `person_name`: Name der Person
-- `title`: Titel der Projektidee
-- `description`: Beschreibung
-- `implementation`: optionale Umsetzungsidee oder benötigte Mittel
-- `id` und `created_at`: automatisch erzeugt
-
-Die öffentliche Website darf Projektideen lesen und neue Einträge hinzufügen, aber keine bestehenden Einträge ändern oder löschen. Korrekturen oder das Entfernen eines Eintrags erfolgen im Supabase Table Editor unter `projektideen`. Wegen der eindeutigen Platznummer können höchstens sechs Einträge gespeichert werden.
-
-**Wichtig bei einer Website ohne Anmeldung:** Supabase kann nicht sicher prüfen, ob eine Einreichung wirklich von einer der sechs Gruppenpersonen stammt. Jeder Besucher der öffentlichen Website könnte versuchen, einen freien Platz zu belegen. Für eine geschlossene Gruppe mit geschütztem Zugang wäre eine Anmeldung oder ein echtes Zugangsverfahren nötig.
-
-## Was ohne Anmeldung absichtlich nicht möglich ist
-
-Besucher können Fristen und Klausuren ansehen, aber nicht über die öffentliche Website verändern. Änderungen erfolgen zunächst im Supabase-Dashboard. Projektideen können öffentlich eingereicht, jedoch nicht öffentlich bearbeitet oder gelöscht werden. Die bisher global gespeicherten Ansichten sind ebenfalls nur lesbar; neue Ansichten, die ein Besucher speichert, gelten nur in dessen Browser. Ein geschützter Verwaltungsbereich kann später ergänzt werden.
+Die Tabelle `projektideen` enthält `slot_number`, `user_id` (bei gemeinsamen Passwort-Einreichungen `NULL`), `person_name`, `title`, `description`, `implementation` und Zeitstempel. Der freie Platz wird über `submit_projektidee` mit einer transaktionsgebundenen Sperre vergeben. Die Funktionen `get_projektideen` und `submit_projektidee` prüfen vor jedem Aufruf das gemeinsame Passwort serverseitig.

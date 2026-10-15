@@ -2,20 +2,13 @@
   const semesterEnd = new Date("2027-01-30T00:00:00");
   const excelFileName = "Stundenplan.xlsx";
 
-  // ==========================================================
-  // SUPABASE – ZENTRALER ÖFFENTLICHER SPEICHER
-  // Jeder darf die gemeinsamen Ansichten ansehen, speichern,
-  // ändern und löschen. Der Publishable Key ist für Browser-
-  // Code vorgesehen; die Rechte werden über Supabase/RLS
-  // gesteuert.
-  // ==========================================================
-  const SUPABASE_URL = "https://taborotlsgsgghrwhdga.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TGk8R6DLn81v_WVMuGXP2w_mednCgaY";
-  const supabaseClient = window.supabase?.createClient
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
-    : null;
-
+  // Der Publishable-Key wird zentral in supabase-config.js geladen.
+  // Gemeinsame Ansichten sind öffentlich lesbar; neue persönliche Ansichten
+  // werden lokal im Browser gespeichert, damit Besucher ohne Anmeldung keine
+  // gemeinsamen Datenbankeinträge verändern oder löschen können.
+  const supabaseClient = window.studiumSupabaseClient || null;
   const SAVED_VIEWS_TABLE = "gespeicherte_ansichten";
+  const LOCAL_SAVED_VIEWS_KEY = "studium_local_saved_views_v1";
   const typInfo = {
     P: { label: "Praktikum", className: "typ-p" },
     V: { label: "Vorlesung", className: "typ-v" },
@@ -109,28 +102,50 @@
   const MAX_SELECTED_MODULES = 6;
   let selectedModules = [];
 
+  function getLocalSavedViews() {
+    try {
+      const parsed = JSON.parse(window.localStorage.getItem(LOCAL_SAVED_VIEWS_KEY) || "[]");
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter(view => view && typeof view.id === "string" && typeof view.name === "string" && Array.isArray(view.modules))
+        .map(view => ({
+          id: `local:${view.id}`,
+          source: "local",
+          name: clean(view.name),
+          modules: view.modules.map(clean).filter(Boolean),
+          created_at: view.created_at || ""
+        }));
+    } catch (error) {
+      console.warn("Lokal gespeicherte Ansichten konnten nicht gelesen werden:", error);
+      return [];
+    }
+  }
+
   async function getSavedViews() {
-    if (!supabaseClient) {
-      console.error("Supabase ist nicht verfügbar.");
-      return [];
+    const localViews = getLocalSavedViews();
+    if (!supabaseClient) return localViews;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from(SAVED_VIEWS_TABLE)
+        .select("id, name, module, created_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      const sharedViews = (data || []).map(view => ({
+        id: `shared:${String(view.id)}`,
+        source: "shared",
+        name: clean(view.name),
+        modules: Array.isArray(view.module) ? view.module.map(clean).filter(Boolean) : [],
+        created_at: view.created_at || ""
+      }));
+      return [...localViews, ...sharedViews];
+    } catch (error) {
+      console.error("Gemeinsame Ansichten konnten nicht geladen werden:", error);
+      return localViews;
     }
-
-    const { data, error } = await supabaseClient
-      .from(SAVED_VIEWS_TABLE)
-      .select("id, name, module, created_at")
-      .order("created_at", { ascending: false })
-      .limit(50);
-
-    if (error) {
-      console.error("Fehler beim Laden der gespeicherten Ansichten:", error);
-      return [];
-    }
-
-    return (data || []).map(view => ({
-      id: view.id,
-      name: clean(view.name),
-      modules: Array.isArray(view.module) ? view.module.map(clean).filter(Boolean) : []
-    }));
   }
 
   function updateModuleFilterButton() {
@@ -188,23 +203,27 @@
       ? views.map(view => {
           const modules = view.modules.map(m => clean(m)).filter(Boolean).slice(0, MAX_SELECTED_MODULES);
           const summary = modules.length === 1 ? modules[0] : `${modules.length} Module`;
+          const sourceLabel = view.source === "local" ? "Nur in diesem Browser" : "Gemeinsam · nur lesbar";
+          const deleteButton = view.source === "local"
+            ? `<button type="button" class="ansicht-loeschen" data-view-id="${esc(view.id)}" title="Lokale Ansicht löschen" aria-label="Lokale Ansicht ${esc(view.name)} löschen">×</button>`
+            : "";
           return `
             <div class="ansicht-item">
               <button type="button" class="ansicht-laden" data-view-id="${esc(view.id)}" title="Ansicht laden">
                 <span class="ansicht-icon" aria-hidden="true">✓</span>
                 <span class="ansicht-info">
                   <strong>${esc(view.name)}</strong>
-                  <small>${esc(summary)}</small>
+                  <small>${esc(summary)} · ${esc(sourceLabel)}</small>
                 </span>
               </button>
-              <button type="button" class="ansicht-loeschen" data-view-id="${esc(view.id)}" title="Ansicht löschen" aria-label="Ansicht ${esc(view.name)} löschen">×</button>
+              ${deleteButton}
             </div>`;
         }).join("")
-      : `<div class="ansichten-empty">Noch keine Ansichten gespeichert.</div>`;
+      : `<div class="ansichten-empty">Noch keine Ansichten vorhanden.</div>`;
   }
 
   async function saveCurrentView() {
-    if (!selectedModules.length || !supabaseClient) return;
+    if (!selectedModules.length) return;
 
     const name = window.prompt("Name für diese Ansicht:", "Meine Ansicht");
     if (name === null) return;
@@ -216,83 +235,78 @@
     if (saveButton) saveButton.disabled = true;
 
     try {
-      const { data: existing, error: findError } = await supabaseClient
-        .from(SAVED_VIEWS_TABLE)
-        .select("id")
-        .eq("name", trimmed)
-        .order("created_at", { ascending: true })
-        .limit(1);
-
-      if (findError) throw findError;
-
-      if (existing && existing.length) {
-        const { error: updateError } = await supabaseClient
-          .from(SAVED_VIEWS_TABLE)
-          .update({ module: [...selectedModules].slice(0, MAX_SELECTED_MODULES) })
-          .eq("id", existing[0].id);
-        if (updateError) throw updateError;
-      } else {
-        const { error: insertError } = await supabaseClient
-          .from(SAVED_VIEWS_TABLE)
-          .insert({
-            name: trimmed,
-            module: [...selectedModules].slice(0, MAX_SELECTED_MODULES)
-          });
-        if (insertError) throw insertError;
-      }
-
+      const existingRaw = JSON.parse(window.localStorage.getItem(LOCAL_SAVED_VIEWS_KEY) || "[]");
+      const localViews = Array.isArray(existingRaw) ? existingRaw : [];
+      const existingIndex = localViews.findIndex(view => clean(view?.name).toLocaleLowerCase("de-DE") === trimmed.toLocaleLowerCase("de-DE"));
+      const record = {
+        id: existingIndex >= 0 ? String(localViews[existingIndex].id) : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+        name: trimmed,
+        modules: [...selectedModules].slice(0, MAX_SELECTED_MODULES),
+        created_at: new Date().toISOString()
+      };
+      if (existingIndex >= 0) localViews[existingIndex] = record;
+      else localViews.unshift(record);
+      window.localStorage.setItem(LOCAL_SAVED_VIEWS_KEY, JSON.stringify(localViews.slice(0, 50)));
       await renderSavedViews();
     } catch (error) {
-      console.error("Fehler beim Speichern der Ansicht:", error);
-      window.alert("Die Ansicht konnte nicht gespeichert werden. Bitte prüfe die Supabase-Einstellungen.");
+      console.error("Die lokale Ansicht konnte nicht gespeichert werden:", error);
+      window.alert("Die Ansicht konnte in diesem Browser nicht gespeichert werden. Prüfe die Browser-Speichereinstellungen.");
     } finally {
       updateModuleFilterButton();
     }
   }
 
   async function loadSavedView(id) {
-    if (!supabaseClient) return;
+    let modulesToLoad = [];
 
-    const { data: view, error } = await supabaseClient
-      .from(SAVED_VIEWS_TABLE)
-      .select("id, name, module")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error || !view) {
-      console.error("Fehler beim Laden der Ansicht:", error);
+    if (String(id).startsWith("local:")) {
+      const localId = String(id).slice("local:".length);
+      const view = getLocalSavedViews().find(entry => entry.id === `local:${localId}`);
+      if (!view) return;
+      modulesToLoad = view.modules;
+    } else if (String(id).startsWith("shared:")) {
+      if (!supabaseClient) return;
+      const sharedId = String(id).slice("shared:".length);
+      const { data: view, error } = await supabaseClient
+        .from(SAVED_VIEWS_TABLE)
+        .select("id, name, module")
+        .eq("id", sharedId)
+        .maybeSingle();
+      if (error || !view) {
+        console.error("Gemeinsame Ansicht konnte nicht geladen werden:", error);
+        return;
+      }
+      modulesToLoad = Array.isArray(view.module) ? view.module.map(clean).filter(Boolean) : [];
+    } else {
       return;
     }
 
     const available = collectModulesFromDom();
-    const modules = (Array.isArray(view.module) ? view.module : [])
+    selectedModules = modulesToLoad
       .map(clean)
       .filter(module => available.includes(module))
       .slice(0, MAX_SELECTED_MODULES);
 
-    selectedModules = modules;
     populateModuleFilter();
     closeSavedViews();
   }
 
   async function deleteSavedView(id) {
-    if (!supabaseClient) return;
+    if (!String(id).startsWith("local:")) return;
 
-    const confirmed = window.confirm("Diese gespeicherte Ansicht wirklich löschen? Sie wird für alle Besucher gelöscht.");
+    const confirmed = window.confirm("Diese Ansicht nur aus deinem Browser löschen?");
     if (!confirmed) return;
 
-    const { error } = await supabaseClient
-      .from(SAVED_VIEWS_TABLE)
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error("Fehler beim Löschen der Ansicht:", error);
-      window.alert("Die Ansicht konnte nicht gelöscht werden.");
-      return;
+    try {
+      const localId = String(id).slice("local:".length);
+      const current = JSON.parse(window.localStorage.getItem(LOCAL_SAVED_VIEWS_KEY) || "[]");
+      const views = Array.isArray(current) ? current.filter(view => String(view?.id) !== localId) : [];
+      window.localStorage.setItem(LOCAL_SAVED_VIEWS_KEY, JSON.stringify(views));
+      await renderSavedViews();
+    } catch (error) {
+      console.error("Lokale Ansicht konnte nicht gelöscht werden:", error);
+      window.alert("Die lokale Ansicht konnte nicht gelöscht werden.");
     }
-
-    await renderSavedViews();
   }
 
   function populateModuleFilter() {
@@ -431,8 +445,8 @@
       event.stopPropagation();
       const loadButton = event.target.closest(".ansicht-laden");
       const deleteButton = event.target.closest(".ansicht-loeschen");
-      if (loadButton) loadSavedView(Number(loadButton.dataset.viewId));
-      if (deleteButton) deleteSavedView(Number(deleteButton.dataset.viewId));
+      if (loadButton) loadSavedView(loadButton.dataset.viewId);
+      if (deleteButton) deleteSavedView(deleteButton.dataset.viewId);
     });
 
     menu.addEventListener("click", event => event.stopPropagation());

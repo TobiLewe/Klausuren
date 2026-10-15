@@ -162,3 +162,14 @@
     }
 }
 
+
+
+/* Statusmeldungen für dynamisch geladene Fristen. */
+.fristen-status {
+    margin: 22px auto 0;
+    color: #c8c8c8;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center;
+}
+.fristen-status[hidden] { display: none !important; }

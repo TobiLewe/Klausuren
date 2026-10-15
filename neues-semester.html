@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes">
   <meta name="theme-color" content="#0b1220">
   <title>Stundenplan</title>
-  <link rel="stylesheet" href="style.css?v=20261011-mobilefix">
-  <link rel="stylesheet" href="semester-style.css?v=20261011-mobilefix">
+  <link rel="stylesheet" href="style.css?v=20261015-dynamic">
+  <link rel="stylesheet" href="semester-style.css?v=20261015-dynamic">
 
   <!-- Supabase: zentraler öffentlicher Speicher für gespeicherte Ansichten -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20261015-dynamic"></script>
 
   <!-- Wird nur zum automatischen Aktualisieren aus Stundenplan.xlsx benötigt. -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -64,14 +65,14 @@
         <div id="ansichten-menu" class="ansichten-menu" hidden>
           <div class="ansichten-menu-head">
             <div>
-              <strong>Meine Ansichten</strong>
-              <span>Gespeicherte Modulauswahlen</span>
+              <strong>Gespeicherte Ansichten</strong>
+              <span>Gemeinsame Ansichten und deine lokalen Auswahlen</span>
             </div>
           </div>
           <div id="ansichten-list" class="ansichten-list"></div>
           <div class="ansichten-menu-footer">
             <button type="button" id="ansicht-speichern" class="ansicht-speichern" disabled>
-              <span aria-hidden="true">＋</span> Aktuelle Auswahl speichern
+              <span aria-hidden="true">＋</span> Aktuelle Auswahl lokal speichern
             </button>
           </div>
         </div>
@@ -1042,7 +1043,7 @@
   </section>
 </main>
 
-<script src="semester-script.js"></script>
+<script src="semester-script.js?v=20261015-dynamic"></script>
 
 </body>
 </html>

@@ -6,29 +6,35 @@
     <meta name="theme-color" content="#222222">
     <meta name="robots" content="noindex, nofollow">
     <title>Projektwahl – Studium</title>
-    <link rel="stylesheet" href="style.css?v=20261017-korrektur-navigation">
-    <link rel="stylesheet" href="projekt.css?v=20261017-korrektur-navigation">
-    <link rel="stylesheet" href="projektwahl.css?v=20261017-korrektur-navigation">
+    <link rel="stylesheet" href="style.css?v=20261017-wahlpasswort-klartext">
+    <link rel="stylesheet" href="projekt.css?v=20261017-wahlpasswort-klartext">
+    <link rel="stylesheet" href="projektwahl.css?v=20261017-wahlpasswort-klartext">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js?v=20261017-korrektur-navigation"></script>
+    <script src="supabase-config.js?v=20261017-wahlpasswort-klartext"></script>
 </head>
 <body class="projekt-page projektwahl-page">
     <a href="projekt.html" class="zurueck-button">← Zurück zu Projekt</a>
 
     <main class="projekt-main">
+        <section id="wahl-start-hinweis" class="projekt-auth-panel" aria-labelledby="wahl-start-titel" hidden>
+            <p class="projekt-kicker">HOCHSCHULE BOCHUM · PROJEKTGRUPPE</p>
+            <h1 id="wahl-start-titel">Projektwahl</h1>
+            <p class="projekt-einleitung">Bitte öffne die Projektwahl über den Link auf der Seite „Projekt“. Hier wird kein Gruppenpasswort abgefragt.</p>
+        </section>
+
         <section id="wahl-anmeldung" class="projekt-auth-panel" aria-labelledby="wahl-login-titel">
             <p class="projekt-kicker">HOCHSCHULE BOCHUM · PROJEKTGRUPPE</p>
             <h1 id="wahl-login-titel">Projektwahl</h1>
-            <p class="projekt-einleitung">Gib dein persönliches Wahlpasswort ein. Du brauchst hier nicht zusätzlich das Gruppenpasswort.</p>
+            <p class="projekt-einleitung">Gib ausschließlich dein persönliches Wahlpasswort (deinen Einmalcode für diese Abstimmung) ein.</p>
             <form id="wahl-login-form" class="projekt-formular projekt-login-formular">
                 <div class="projekt-feld">
-                    <label for="wahl-login-code">Wahlpasswort</label>
-                    <input id="wahl-login-code" name="vote_code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required minlength="20" maxlength="80" placeholder="Dein persönliches Wahlpasswort">
+                    <label for="wahl-login-code">Persönliches Wahlpasswort (Einmalcode)</label>
+                    <input id="wahl-login-code" name="vote_code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required minlength="20" maxlength="80" placeholder="Persönlichen Wahlcode eingeben">
                 </div>
                 <button id="wahl-login-button" class="projekt-submit" type="submit">Zur Projektwahl</button>
             </form>
             <p id="wahl-login-status" class="projekt-form-status" role="status" aria-live="polite"></p>
-            <p class="projekt-auth-hinweis">Das Wahlpasswort ist dein persönlicher Einmalcode. Es wird nur im Arbeitsspeicher dieser geöffneten Seite gehalten und nicht dauerhaft im Browser gespeichert.</p>
+            <p class="projekt-auth-hinweis">Hier wird nur der persönliche Wahlcode abgefragt – nicht das Gruppenpasswort der Projektseite. Der Code wird nicht dauerhaft im Browser gespeichert.</p>
         </section>
 
         <section id="wahl-bereich" hidden>
@@ -74,6 +80,6 @@
         </section>
     </main>
 
-    <script src="projektwahl.js?v=20261017-korrektur-navigation"></script>
+    <script src="projektwahl.js?v=20261017-wahlpasswort-klartext"></script>
 </body>
 </html>

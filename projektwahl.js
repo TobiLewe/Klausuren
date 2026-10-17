@@ -1,18 +1,21 @@
 (() => {
     'use strict';
 
-    // Diese Seite wird ausschließlich über den freigeschalteten Projektbereich geöffnet.
-    // Der Marker erlaubt danach nur den Wahlcode-Login; das Gruppenpasswort wird hier nicht erneut abgefragt.
+    // Die Wahl wird über die Projektseite geöffnet. Bei direktem Seitenaufruf
+    // erklären wir den richtigen Einstieg, statt zur Gruppenpasswortmaske umzuleiten.
     const VOTE_NAVIGATION_KEY = 'studiumProjektwahlNavigationErlaubt';
+    let enteredFromProject = false;
     try {
-        const enteredFromProject = sessionStorage.getItem(VOTE_NAVIGATION_KEY) === '1';
+        enteredFromProject = sessionStorage.getItem(VOTE_NAVIGATION_KEY) === '1';
         sessionStorage.removeItem(VOTE_NAVIGATION_KEY);
-        if (!enteredFromProject) {
-            window.location.replace('projekt.html');
-            return;
-        }
     } catch (_) {
-        window.location.replace('projekt.html');
+        enteredFromProject = false;
+    }
+    if (!enteredFromProject) {
+        const loginPanelForGate = document.getElementById('wahl-anmeldung');
+        const gatePanel = document.getElementById('wahl-start-hinweis');
+        if (loginPanelForGate) loginPanelForGate.hidden = true;
+        if (gatePanel) gatePanel.hidden = false;
         return;
     }
 

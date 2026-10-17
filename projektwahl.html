@@ -6,29 +6,29 @@
     <meta name="theme-color" content="#222222">
     <meta name="robots" content="noindex, nofollow">
     <title>Projektwahl – Studium</title>
-    <link rel="stylesheet" href="style.css?v=20261017-projektwahl">
-    <link rel="stylesheet" href="projekt.css?v=20261017-projektwahl">
-    <link rel="stylesheet" href="projektwahl.css?v=20261017-projektwahl">
+    <link rel="stylesheet" href="style.css?v=20261017-korrektur-navigation">
+    <link rel="stylesheet" href="projekt.css?v=20261017-korrektur-navigation">
+    <link rel="stylesheet" href="projektwahl.css?v=20261017-korrektur-navigation">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js?v=20261017-projektwahl"></script>
+    <script src="supabase-config.js?v=20261017-korrektur-navigation"></script>
 </head>
 <body class="projekt-page projektwahl-page">
-    <a href="index.html" class="zurueck-button">← Zurück</a>
+    <a href="projekt.html" class="zurueck-button">← Zurück zu Projekt</a>
 
     <main class="projekt-main">
         <section id="wahl-anmeldung" class="projekt-auth-panel" aria-labelledby="wahl-login-titel">
             <p class="projekt-kicker">HOCHSCHULE BOCHUM · PROJEKTGRUPPE</p>
             <h1 id="wahl-login-titel">Projektwahl</h1>
-            <p class="projekt-einleitung">Gib zuerst das gemeinsame Gruppenpasswort ein. Für die einmalige Stimmabgabe brauchst du zusätzlich deinen persönlichen Wahlcode.</p>
+            <p class="projekt-einleitung">Gib dein persönliches Wahlpasswort ein. Du brauchst hier nicht zusätzlich das Gruppenpasswort.</p>
             <form id="wahl-login-form" class="projekt-formular projekt-login-formular">
                 <div class="projekt-feld">
-                    <label for="wahl-login-passwort">Gruppenpasswort</label>
-                    <input id="wahl-login-passwort" name="password" type="password" autocomplete="off" required maxlength="128" placeholder="Gruppenpasswort eingeben">
+                    <label for="wahl-login-code">Wahlpasswort</label>
+                    <input id="wahl-login-code" name="vote_code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required minlength="20" maxlength="80" placeholder="Dein persönliches Wahlpasswort">
                 </div>
                 <button id="wahl-login-button" class="projekt-submit" type="submit">Zur Projektwahl</button>
             </form>
             <p id="wahl-login-status" class="projekt-form-status" role="status" aria-live="polite"></p>
-            <p class="projekt-auth-hinweis">Das Gruppenpasswort und der Wahlcode werden nicht im Browser gespeichert. Beim erneuten Öffnen musst du dich erneut anmelden.</p>
+            <p class="projekt-auth-hinweis">Das Wahlpasswort ist dein persönlicher Einmalcode. Es wird nur im Arbeitsspeicher dieser geöffneten Seite gehalten und nicht dauerhaft im Browser gespeichert.</p>
         </section>
 
         <section id="wahl-bereich" hidden>
@@ -36,10 +36,6 @@
                 <p class="projekt-kicker">HOCHSCHULE BOCHUM · PROJEKTGRUPPE</p>
                 <h1>Projektwahl</h1>
                 <p class="projekt-einleitung">Vergib für jede der sechs Projektideen 0 bis 5 Punkte – auch für deine eigene Idee. Jede Idee muss bewertet werden.</p>
-                <div class="projekt-angemeldet-zeile">
-                    <p class="projekt-angemeldet-als">Gruppenzugang aktiv</p>
-                    <button id="wahl-abmelden" class="projekt-abmelden" type="button">Sperren</button>
-                </div>
             </header>
 
             <section class="projektwahl-panel" aria-labelledby="wahl-regeln-titel">
@@ -58,11 +54,6 @@
                     <p id="wahl-bewertungszaehler" class="projekt-plaetze-status">0 von 6 bewertet</p>
                 </div>
                 <div id="wahl-projektliste" class="wahl-projektliste"></div>
-                <div class="projekt-feld wahl-code-feld">
-                    <label for="wahl-code">Dein persönlicher Wahlcode</label>
-                    <input id="wahl-code" name="vote_code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required minlength="20" maxlength="80" placeholder="Einmaligen Wahlcode eingeben">
-                    <p class="projekt-auth-hinweis">Jeder Code kann genau einmal abstimmen. Bewahre ihn geheim auf und verwende ihn nur für deine eigene Stimme.</p>
-                </div>
                 <div class="projekt-formular-fuss">
                     <p class="projekt-pflichtfeld-hinweis">Die Stimme kann nach dem Absenden nicht geändert werden.</p>
                     <button id="wahl-absenden" class="projekt-submit" type="submit">Stimme verbindlich abgeben</button>
@@ -83,6 +74,6 @@
         </section>
     </main>
 
-    <script src="projektwahl.js?v=20261017-projektwahl"></script>
+    <script src="projektwahl.js?v=20261017-korrektur-navigation"></script>
 </body>
 </html>

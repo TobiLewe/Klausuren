@@ -355,25 +355,6 @@
     font-size: 14px;
 }
 
-.projekt-abmelden {
-    border: 1px solid #666;
-    border-radius: 8px;
-    padding: 8px 12px;
-    background: transparent;
-    color: #eee;
-    font: inherit;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.projekt-abmelden:hover:not(:disabled) {
-    background: #3b3b3b;
-}
-
-.projekt-abmelden:disabled {
-    opacity: .55;
-    cursor: wait;
-}
 
 .projekt-eigene-idee-status {
     margin: 12px 0 0;

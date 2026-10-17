@@ -8,13 +8,14 @@
     const loginButton = document.getElementById('projekt-login-button');
     const loginStatus = document.getElementById('projekt-login-status');
     const projectArea = document.getElementById('projekt-bereich');
-    const signOutButton = document.getElementById('projekt-abmelden');
     const form = document.getElementById('projekt-formular');
     const submitButton = document.getElementById('projekt-absenden');
     const list = document.getElementById('projektideen-liste');
     const formStatus = document.getElementById('projekt-form-status');
     const slotsStatus = document.getElementById('projekt-plaetze-status');
     const fullStatus = document.getElementById('projekt-eigene-idee-status');
+    const votingLink = document.querySelector('.projektwahl-direktlink');
+    const VOTE_NAVIGATION_KEY = 'studiumProjektwahlNavigationErlaubt';
 
     const TOTAL_SLOTS = 6;
     let currentIdeas = [];
@@ -156,6 +157,24 @@
         }
     }
 
+    if (votingLink) {
+        votingLink.addEventListener('click', event => {
+            // Die Wahl wird nur aus dem nach Gruppenpasswort freigeschalteten Projektbereich geöffnet.
+            if (!accessPassword) {
+                event.preventDefault();
+                setLoginStatus('Bitte öffne zuerst den Projektbereich mit dem Gruppenpasswort.', true);
+                return;
+            }
+
+            try {
+                sessionStorage.setItem(VOTE_NAVIGATION_KEY, '1');
+            } catch (_) {
+                event.preventDefault();
+                setFormStatus('Die Wahl kann in diesem Browser nicht geöffnet werden. Bitte aktiviere die Sitzungsspeicherung und versuche es erneut.', true);
+            }
+        });
+    }
+
     loginForm.addEventListener('submit', async event => {
         event.preventDefault();
         if (!client || isLoading) {
@@ -262,9 +281,6 @@
         setFormStatus(`Deine Idee wurde auf Platz ${inserted?.slot_number || 'einem freien Platz'} gespeichert.`);
     });
 
-    signOutButton.addEventListener('click', () => {
-        setLoggedOut('Der Projektbereich wurde gesperrt. Beim nächsten Öffnen musst du das Gruppenpasswort erneut eingeben.');
-    });
 
     if (!client) {
         loginButton.disabled = true;

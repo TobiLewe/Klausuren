@@ -1,19 +1,32 @@
 (() => {
     'use strict';
 
+    // Diese Seite wird ausschließlich über den freigeschalteten Projektbereich geöffnet.
+    // Der Marker erlaubt danach nur den Wahlcode-Login; das Gruppenpasswort wird hier nicht erneut abgefragt.
+    const VOTE_NAVIGATION_KEY = 'studiumProjektwahlNavigationErlaubt';
+    try {
+        const enteredFromProject = sessionStorage.getItem(VOTE_NAVIGATION_KEY) === '1';
+        sessionStorage.removeItem(VOTE_NAVIGATION_KEY);
+        if (!enteredFromProject) {
+            window.location.replace('projekt.html');
+            return;
+        }
+    } catch (_) {
+        window.location.replace('projekt.html');
+        return;
+    }
+
     const client = window.studiumSupabaseClient;
     const loginPanel = document.getElementById('wahl-anmeldung');
     const loginForm = document.getElementById('wahl-login-form');
-    const loginPassword = document.getElementById('wahl-login-passwort');
+    const loginCodeInput = document.getElementById('wahl-login-code');
     const loginButton = document.getElementById('wahl-login-button');
     const loginStatus = document.getElementById('wahl-login-status');
     const votingArea = document.getElementById('wahl-bereich');
-    const logoutButton = document.getElementById('wahl-abmelden');
     const progress = document.getElementById('wahl-fortschritt');
     const statusHint = document.getElementById('wahl-status-hinweis');
     const voteForm = document.getElementById('wahl-form');
     const projectList = document.getElementById('wahl-projektliste');
-    const codeInput = document.getElementById('wahl-code');
     const voteButton = document.getElementById('wahl-absenden');
     const voteStatus = document.getElementById('wahl-form-status');
     const ratingCounter = document.getElementById('wahl-bewertungszaehler');
@@ -22,7 +35,7 @@
     const resultList = document.getElementById('wahl-ergebnisse');
 
     const TOTAL = 6;
-    let accessPassword = '';
+    let accessCode = '';
     let ideas = [];
     let ratings = new Map();
     let loading = false;
@@ -43,7 +56,7 @@
     }
 
     function loggedOut(message = '') {
-        accessPassword = '';
+        accessCode = '';
         ideas = [];
         ratings = new Map();
         loading = false;
@@ -67,12 +80,8 @@
         setMessage(loginStatus, message, Boolean(message));
     }
 
-    async function fetchIdeas(password) {
-        return client.rpc('get_projektideen', { p_password: password });
-    }
-
-    async function fetchStatus(password) {
-        return client.rpc('get_projektwahl_status', { p_password: password });
+    async function fetchStatus(code) {
+        return client.rpc('get_projektwahl_status', { p_vote_code: code });
     }
 
     function currentCount() {
@@ -93,8 +102,8 @@
             setMessage(statusHint, 'Die Wahlcodes sind noch nicht eingerichtet. Die Person, die die Wahl organisiert, muss das SQL-Skript „projektwahl-codes-einrichten.sql“ einmal in Supabase ausführen.', true);
         } else if (status.results_released) {
             setMessage(statusHint, 'Alle sechs Mitglieder haben abgestimmt. Die Endergebnisse sind veröffentlicht.');
-        } else if (hasVotedThisSession) {
-            setMessage(statusHint, 'Deine Stimme wurde gespeichert. Die Punktestände bleiben geheim, bis alle sechs Mitglieder abgestimmt haben.');
+        } else if (status.code_used || hasVotedThisSession) {
+            setMessage(statusHint, 'Dieser Wahlcode wurde bereits verwendet. Deine Stimme kann nicht erneut abgegeben werden. Die Ergebnisse bleiben geheim, bis alle sechs Stimmen eingegangen sind.');
         } else {
             setMessage(statusHint, 'Bewerte alle sechs Projekte einschließlich deiner eigenen Idee. Die Einzelbewertungen und Punktestände bleiben bis zum Ende geheim.');
         }
@@ -108,7 +117,7 @@
             const card = el('article', 'wahl-projektkarte');
             card.append(
                 el('h3', '', idea.title),
-                el('p', 'wahl-projekt-meta', `Projekt ${index + 1} · eingereicht von ${idea.person_name}`),
+                el('p', 'wahl-projekt-meta', `Projekt ${idea.slot_number || index + 1} · eingereicht von ${idea.person_name}`),
                 el('p', 'wahl-projektbeschreibung', idea.description)
             );
 
@@ -145,9 +154,6 @@
         const allRated = ideas.length === TOTAL && currentCount() === TOTAL;
         voteButton.disabled = !allRated || submitting || hasVotedThisSession;
         voteButton.textContent = submitting ? 'Stimme wird gespeichert …' : hasVotedThisSession ? 'Stimme bereits abgegeben' : 'Stimme verbindlich abgeben';
-        for (const field of voteForm.querySelectorAll('input')) {
-            field.disabled = submitting || hasVotedThisSession;
-        }
         for (const button of projectList.querySelectorAll('button')) {
             button.disabled = submitting || hasVotedThisSession;
         }
@@ -174,9 +180,7 @@
             previousPoints = Number(result.points);
             const item = el('li', 'wahl-ergebnis');
             if (Number(result.points) === topPoints) item.classList.add('wahl-ergebnis-sieger');
-            item.append(
-                el('span', 'wahl-rang', `${currentRank}. Platz`)
-            );
+            item.append(el('span', 'wahl-rang', `${currentRank}. Platz`));
             const text = el('div', 'wahl-ergebnis-text');
             text.append(
                 el('span', 'wahl-ergebnis-titel', result.title),
@@ -189,20 +193,47 @@
         voteForm.hidden = true;
     }
 
+    function statusIdeasChanged(newIdeas) {
+        return JSON.stringify((newIdeas || []).map(idea => ({
+            id: Number(idea.id),
+            slot_number: Number(idea.slot_number),
+            person_name: idea.person_name,
+            title: idea.title,
+            description: idea.description
+        }))) !== JSON.stringify(ideas.map(idea => ({
+            id: Number(idea.id),
+            slot_number: Number(idea.slot_number),
+            person_name: idea.person_name,
+            title: idea.title,
+            description: idea.description
+        })));
+    }
+
     async function refreshStatus(quiet = false) {
-        if (!client || !accessPassword || loading || submitting) return;
-        const { data, error } = await fetchStatus(accessPassword);
+        if (!client || !accessCode || loading || submitting) return;
+        const { data, error } = await fetchStatus(accessCode);
         if (error) {
             if (!quiet) setMessage(statusHint, 'Der Wahlstatus konnte nicht geladen werden. Prüfe, ob das aktualisierte SQL ausgeführt wurde.', true);
-            if (String(error.message || '').toLowerCase().includes('passwort')) {
-                loggedOut('Das Gruppenpasswort ist nicht mehr gültig. Bitte melde dich erneut an.');
-            }
             return;
         }
+
+        if (Array.isArray(data.ideas) && statusIdeasChanged(data.ideas)) {
+            ideas = data.ideas;
+            renderRatingCards();
+        }
+        hasVotedThisSession = Boolean(data.code_used || hasVotedThisSession);
         setVotingHint(data);
         renderResults(data);
-        if (!data.results_released && !hasVotedThisSession && Number(data.idea_count) === TOTAL && Number(data.eligible_voters) === TOTAL) {
-            voteForm.hidden = false;
+        voteForm.hidden = !(
+            !data.results_released &&
+            !data.code_used &&
+            !hasVotedThisSession &&
+            Number(data.idea_count) === TOTAL &&
+            Number(data.eligible_voters) === TOTAL
+        );
+        if (data.code_used && !data.results_released) {
+            voteForm.hidden = true;
+            updateVoteButton();
         }
         if (data.results_released) {
             voteForm.hidden = true;
@@ -217,36 +248,40 @@
             setMessage(loginStatus, 'Supabase ist nicht verfügbar. Prüfe supabase-config.js und lade die Seite erneut.', true);
             return;
         }
-        const password = String(new FormData(loginForm).get('password') || '');
-        if (!password) {
-            setMessage(loginStatus, 'Bitte gib das Gruppenpasswort ein.', true);
+        const code = String(new FormData(loginForm).get('vote_code') || '').trim();
+        if (code.length < 20) {
+            setMessage(loginStatus, 'Bitte gib dein vollständiges Wahlpasswort ein.', true);
             return;
         }
+
         loading = true;
         loginButton.disabled = true;
         loginButton.textContent = 'Wird geprüft …';
-        setMessage(loginStatus, 'Gruppenpasswort wird geprüft …');
+        setMessage(loginStatus, 'Wahlpasswort wird geprüft …');
 
-        const [{ data: ideasData, error: ideasError }, { data: statusData, error: statusError }] = await Promise.all([
-            fetchIdeas(password),
-            fetchStatus(password)
-        ]);
+        const { data: statusData, error } = await fetchStatus(code);
         loading = false;
         loginButton.disabled = false;
         loginButton.textContent = 'Zur Projektwahl';
 
-        if (ideasError || statusError) {
-            const error = ideasError || statusError;
+        if (error) {
             const message = String(error.message || '').toLowerCase();
-            loginPassword.value = '';
-            if (message.includes('passwort')) setMessage(loginStatus, 'Das Gruppenpasswort ist falsch oder noch nicht eingerichtet.', true);
-            else if (error.code === 'PGRST202' || error.code === '42883') setMessage(loginStatus, 'Die Wahlfunktionen fehlen. Führe das aktualisierte database-setup.sql in Supabase aus.', true);
-            else setMessage(loginStatus, 'Die Prüfung ist fehlgeschlagen. Prüfe die Datenbankkonfiguration in Supabase.', true);
+            loginCodeInput.value = '';
+            if (message.includes('wahlpasswort') || message.includes('wahlcode')) {
+                setMessage(loginStatus, 'Das Wahlpasswort ist ungültig. Prüfe, ob du den persönlichen Einmalcode korrekt eingegeben hast.', true);
+            } else if (message.includes('wahlcodes')) {
+                setMessage(loginStatus, 'Die sechs Wahlcodes wurden noch nicht eingerichtet. Die Wahlorganisation muss „projektwahl-codes-einrichten.sql“ einmal in Supabase ausführen.', true);
+            } else if (error.code === 'PGRST202' || error.code === '42883') {
+                setMessage(loginStatus, 'Die Wahlfunktionen fehlen. Führe die Datei „projektwahl-nur-wahlpasswort.sql“ in Supabase aus.', true);
+            } else {
+                setMessage(loginStatus, 'Die Prüfung ist fehlgeschlagen. Prüfe die Datenbankkonfiguration in Supabase und versuche es erneut.', true);
+            }
             return;
         }
 
-        accessPassword = password;
-        ideas = Array.isArray(ideasData) ? ideasData : [];
+        accessCode = code;
+        ideas = Array.isArray(statusData.ideas) ? statusData.ideas : [];
+        hasVotedThisSession = Boolean(statusData.code_used);
         loginForm.reset();
         loginPanel.hidden = true;
         votingArea.hidden = false;
@@ -254,33 +289,34 @@
         renderRatingCards();
         setVotingHint(statusData);
         renderResults(statusData);
-        if (Number(statusData.idea_count) === TOTAL && Number(statusData.eligible_voters) === TOTAL && !statusData.results_released) {
-            voteForm.hidden = false;
+        voteForm.hidden = !(
+            !statusData.results_released &&
+            !statusData.code_used &&
+            Number(statusData.idea_count) === TOTAL &&
+            Number(statusData.eligible_voters) === TOTAL
+        );
+        if (statusData.code_used && !statusData.results_released) {
+            setMessage(voteStatus, 'Dieser Wahlcode wurde bereits verwendet. Eine zweite Stimmabgabe ist nicht möglich.');
         }
         updateVoteButton();
     });
 
     voteForm.addEventListener('submit', async event => {
         event.preventDefault();
-        if (!client || !accessPassword || submitting || hasVotedThisSession) return;
+        if (!client || !accessCode || submitting || hasVotedThisSession) return;
         if (ideas.length !== TOTAL || currentCount() !== TOTAL) {
             setMessage(voteStatus, 'Bitte vergib für jedes der sechs Projekte 0 bis 5 Punkte.', true);
             return;
         }
-        const code = String(new FormData(voteForm).get('vote_code') || '').trim();
-        if (code.length < 20) {
-            setMessage(voteStatus, 'Bitte gib deinen persönlichen Wahlcode vollständig ein.', true);
-            return;
-        }
-        const scores = ideas.map(idea => ({ project_id: Number(idea.id), points: Number(ratings.get(Number(idea.id))) }));
 
+        const scores = ideas.map(idea => ({ project_id: Number(idea.id), points: Number(ratings.get(Number(idea.id))) }));
         submitting = true;
         voteForm.setAttribute('aria-busy', 'true');
         setMessage(voteStatus, 'Deine Stimme wird verbindlich gespeichert …');
         updateVoteButton();
+
         const { data, error } = await client.rpc('submit_projektwahl_stimme', {
-            p_password: accessPassword,
-            p_vote_code: code,
+            p_vote_code: accessCode,
             p_scores: scores
         });
         submitting = false;
@@ -288,31 +324,36 @@
 
         if (error) {
             const message = String(error.message || '').toLowerCase();
-            if (message.includes('passwort')) {
-                loggedOut('Die Passwortprüfung ist fehlgeschlagen. Bitte melde dich erneut an.');
-                return;
+            if (message.includes('wahlpasswort') || message.includes('wahlcode')) {
+                if (message.includes('bereits verwendet')) {
+                    hasVotedThisSession = true;
+                    voteForm.hidden = true;
+                    setMessage(voteStatus, 'Dieser Wahlcode wurde bereits verwendet. Eine zweite Stimmabgabe ist nicht möglich.', true);
+                    await refreshStatus(true);
+                } else {
+                    setMessage(voteStatus, 'Das Wahlpasswort ist ungültig. Lade die Seite neu und prüfe deinen persönlichen Einmalcode.', true);
+                }
+            } else if (message.includes('sechs projektideen') || message.includes('projektliste')) {
+                setMessage(voteStatus, 'Die Wahl ist noch nicht bereit oder die Projektliste wurde geändert. Lade die Seite neu und prüfe die sechs Projektideen.', true);
+            } else if (message.includes('wahlcodes')) {
+                setMessage(voteStatus, 'Die sechs Wahlcodes wurden noch nicht korrekt eingerichtet.', true);
+            } else if (error.code === 'PGRST202' || error.code === '42883') {
+                setMessage(voteStatus, 'Die Wahlfunktion fehlt. Führe „projektwahl-nur-wahlpasswort.sql“ in Supabase aus.', true);
+            } else {
+                setMessage(voteStatus, 'Die Stimme konnte nicht gespeichert werden. Prüfe deine Bewertungen und versuche es erneut.', true);
             }
-            if (message.includes('wahlcode')) setMessage(voteStatus, 'Der Wahlcode ist ungültig oder wurde bereits verwendet. Jeder Code darf nur einmal abstimmen.', true);
-            else if (message.includes('sechs projektideen') || message.includes('projektliste')) setMessage(voteStatus, 'Die Wahl ist noch nicht bereit oder die Projektliste wurde geändert. Lade die Seite neu und prüfe die sechs Projektideen.', true);
-            else if (message.includes('wahlcodes')) setMessage(voteStatus, 'Die sechs Wahlcodes wurden noch nicht korrekt eingerichtet.', true);
-            else if (error.code === 'PGRST202' || error.code === '42883') setMessage(voteStatus, 'Die Wahlfunktion fehlt. Führe das aktualisierte database-setup.sql aus.', true);
-            else setMessage(voteStatus, 'Die Stimme konnte nicht gespeichert werden. Prüfe deine Bewertungen und versuche es erneut.', true);
             updateVoteButton();
             return;
         }
 
         hasVotedThisSession = true;
-        codeInput.value = '';
+        voteForm.hidden = true;
         setMessage(voteStatus, 'Deine Stimme wurde verbindlich abgegeben. Du kannst sie nicht erneut ändern.');
         updateVoteButton();
         await refreshStatus(true);
         if (!data?.results_released) {
             setMessage(voteStatus, 'Deine Stimme ist gespeichert. Die Ergebnisse werden erst nach Eingang aller sechs Stimmen angezeigt.');
         }
-    });
-
-    logoutButton.addEventListener('click', () => {
-        loggedOut('Der Wahlbereich wurde gesperrt. Beim nächsten Öffnen musst du das Gruppenpasswort erneut eingeben.');
     });
 
     if (!client) {
@@ -322,7 +363,7 @@
 
     loggedOut();
     window.addEventListener('pagehide', () => {
-        accessPassword = '';
+        accessCode = '';
         ideas = [];
         ratings.clear();
         votingArea.hidden = true;
@@ -334,6 +375,6 @@
     });
 
     window.setInterval(() => {
-        if (accessPassword && !loading && !submitting) refreshStatus(true);
+        if (accessCode && !loading && !submitting) refreshStatus(true);
     }, 20000);
 })();

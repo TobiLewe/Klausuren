@@ -1,0 +1,44 @@
+/* Projektwahl – Darstellung in Anlehnung an den Projektbereich */
+.projektwahl-page .projekt-header { margin-top: 24px; }
+.projektwahl-panel {
+    margin-top: 22px;
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    background: #2b2b2b;
+    box-shadow: 0 14px 30px rgba(0,0,0,.16);
+}
+.projektwahl-panel h2 { margin: 0 0 15px; font-size: 23px; }
+.wahl-regel-zeile { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; color: #c8c8c8; font-size: 14px; }
+.wahl-regel-zeile strong { color: #f5f5f5; }
+.wahl-fortschritt { margin: 18px 0 0; color: #eee; font-size: 15px; font-weight: 700; }
+.wahl-projektliste { display: grid; gap: 15px; }
+.wahl-projektkarte { padding: 17px; border: 1px solid #454545; border-radius: 12px; background: #242424; }
+.wahl-projektkarte h3 { margin: 0 0 6px; font-size: 18px; line-height: 1.35; }
+.wahl-projekt-meta { margin: 0 0 12px; color: #b7b7b7; font-size: 13px; }
+.wahl-projektbeschreibung { margin: 0 0 16px; color: #dedede; font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.wahl-punkte-label { display: block; margin-bottom: 8px; color: #f3f3f3; font-size: 13px; font-weight: 700; }
+.wahl-punkte { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
+.wahl-punkte button { min-height: 42px; border: 1px solid #626262; border-radius: 8px; background: #303030; color: #f5f5f5; font: inherit; font-weight: 700; cursor: pointer; }
+.wahl-punkte button:hover { background: #404040; }
+.wahl-punkte button[aria-pressed="true"] { border-color: #9dc4ff; background: #dbeafe; color: #163d72; box-shadow: 0 0 0 1px #9dc4ff; }
+.wahl-punkte button:focus-visible { outline: 2px solid #d1e2ff; outline-offset: 2px; }
+.wahl-code-feld { margin-top: 23px; }
+.wahl-code-feld .projekt-auth-hinweis { margin-top: 6px; text-align: left; }
+.wahl-gewinner { margin: 0 0 18px; color: #f5f5f5; font-size: 17px; line-height: 1.5; font-weight: 700; }
+.wahl-ergebnisliste { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.wahl-ergebnis { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px; border: 1px solid #454545; border-radius: 10px; background: #242424; }
+.wahl-rang { color: #bdbdbd; font-size: 13px; font-weight: 700; }
+.wahl-ergebnis-titel { display: block; margin-bottom: 4px; font-weight: 700; overflow-wrap: anywhere; }
+.wahl-ergebnis-person { display: block; color: #aaa; font-size: 12px; }
+.wahl-ergebnis-punkte { white-space: nowrap; color: #f5f5f5; font-size: 18px; font-weight: 800; }
+.wahl-ergebnis-sieger { border-color: rgba(157,196,255,.65); background: #2b3542; }
+.wahl-form-fehler { color: #f3a3a3; }
+.wahl-geschlossen { color: #c9c9c9; }
+@media (max-width: 520px) {
+    .wahl-punkte { gap: 5px; }
+    .wahl-punkte button { min-height: 40px; }
+    .wahl-ergebnis { grid-template-columns: 38px minmax(0, 1fr); }
+    .wahl-ergebnis-punkte { grid-column: 2; font-size: 16px; }
+    .wahl-regel-zeile { flex-direction: column; gap: 7px; }
+}
